@@ -11,8 +11,8 @@ var idProps = require('../bpmn/parts/IdProps'),
     nameProps = require('../bpmn/parts/NameProps');
 
 // execution properties
-var globalsProps = require('./parts/ProcessProps'),
-    statusProps = require('./parts/StatusProps'),
+var statusProps = require('./parts/StatusProps'),
+    operatorProps = require('./parts/OperatorProps'),
     restrictionProps = require('./parts/RestrictionProps');
 
 var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject;
@@ -41,31 +41,31 @@ function createGeneralTabGroups(
   return groups;
 }
 
-function createProcessTabGroups(element, bpmnFactory, elementRegistry, translate) {
-  var processGroup = {
-    id: 'process-group',
-    label: translate('Globals'),
-    entries: []
-  };
-  var processOptions;
-
-  globalsProps(processGroup, element, bpmnFactory, translate);
-
-  return [
-    processGroup
-  ];
-}
-
 function createStatusTabGroups(element, bpmnFactory, elementRegistry, translate) {
   var statusGroup = {
-    id : 'status-group',
-    label : translate('Status'),
+    id: 'status-group',
+    label: translate('Status'),
     entries: []
   };
+  var statusOptions;
+
   statusProps(statusGroup, element, bpmnFactory, translate);
 
   return [
     statusGroup
+  ];
+}
+
+function createOperatorTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var operatorGroup = {
+    id : 'operator-group',
+    label : translate('Operators'),
+    entries: []
+  };
+  operatorProps(operatorGroup, element, bpmnFactory, translate);
+
+  return [
+    operatorGroup
   ];
 }
 
@@ -113,16 +113,16 @@ function ExecutionPropertiesProvider(
         elementRegistry, elementTemplates, translate)
     };
 
-    var processTab = {
-      id: 'process',
-      label: translate('Process'),
-      groups: createProcessTabGroups(element, bpmnFactory, elementRegistry, translate)
-    };
-
     var statusTab = {
       id: 'status',
       label: translate('Status'),
       groups: createStatusTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
+    var operatorsTab = {
+      id: 'operators',
+      label: translate('Operators'),
+      groups: createOperatorTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
     var restrictionsTab = {
@@ -133,8 +133,8 @@ function ExecutionPropertiesProvider(
 
     return [
       generalTab,
-      processTab,
       statusTab,
+      operatorsTab,
       restrictionsTab,
     ];
   };

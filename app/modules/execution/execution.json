@@ -8,7 +8,7 @@
   "associations": [],
   "types": [
     {
-      "name": "Attributes", 
+      "name": "Status", 
       "superClass": [ "Element" ],
       "properties": [
         {
@@ -19,7 +19,28 @@
        ]
     },
     {
-      "name": "Status", 
+      "name": "Attribute",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "key",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+    {
+      "name": "Operators", 
       "superClass": [ "Element" ],
       "properties": [
         {
@@ -44,23 +65,18 @@
           "isAttr": true
         },
         {
-          "name": "attribute",
-          "type": "Attribute",
+          "name": "parameter",
+          "type": "Parameter",
           "isMany": true
         },
        ]
     },
     {
-      "name": "Attribute",
+      "name": "Parameter",
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "key",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "type",
+          "name": "name",
           "type": "String",
           "isAttr": true
         },

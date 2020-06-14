@@ -1,0 +1,280 @@
+'use strict';
+
+var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject,
+    getExtensionElements = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').getExtensionElements,
+    removeEntry = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').removeEntry,
+    entryFactory = require('bpmn-js-properties-panel/lib/factory/EntryFactory'),
+    elementHelper = require('bpmn-js-properties-panel/lib/helper/ElementHelper'),
+    cmdHelper = require('bpmn-js-properties-panel/lib/helper/CmdHelper'),
+    is = require('bpmn-js/lib/util/ModelUtil').is,
+    find = require('lodash/find');
+
+var extensionElements = require('./ExtensionElements'), helper = require('./Helper');
+var statusOperators = require('../statusOperators.json');
+
+module.exports = function(group, element, bpmnFactory, translate) {
+
+  if ( !is(element, 'bpmn:FlowNode') && !is(element, 'bpmn:MessageFlow') ) {
+    return;
+  }
+
+  /**
+   * Return the currently selected object querying the select box
+   * from the DOM.
+   *
+   * @param  {djs.model.Base} element
+   * @param  {DOMElement} node - DOM element belonging to the object
+   *
+   * @return {ModdleElement} the currently selected object
+   */
+  function getSelectedOperator(element, node) {
+    var selected = operatorsEntry.getSelected(element, node.parentNode);
+    if (selected.idx === -1) {
+      return;
+    }
+    return helper.getObject(element, selected.idx, 'execution:Operators');
+  }
+
+  function getSelectedParameter(element, node) {
+      var operator = getSelectedOperator(element, node);
+      if ( !operator ) return;
+      var selected = parametersEntry.getSelected(element, node.parentNode);
+      if (selected.idx === -1) {
+        return;
+      }
+      return operator.parameter[selected.idx]
+  }
+
+  // Select box entry
+  var operatorsEntry = extensionElements(element, bpmnFactory, {
+    id: 'operator',
+    label: translate('Operators'),
+    modelProperty: 'id',
+    prefix: 'Operator',
+    createExtensionElement: function(element, extensionElement, value) {
+      var bo = getBusinessObject(element), commands = [];
+
+      if (!extensionElement) {
+        extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, bo, bpmnFactory);
+        commands.push(cmdHelper.updateProperties(element, { extensionElements: extensionElement }));
+      }
+      var containerElement = helper.getContainerElement(element,'execution:Operators');
+      if (!containerElement) {
+        containerElement = elementHelper.createElement('execution:Operators', {}, extensionElement, bpmnFactory);
+        commands.push(cmdHelper.addAndRemoveElementsFromList(
+          element,
+          extensionElement,
+          'values',
+          'extensionElements',
+          [containerElement],
+          []
+        ));
+      }
+
+      var operator = elementHelper.createElement('execution:Operator', { id: value }, containerElement, bpmnFactory);
+      commands.push(cmdHelper.addElementsTolist(element, containerElement, 'operator', [ operator ]));
+
+      return commands;
+    },
+    removeExtensionElement: function(element, extensionElement, value, idx) {
+      var containerElement = helper.getContainerElement(element,'execution:Operators');
+      var entry = containerElement.operator[idx],
+          commands = [];
+
+      if (containerElement.operator.length < 2) {
+        commands.push(removeEntry(getBusinessObject(element), element, containerElement));
+      } else {
+        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'operator', null, [entry]));
+      }
+
+      return commands;
+    },
+    getExtensionElements: function(element) {
+      return helper.getObjectList(element,'execution:Operators');
+    },
+    hideExtensionElements: function(element, node) {
+      return false;
+    }
+  });
+  group.entries.push(operatorsEntry);
+
+  // ID entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'operator-id',
+    label: translate('ID'),
+    modelProperty: 'id',
+
+    getProperty: function(element, node) {
+      var object = getSelectedOperator(element, node) || {};
+      return object.id;
+    },
+
+    setProperty: function(element, properties, node) {
+      var object = getSelectedOperator(element, node);
+      return cmdHelper.updateBusinessObject(element, object, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedOperator(element, node);
+    },
+
+    validate: function(element, values, node) {
+      var object = getSelectedOperator(element, node);
+      if (object) {
+        var idValue = values.id;
+        if (!idValue || idValue.trim() === '') {
+          return { id: 'Id must not be empty.' };
+        }
+        var objects = helper.getObjectList(element,'execution:Operators');
+        var existingID = find(objects, function(f) {
+          return f !== object && f.id === idValue;
+        });
+        if (existingID) {
+          return { id: 'Id is already used.' };
+        }
+      }
+    }
+  }));
+
+
+  // Select operator entry
+  group.entries.push(entryFactory.selectBox({
+    id: 'operator-name',
+    label: translate('Status operator'),
+    modelProperty : 'name',
+    emptyParameter: false,
+    selectOptions: statusOperators,
+    get: function(element, node) {
+      var object = getSelectedOperator(element, node) || {};
+      return {
+        name: object.name || statusOperators[0].name
+      };
+    },
+    set: function(element, values, node) {
+      var object = getSelectedOperator(element, node);
+      return cmdHelper.updateBusinessObject(element, object, values);
+    },
+    hidden: function(element, node) {
+      return !getSelectedOperator(element, node);
+    },
+  }));
+
+
+  // Parameter box entry
+  var parametersEntry = extensionElements(element, bpmnFactory, {
+    id: 'parameters',
+    label: translate('Parameters'),
+    modelProperty: 'name',
+    prefix: 'Parameter',
+    createExtensionElement: function(element, extensionElement, value, node) {
+      var operator = getSelectedOperator(element, node) || {}, commands = [];
+      var parameter = elementHelper.createElement('execution:Parameter', { name: value }, operator, bpmnFactory);
+      commands.push(cmdHelper.addElementsTolist(element, operator, 'parameter', [ parameter ]));
+
+      return commands;
+    },
+    removeExtensionElement: function(element, extensionElement, value, idx, node) {
+      var operator = getSelectedOperator(element, node) || {}, commands = [];
+      commands.push(cmdHelper.removeElementsFromList(element, operator, 'parameter', null, [item]));
+      return commands;
+    },
+    getExtensionElements: function(element, node) {
+      var operator = getSelectedOperator(element, node) || {};
+//console.log(operator);
+      return operator.parameter || [];
+    },
+    hideExtensionElements: function(element, node) {
+      return !getSelectedOperator(element, node);
+    }
+  });
+  group.entries.push(parametersEntry);
+
+  // Parameter name entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'parameter-name',
+    label: translate('Name'),
+    modelProperty: 'name',
+
+    getProperty: function(element, node) {
+      var parameter = getSelectedParameter(element, node) || {}; 
+      return parameter.name;
+    },
+
+    setProperty: function(element, properties, node) {
+      var parameter = getSelectedParameter(element, node);
+      return cmdHelper.updateBusinessObject(element, parameter, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedOperator(element, node) || !getSelectedParameter(element, node);
+    },
+
+    validate: function(element, values, node) {
+      var parameter = getSelectedParameter(element, node) || {};
+      if (parameter) {
+        var parameterName = values.name;
+        if (!parameterName || parameterName.trim() === '') {
+          return { name: 'Name must not be empty.' };
+        }
+	var operator = getSelectedOperator(element, node) || {};
+        var parameters = operator.parameter;
+        var existingName = find(parameters, function(f) {
+          return f !== parameter && f.name === name;
+        });
+        if (existingName) {
+          return { existingName: 'Name is already used.' };
+        }
+      }
+    }
+  }));
+/*
+  // Select parameter type
+  group.entries.push(entryFactory.selectBox({
+    id: 'parameter-type',
+    label: translate('Type'),
+    modelProperty : 'type',
+    emptyParameter: false,
+    selectOptions: [
+      { name: '<inherit>', value: '' },
+      { name: 'string', value: 'xs:string' },
+      { name: 'integer', value: 'xs:integer' },
+      { name: 'decimal', value: 'xs:decimal' },
+      { name: 'boolean', value: 'xs:boolean' }
+    ],
+    get: function(element, node) {
+      var object = getSelectedParameter(element, node) || {};
+      return {
+        type: object.type || ''
+      };
+    },
+    set: function(element, properties, node) {
+      if ( properties.type == '' ) properties.type = undefined;
+      var parameter = getSelectedParameter(element, node);
+      return cmdHelper.updateBusinessObject(element, parameter, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedOperator(element, node) || !getSelectedParameter(element, node);
+    },
+  }));
+*/
+
+  /// Parameter value input field
+  group.entries.push(entryFactory.textField({
+    id: 'parameter-value',
+    label: translate('Value'),
+    modelProperty: 'value',
+    get: function(element, node) {
+      var parameter = getSelectedParameter(element, node) || {}; 
+      return { value: parameter.value };
+    },
+
+    set: function(element, properties, node) {
+      var parameter = getSelectedParameter(element, node);
+      return cmdHelper.updateBusinessObject(element, parameter, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedOperator(element, node) || !getSelectedParameter(element, node);
+    }
+  }));
+
+};
