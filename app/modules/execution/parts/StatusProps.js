@@ -222,6 +222,7 @@ console.log(properties);
     }
   }));
 
+/*
   // Restrictions entry
   var restrictionsEntry = extensionElements(element, bpmnFactory, {
     id: 'restriction',
@@ -471,5 +472,5 @@ console.log(properties);
   });
   group.entries.push(negateEntry);
 
-
+*/
 };

@@ -1,7 +1,10 @@
 'use strict';
 
-var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject,
-    getExtensionElements = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').getExtensionElements,
+var is = require('bpmn-js/lib/util/ModelUtil').is,
+    getBO = require('bpmn-js/lib/util/ModelUtil').getBusinessObject,
+    getBusinessObject =  function getBusinessObject(element) { return is(element, 'bpmn:Participant') ? getBO(element).processRef : getBO(element); };
+
+var getExtensionElements = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').getExtensionElements,
     removeEntry = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').removeEntry,
     entryFactory = require('bpmn-js-properties-panel/lib/factory/EntryFactory'),
     elementHelper = require('bpmn-js-properties-panel/lib/helper/ElementHelper'),
@@ -14,9 +17,7 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 
 module.exports = function(group, element, bpmnFactory, translate) {
 
-  if ( !is(element, 'bpmn:FlowNode') && !is(element, 'bpmn:SequenceFlow') 
-       || is(element, 'bpmn:SubProcess') || is(element, 'bpmn:Transaction') || is(element, 'bpmn:CallActivity')
-     ) {
+  if ( !is(element, 'bpmn:FlowNode') && !is(element, 'bpmn:SequenceFlow') && !is(element, 'bpmn:Process') && !(is(element, 'bpmn:Participant') && getBO(element).get('processRef')) ) {
     return;
   }
 
