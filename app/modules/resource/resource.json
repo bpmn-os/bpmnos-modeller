@@ -1,0 +1,23 @@
+{
+  "name": "Resources",
+  "uri": "https://bpmn.telematique.eu/resources",
+  "prefix": "resources",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "types": [
+    {
+      "name": "ResourceTask",
+      "extends": [ "bpmn:Task" ],
+      "properties": [
+        {
+          "name": "type",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    }
+  ],
+  "emumerations": [],
+  "associations": []
+}

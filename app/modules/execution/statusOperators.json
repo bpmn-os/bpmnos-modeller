@@ -1,0 +1,10 @@
+[
+   { "name": "extend", "value": "extend", "title": "Extends the current status by the given attributes" },
+   { "name": "new", "value": "new", "title": "Creates a new status from the given attributes" },
+   { "name": "remove", "value": "remove", "title": "Removes the given attributes from the status" },
+   { "name": "copy", "value": "copy", "title": "Copies the value of given attributes to attributes with the specified name" },
+   { "name": "rename", "value": "rename", "title": "Renames the given attributes to the specified names" },
+   { "name": "math", "value": "math", "title": "Evaluates a given mathematical expression and adds the result" },
+   { "name": "random", "value": "random", "title": "Includes a random value from a specified distribution" },
+   { "name": "decide", "value": "decide", "title": "Determines a value according to a given logic" }
+]

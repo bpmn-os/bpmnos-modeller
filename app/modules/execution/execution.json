@@ -1,0 +1,156 @@
+{
+  "name": "Execution",
+  "uri": "https://bpmn.telematique.eu/execution",
+  "prefix": "execution",
+  "xml": {
+    "tagAlias": "lowerCase"
+  },
+  "associations": [],
+  "types": [
+    {
+      "name": "Attributes", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "attribute",
+          "type": "Attribute",
+          "isMany": true
+        },
+       ]
+    },
+    {
+      "name": "Status", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "operator",
+          "type": "Operator",
+          "isMany": true
+        },
+      ]
+    },
+    {
+      "name": "Operator", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "attribute",
+          "type": "Attribute",
+          "isMany": true
+        },
+       ]
+    },
+    {
+      "name": "Attribute",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "key",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "type",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+    {
+      "name": "Restrictions", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "restriction",
+          "type": "Restriction",
+          "isMany": true
+        },
+      ]
+    },
+    {
+      "name": "Restriction", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "attribute",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "negate",
+          "type": "Boolean",
+          "isAttr": true
+        },
+        {
+          "name": "minInclusive",
+          "type": "MinInclusive",
+          "isMany": true
+        },
+        {
+          "name": "maxInclusive",
+          "type": "MaxInclusive",
+          "isMany": true
+        },
+        {
+          "name": "enumeration",
+          "type": "Enumeration",
+          "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "MinInclusive",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+    {
+      "name": "MaxInclusive",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+    {
+      "name": "Enumeration",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "value",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+  ],
+  "emumerations": [ ]
+}
