@@ -253,7 +253,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     id: 'parameters',
     modelProperties: [ 'name', 'value' ],
     labels: [ translate('Name'), translate('Value') ],
-    addLabel: translate('Add parameter'),
+    addLabel: translate('Parameters'),
     getElements: function(element, node) {
       var operator = getSelectedOperator(element, node) || {};
       return operator.parameter || [];
