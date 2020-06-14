@@ -1,10 +1,9 @@
 [
-   { "name": "extend", "value": "extend", "title": "Extends the current status by the given attributes" },
-   { "name": "new", "value": "new", "title": "Creates a new status from the given attributes" },
-   { "name": "remove", "value": "remove", "title": "Removes the given attributes from the status" },
-   { "name": "copy", "value": "copy", "title": "Copies the value of given attributes to attributes with the specified name" },
-   { "name": "rename", "value": "rename", "title": "Renames the given attributes to the specified names" },
-   { "name": "math", "value": "math", "title": "Evaluates a given mathematical expression and adds the result" },
-   { "name": "random", "value": "random", "title": "Includes a random value from a specified distribution" },
-   { "name": "decide", "value": "decide", "title": "Determines a value according to a given logic" }
+   { "name": "Add attribute", "value": "add", "title": "Adds the the specified attribute to the status" },
+   { "name": "Remove attribute", "value": "remove", "title": "Removes the specified attribute from the status" },
+   { "name": "Copy attribute", "value": "copy", "title": "Copies the value of a specified attribute to an attribute with specified name" },
+   { "name": "Rename attribute", "value": "rename", "title": "Renames the specifdied attribute" },
+   { "name": "Calculate value", "value": "math", "title": "Calcluates the value of a specified attribute using a specified expression" },
+   { "name": "Determine random value", "value": "random", "title": "Sets the value of a specified attribute using a specified probability distribution" },
+   { "name": "Choose value", "value": "decide", "title": "Determines the value of a specified attribute according to a specified logic" }
 ]

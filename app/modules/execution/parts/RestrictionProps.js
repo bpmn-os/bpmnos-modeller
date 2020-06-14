@@ -14,7 +14,9 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 
 module.exports = function(group, element, bpmnFactory, translate) {
 
-  if ( !is(element, 'bpmn:FlowNode') && !is(element, 'bpmn:SequenceFlow') ) {
+  if ( !is(element, 'bpmn:FlowNode') && !is(element, 'bpmn:SequenceFlow') 
+       || is(element, 'bpmn:SubProcess') || is(element, 'bpmn:Transaction') || is(element, 'bpmn:CallActivity')
+     ) {
     return;
   }
 

@@ -147,7 +147,8 @@ module.exports = function(group, element, bpmnFactory, translate) {
     get: function(element, node) {
       var object = getSelectedOperator(element, node) || {};
       return {
-        name: object.name || statusOperators[0].name
+        value: object.value || statusOperators[0].value,
+        parameter: [ { name: 'name', value: 'value' } ]
       };
     },
     set: function(element, values, node) {
@@ -159,7 +160,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     },
   }));
 
-
+/*
   // Parameter box entry
   var parametersEntry = extensionElements(element, bpmnFactory, {
     id: 'parameters',
@@ -227,36 +228,6 @@ module.exports = function(group, element, bpmnFactory, translate) {
       }
     }
   }));
-/*
-  // Select parameter type
-  group.entries.push(entryFactory.selectBox({
-    id: 'parameter-type',
-    label: translate('Type'),
-    modelProperty : 'type',
-    emptyParameter: false,
-    selectOptions: [
-      { name: '<inherit>', value: '' },
-      { name: 'string', value: 'xs:string' },
-      { name: 'integer', value: 'xs:integer' },
-      { name: 'decimal', value: 'xs:decimal' },
-      { name: 'boolean', value: 'xs:boolean' }
-    ],
-    get: function(element, node) {
-      var object = getSelectedParameter(element, node) || {};
-      return {
-        type: object.type || ''
-      };
-    },
-    set: function(element, properties, node) {
-      if ( properties.type == '' ) properties.type = undefined;
-      var parameter = getSelectedParameter(element, node);
-      return cmdHelper.updateBusinessObject(element, parameter, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedOperator(element, node) || !getSelectedParameter(element, node);
-    },
-  }));
-*/
 
   /// Parameter value input field
   group.entries.push(entryFactory.textField({
@@ -276,5 +247,116 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !getSelectedOperator(element, node) || !getSelectedParameter(element, node);
     }
   }));
+*/
 
+  // [FormData] form field constraints table
+  group.entries.push(entryFactory.table({
+    id: 'parameters',
+    modelProperties: [ 'name', 'value' ],
+    labels: [ translate('Name'), translate('Value') ],
+    addLabel: translate('Add parameter'),
+    getElements: function(element, node) {
+      var operator = getSelectedOperator(element, node) || {};
+      return operator.parameter || [];
+    },
+    addElement: function(element, node) {
+      var commands = [],
+          operator = getSelectedOperator(element, node) || {};
+      var parameter = elementHelper.createElement('execution:Parameter', { name: undefined, value: undefined }, operator, bpmnFactory);
+      commands.push(cmdHelper.addElementsTolist(element, operator, 'parameter', [ parameter ]));
+
+      return commands;
+    },
+    updateElement: function(element, value, node, idx) {
+      var operator = getSelectedOperator(element, node) || {},
+          parameter = operator.parameter[idx];
+
+      value.name = value.name || undefined;
+      value.value = value.value || undefined;
+
+      return cmdHelper.updateBusinessObject(element, parameter, value);
+    },
+    removeElement: function(element, node, idx) {
+      var commands = [],
+          operator = getSelectedOperator(element, node),
+          parameter = operator.parameter[idx];
+
+      commands.push(cmdHelper.removeElementsFromList(
+        element,
+        operator,
+        'parameter',
+        null,
+        [ parameter ]
+      ));
+
+      if (operator.parameter.length === 1) {
+        // remove camunda:validation if the last existing constraint has been removed
+        commands.push(cmdHelper.updateBusinessObject(element, operator, { parameter: undefined }));
+      }
+
+      return commands;
+    },
+    show: function(element, node) {
+      return !!getSelectedOperator(element, node);
+    }
+  }));
+/*
+  // Parameter entry
+  group.entries.push(entryFactory.table({
+    id: 'parameters',
+    labels: [ translate('Name'), translate('Value') ],
+    modelProperties: [ 'name', 'value' ],
+    show: function(element, node) {
+      var selectedFormField = getSelectedOperator(element, node);
+
+      return selectedFormField && selectedFormField.type === 'enum';
+    },
+    getElements: function(element, node) {
+      var selectedFormField = getSelectedOperator(element, node);
+
+      return formHelper.getEnumValues(selectedFormField);
+    },
+    addElement: function(element, node) {
+      var selectedFormField = getSelectedOperator(element, node),
+          id = generateValueId();
+
+      var enumValue = elementHelper.createElement(
+        'execution:Parameter',
+        { name: undefined, value: undefined },
+        getBusinessObject(element),
+        bpmnFactory
+      );
+
+      return cmdHelper.addElementsTolist(element, selectedFormField, 'values', [enumValue]);
+    },
+    removeElement: function(element, node, idx) {
+      var selectedFormField = getSelectedOperator(element, node),
+          enumValue = selectedFormField.values[idx];
+
+      return cmdHelper.removeElementsFromList(element, selectedFormField, 'values', null, [enumValue]);
+    },
+    updateElement: function(element, value, node, idx) {
+      var selectedFormField = getSelectedOperator(element, node),
+          enumValue = selectedFormField.values[idx];
+
+      value.name = value.name || undefined;
+      return cmdHelper.updateBusinessObject(element, enumValue, value);
+    },
+    validate: function(element, value, node, idx) {
+
+      var selectedFormField = getSelectedOperator(element, node),
+          enumValue = selectedFormField.values[idx];
+
+      if (enumValue) {
+        // check if id is valid
+        var validationError = utils.isIdValid(enumValue, value.id, translate);
+
+        if (validationError) {
+          return { id: validationError };
+        }
+      }
+    }
+  }));
+
+*/
 };
