@@ -148,7 +148,6 @@ module.exports = function(group, element, bpmnFactory, translate) {
       var object = getSelectedOperator(element, node) || {};
       return {
         value: object.value || statusOperators[0].value,
-        parameter: [ { name: 'name', value: 'value' } ]
       };
     },
     set: function(element, values, node) {
