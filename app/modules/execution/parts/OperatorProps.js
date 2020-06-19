@@ -10,11 +10,11 @@ var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject,
     find = require('lodash/find');
 
 var extensionElements = require('./ExtensionElements'), helper = require('./Helper');
-var statusOperators = require('../statusOperators.json');
+var statusOperators = require('../operators.json');
 
 module.exports = function(group, element, bpmnFactory, translate) {
 
-  if ( !is(element, 'bpmn:FlowNode') && !is(element, 'bpmn:MessageFlow') ) {
+  if ( !is(element, 'bpmn:Task') ) {
     return;
   }
 

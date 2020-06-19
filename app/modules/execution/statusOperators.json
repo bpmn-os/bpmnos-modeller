@@ -1,9 +1,0 @@
-[
-   { "name": "Add attribute", "value": "add", "title": "Adds the the specified attribute to the status" },
-   { "name": "Remove attribute", "value": "remove", "title": "Removes the specified attribute from the status" },
-   { "name": "Copy attribute", "value": "copy", "title": "Copies the value of a specified attribute to an attribute with specified name" },
-   { "name": "Rename attribute", "value": "rename", "title": "Renames the specifdied attribute" },
-   { "name": "Calculate value", "value": "math", "title": "Calculates the value of a specified attribute using a specified expression" },
-   { "name": "Determine random value", "value": "random", "title": "Sets the value of a specified attribute using a specified probability distribution" },
-   { "name": "Choose value", "value": "decide", "title": "Determines the value of a specified attribute according to a specified logic" }
-]

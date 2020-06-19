@@ -13,7 +13,8 @@ var idProps = require('../bpmn/parts/IdProps'),
 // execution properties
 var statusProps = require('./parts/StatusProps'),
     operatorProps = require('./parts/OperatorProps'),
-    restrictionProps = require('./parts/RestrictionProps');
+    restrictionProps = require('./parts/RestrictionProps'),
+    messageProps = require('./parts/MessageProps');
 
 var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject;
 
@@ -83,6 +84,18 @@ function createRestrictionsTabGroups(element, bpmnFactory, elementRegistry, tran
   ];
 }
 
+function createMessageTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var messageGroup = {
+    id : 'message-group',
+    label : translate('Message'),
+    entries: []
+  };
+  messageProps(messageGroup, element, bpmnFactory, translate);
+
+  return [
+    messageGroup
+  ];
+}
 
 // Execution Properties Provider /////////////////////////////////////
 
@@ -131,11 +144,18 @@ function ExecutionPropertiesProvider(
       groups: createRestrictionsTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
+    var messageTab = {
+      id: 'message',
+      label: translate('Message'),
+      groups: createMessageTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
     return [
       generalTab,
       statusTab,
       operatorsTab,
       restrictionsTab,
+      messageTab,
     ];
   };
 

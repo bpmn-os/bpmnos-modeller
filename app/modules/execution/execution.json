@@ -167,6 +167,44 @@
         }
       ]
     },
+    {
+      "name": "Message", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        },
+       ]
+    },
+    {
+      "name": "Content",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "origin",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "destination",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "value",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
   ],
+
   "emumerations": [ ]
 }

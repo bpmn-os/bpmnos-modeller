@@ -1,0 +1,5 @@
+[
+   { "name": "Expression", "value": "expression", "title": "Calculates the value of a specified attribute using a specified expression" },
+   { "name": "Random", "value": "random", "title": "Sets the value of a specified attribute using a specified probability distribution" },
+   { "name": "Choice", "value": "choice", "title": "Determines the value of a specified attribute according to a specified logic" }
+]
