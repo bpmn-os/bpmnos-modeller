@@ -168,7 +168,18 @@
       ]
     },
     {
-      "name": "Message", 
+      "name": "Send", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        },
+       ]
+    },
+    {
+      "name": "Receive", 
       "superClass": [ "Element" ],
       "properties": [
         {
@@ -188,12 +199,12 @@
           "isAttr": true
         },
         {
-          "name": "origin",
+          "name": "key",
           "type": "String",
           "isAttr": true
         },
         {
-          "name": "destination",
+          "name": "attribute",
           "type": "String",
           "isAttr": true
         },
@@ -203,6 +214,17 @@
           "isAttr": true
         }
       ]
+    },
+    {
+      "name": "Resource", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+       ]
     },
   ],
 

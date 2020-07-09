@@ -16,9 +16,9 @@ module.exports = Helper;
 
 Helper.getContainerElement = function(element, type) {
   var bo = getBusinessObject(element);
-  var containerElement = getExtensionElements(bo, type);
-  if (typeof containerElement !== 'undefined') {
-    return containerElement[0];
+  var containerElements = getExtensionElements(bo, type);
+  if (typeof containerElements !== 'undefined') {
+    return containerElements[0];
   }
 };
 
