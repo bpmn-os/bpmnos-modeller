@@ -17,7 +17,10 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 
 
 module.exports = function(group, element, bpmnFactory, translate) {
-  if ( !is(element, 'bpmn:Process') && !(is(element, 'bpmn:Participant') && getBO(element).get('processRef')) && !is(element, 'bpmn:Activity')  ) {
+  if ( !is(element, 'bpmn:Process') && !(is(element, 'bpmn:Participant') && getBO(element).get('processRef')) && !is(element, 'bpmn:Activity') ) {
+    return;
+  }
+  if ( is(element, 'bpmn:Task') && ( getBusinessObject(element).type == "Request" || getBusinessObject(element).type == "Release") ) {
     return;
   }
 

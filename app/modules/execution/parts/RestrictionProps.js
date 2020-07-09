@@ -23,6 +23,9 @@ module.exports = function(group, element, bpmnFactory, translate) {
      ) {
     return;
   }
+  if ( is(element, 'bpmn:Task') && ( getBusinessObject(element).type == "Request" || getBusinessObject(element).type == "Release") ) {
+    return;
+  }
 
   /**
    * Return the currently selected object querying the select box

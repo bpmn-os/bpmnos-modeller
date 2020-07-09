@@ -17,26 +17,29 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 
 module.exports = function(group, element, bpmnFactory, translate) {
   var bo = getBusinessObject(element);
-  var isCatching = is(element, 'bpmn:CatchEvent') || is(element, 'bpmn:ReceiveTask');
-  var isThrowing = is(element, 'bpmn:ThrowEvent') || is(element, 'bpmn:SendTask');
-  var isMessage = ( is(element, 'bpmn:Event') && bo.eventDefinitions && bo.eventDefinitions[0].$type == "bpmn:MessageEventDefinition" )  || is(element, 'bpmn:ReceiveTask') || is(element, 'bpmn:SendTask');
+  var isRequest = is(element,"bpmn:Task") && getBusinessObject(element).type == "Request";
+  var isRelease = is(element,"bpmn:Task") && getBusinessObject(element).type == "Release";
+  var isCatching = isRequest || isRelease ||  ( is(element, 'bpmn:CatchEvent') && bo.eventDefinitions && bo.eventDefinitions[0].$type == "bpmn:MessageEventDefinition" )  || is(element, 'bpmn:ReceiveTask');
+  var isThrowing = isRequest || isRelease ||  ( is(element, 'bpmn:ThrowEvent') && bo.eventDefinitions && bo.eventDefinitions[0].$type == "bpmn:MessageEventDefinition" )  || is(element, 'bpmn:SendTask');
 
-  if ( !isMessage ) {
+
+  if ( !isCatching && !isThrowing ) {
     return;
   }
 
-  function getSelectedContent(element, node, type) {
-    var selected = contentsEntry.getSelected(element, node.parentNode);
+  function getSelectedContent(entry, element, node, type) {
+    var selected = entry.getSelected(element, node.parentNode);
     if (selected.idx === -1) {
       return;
     }
+console.log(type, selected.idx);
     return helper.getObject(element, selected.idx, type);
   }
 
   //////////////////////
   // Send content entry
   //////////////////////
-  var contentsEntry = extensionElements(element, bpmnFactory, {
+  var sendContentsEntry = extensionElements(element, bpmnFactory, {
     id: 'send-content',
     label: translate('Send'),
     modelProperty: 'id',
@@ -86,7 +89,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !isThrowing;
     }
   });
-  group.entries.push(contentsEntry);
+  group.entries.push(sendContentsEntry);
 
   // Content ID entry
   group.entries.push(entryFactory.validationAwareTextField({
@@ -95,21 +98,21 @@ module.exports = function(group, element, bpmnFactory, translate) {
     modelProperty: 'id',
 
     getProperty: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Send') || {}; 
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {}; 
       return content.id;
     },
 
     setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Send');
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Send');
+      return !getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
     },
 
     validate: function(element, values, node) {
-      var content = getSelectedContent(element, node, 'execution:Send') || {};
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {};
       if (content) {
         var IdValue = values.id;
         if (!IdValue || IdValue.trim() === '') {
@@ -133,21 +136,21 @@ module.exports = function(group, element, bpmnFactory, translate) {
     modelProperty: 'key',
 
     getProperty: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Send') || {}; 
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {}; 
       return content.key;
     },
 
     setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Send');
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Send');
+      return !getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
     },
 
     validate: function(element, values, node) {
-      var content = getSelectedContent(element, node, 'execution:Send') || {};
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {};
       if (content) {
         var keyValue = values.key;
         if (!keyValue || keyValue.trim() === '') {
@@ -163,16 +166,16 @@ module.exports = function(group, element, bpmnFactory, translate) {
     label: translate('Attribute key of status'),
     modelProperty: 'attribute',
     get: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Send') || {}; 
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {}; 
       return { attribute: content.attribute };
     },
 
     set: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Send');
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Send');
+      return !getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
     }
   }));
 
@@ -183,23 +186,23 @@ module.exports = function(group, element, bpmnFactory, translate) {
     label: translate('Value'),
     modelProperty: 'value',
     get: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Send') || {}; 
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {}; 
       return { value: content.value };
     },
 
     set: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Send');
+      var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Send');
+      return !getSelectedContent(sendContentsEntry, element, node, 'execution:Send');
     }
   }));
 
   //////////////////////
   // Receive content entry
   //////////////////////
-  var contentsEntry = extensionElements(element, bpmnFactory, {
+  var receiveContentsEntry = extensionElements(element, bpmnFactory, {
     id: 'receive-content',
     label: translate('Receive'),
     modelProperty: 'id',
@@ -249,7 +252,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !isCatching;
     }
   });
-  group.entries.push(contentsEntry);
+  group.entries.push(receiveContentsEntry);
 
   // Content ID entry
   group.entries.push(entryFactory.validationAwareTextField({
@@ -258,21 +261,21 @@ module.exports = function(group, element, bpmnFactory, translate) {
     modelProperty: 'id',
 
     getProperty: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive') || {}; 
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {}; 
       return content.id;
     },
 
     setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive');
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Receive');
+      return !getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
     },
 
     validate: function(element, values, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive') || {};
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {};
       if (content) {
         var IdValue = values.id;
         if (!IdValue || IdValue.trim() === '') {
@@ -296,21 +299,21 @@ module.exports = function(group, element, bpmnFactory, translate) {
     modelProperty: 'key',
 
     getProperty: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive') || {}; 
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {}; 
       return content.key;
     },
 
     setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive');
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Receive');
+      return !getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
     },
 
     validate: function(element, values, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive') || {};
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {};
       if (content) {
         var keyValue = values.key;
         if (!keyValue || keyValue.trim() === '') {
@@ -326,16 +329,16 @@ module.exports = function(group, element, bpmnFactory, translate) {
     label: translate('Attribute key of status'),
     modelProperty: 'attribute',
     get: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive') || {}; 
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {}; 
       return { attribute: content.attribute };
     },
 
     set: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive');
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Receive');
+      return !getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
     }
   }));
 
@@ -346,16 +349,16 @@ module.exports = function(group, element, bpmnFactory, translate) {
     label: translate('Value'),
     modelProperty: 'value',
     get: function(element, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive') || {}; 
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {}; 
       return { value: content.value };
     },
 
     set: function(element, properties, node) {
-      var content = getSelectedContent(element, node, 'execution:Receive');
+      var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
     hidden: function(element, node) {
-      return !getSelectedContent(element, node, 'execution:Receive');
+      return !getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive');
     }
   }));
 

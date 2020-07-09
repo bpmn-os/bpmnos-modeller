@@ -14,7 +14,7 @@ var statusOperators = require('../operators.json');
 
 module.exports = function(group, element, bpmnFactory, translate) {
 
-  if ( !is(element, 'bpmn:Task') ) {
+  if ( !is(element, 'bpmn:Task') || getBusinessObject(element).type == "Request" || getBusinessObject(element).type == "Release") {
     return;
   }
 
