@@ -25,13 +25,13 @@ Helper.getContainerElement = function(element, type) {
 /**
  * Return list of objects within container element with given type
  */
-Helper.getObjectList = function(element, type) {
+Helper.getObjectList = function(element, type, property) {
   var containerElement = this.getContainerElement(element,type);
   if (typeof containerElement === 'undefined') {
     return [];
   }
   // Determine the unique element name 
-  var propertyName = Object.getPrototypeOf(containerElement).$descriptor.properties[0].name;
+  var propertyName = property || Object.getPrototypeOf(containerElement).$descriptor.properties[0].name;
   return containerElement[propertyName] || [];
 };
 
@@ -39,8 +39,8 @@ Helper.getObjectList = function(element, type) {
 /**
  * Get an object from the business object at given index
  */
-Helper.getObject = function(element, idx, type) {
-  var objects = this.getObjectList(element, type);
+Helper.getObject = function(element, idx, type, property) {
+  var objects = this.getObjectList(element, type, property);
   return objects[idx];
 };
 

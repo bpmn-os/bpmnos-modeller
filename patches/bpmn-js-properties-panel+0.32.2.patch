@@ -1,13 +1,23 @@
 diff --git a/node_modules/bpmn-js-properties-panel/lib/PropertiesPanel.js b/node_modules/bpmn-js-properties-panel/lib/PropertiesPanel.js
-index b011956..13ebd60 100644
+index b011956..e1d4a57 100644
 --- a/node_modules/bpmn-js-properties-panel/lib/PropertiesPanel.js
 +++ b/node_modules/bpmn-js-properties-panel/lib/PropertiesPanel.js
-@@ -329,6 +329,9 @@ PropertiesPanel.prototype._init = function(config) {
+@@ -329,6 +329,19 @@ PropertiesPanel.prototype._init = function(config) {
        if (e.elements.indexOf(element) !== -1) {
          self.update(element);
        }
-+      else if (e.elements[0].$type == 'bpmn:Definitions') {
-+        self.update(e.elements[0]);
++      else {
++	if (e.elements[0]) {
++          if (e.elements[0].$type == 'bpmn:Definitions') {
++	   self.update(e.elements[0]);
++          }
++          else if (e.elements[0].$type == 'bpmn:Resource') {
++	   self.update(e.elements[0].$parent);
++          }
++          else if (e.elements[0].$type == 'bpmn:ExtensionElements' && e.elements[0].$parent.$type == 'bpmn:Resource') {
++	   self.update(e.elements[0].$parent.$parent);
++          }
++	}
 +      }
      }
    });

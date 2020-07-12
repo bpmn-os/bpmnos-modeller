@@ -14,7 +14,10 @@ var idProps = require('../bpmn/parts/IdProps'),
 var statusProps = require('./parts/StatusProps'),
     operatorProps = require('./parts/OperatorProps'),
     restrictionProps = require('./parts/RestrictionProps'),
-    messageProps = require('./parts/MessageProps');
+    messageProps = require('./parts/MessageProps'),
+    requestProps = require('./parts/RequestProps'),
+    releaseProps = require('./parts/ReleaseProps'),
+    resourceProps = require('./parts/ResourceProps');
 
 var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject;
 
@@ -97,6 +100,45 @@ function createMessageTabGroups(element, bpmnFactory, elementRegistry, translate
   ];
 }
 
+function createRequestTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var requestGroup = {
+    id : 'request-group',
+    label : translate('Resource allocation'),
+    entries: []
+  };
+  requestProps(requestGroup, element, bpmnFactory, translate);
+
+  return [
+    requestGroup
+  ];
+}
+
+function createReleaseTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var releaseGroup = {
+    id : 'release-group',
+    label : translate('Resource allocation'),
+    entries: []
+  };
+  releaseProps(releaseGroup, element, bpmnFactory, translate);
+
+  return [
+    releaseGroup
+  ];
+}
+
+function createResourcesTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var resourcesGroup = {
+    id : 'resource-group',
+    label : translate('Resource'),
+    entries: []
+  };
+  resourceProps(resourcesGroup, element, bpmnFactory, translate);
+
+  return [
+    resourcesGroup
+  ];
+}
+
 // Execution Properties Provider /////////////////////////////////////
 
 
@@ -150,12 +192,33 @@ function ExecutionPropertiesProvider(
       groups: createMessageTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
+    var requestTab = {
+      id: 'request',
+      label: translate('Request'),
+      groups: createRequestTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
+    var releaseTab = {
+      id: 'release',
+      label: translate('Release'),
+      groups: createReleaseTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
+    var resourcesTab = {
+      id: 'resources',
+      label: translate('Resources'),
+      groups: createResourcesTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
     return [
       generalTab,
       statusTab,
       operatorsTab,
       restrictionsTab,
       messageTab,
+      requestTab,
+      releaseTab,
+      resourcesTab,
     ];
   };
 

@@ -216,7 +216,23 @@
       ]
     },
     {
-      "name": "Resource", 
+      "name": "Allocations", 
+      "superClass": [ "Element" ],
+      "properties": [
+         {
+          "name": "request",
+          "type": "Request",
+          "isMany": true
+        },
+         {
+          "name": "release",
+          "type": "Release",
+          "isMany": true
+        },
+      ]
+    },
+    {
+      "name": "Request", 
       "superClass": [ "Element" ],
       "properties": [
         {
@@ -224,9 +240,84 @@
           "type": "String",
           "isAttr": true
         },
+        {
+          "name": "restrictions",
+          "type": "Restrictions",
+          "isMany": true
+        },
+        {
+          "name": "send",
+          "type": "Send",
+          "isMany": true
+        },
+        {
+          "name": "receive",
+          "type": "Receive",
+          "isMany": true
+        },
        ]
     },
-  ],
+    {
+      "name": "Release", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "request",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "send",
+          "type": "Send",
+          "isMany": true
+        },
+        {
+          "name": "receive",
+          "type": "Receive",
+          "isMany": true
+        },
+       ]
+    },
+    {
+      "name": "CustomResource", 
+      "extends": [
+        "bpmn:Resource"
+      ],
+      "properties": [
+        {
+          "name": "prepare",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "service",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "finish",
+          "type": "String",
+          "isAttr": true
+        },
+       ]
+    },
+    {
+      "name": "Context", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "attribute",
+          "type": "Attribute",
+          "isMany": true
+        },
+       ]
+    },
+ ],
 
   "emumerations": [ ]
 }
