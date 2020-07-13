@@ -399,7 +399,7 @@ console.log(properties);
     modelProperty: 'key',
 
     getProperty: function(element, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Status') || {}; 
+      var attribute = getSelectedAttribute(element, node, 'execution:Context') || {}; 
       return attribute.key;
     },
 
