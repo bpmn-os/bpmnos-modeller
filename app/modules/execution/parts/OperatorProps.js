@@ -159,6 +159,25 @@ module.exports = function(group, element, bpmnFactory, translate) {
     },
   }));
 
+  /// Attribute key input field
+  group.entries.push(entryFactory.textField({
+    id: 'attribute',
+    label: translate('Attribute key'),
+    modelProperty: 'attribute',
+    get: function(element, node) {
+      var operator = getSelectedOperator(element, node) || {}; 
+      return { attribute: operator.attribute };
+    },
+
+    set: function(element, properties, node) {
+      var operator = getSelectedOperator(element, node);
+      return cmdHelper.updateBusinessObject(element, operator, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedOperator(element, node);
+    }
+  }));
+
 /*
   // Parameter box entry
   var parametersEntry = extensionElements(element, bpmnFactory, {

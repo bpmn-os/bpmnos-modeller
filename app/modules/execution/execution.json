@@ -65,6 +65,11 @@
           "isAttr": true
         },
         {
+          "name": "attribute",
+          "type": "String",
+          "isAttr": true
+        },
+        {
           "name": "parameter",
           "type": "Parameter",
           "isMany": true
