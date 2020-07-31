@@ -214,7 +214,11 @@ module.exports = function(group, element, bpmnFactory, translate) {
       var commands = [],
           object = getSelectedObject(element, node),
           minInclusive = object.minInclusive;
-      if (!minInclusive) {
+      if (minInclusive) {
+        // delete <minInclusive> element
+        commands.push(cmdHelper.removeElementsFromList(element, object, 'minInclusive', null, minInclusive));
+      }
+      if ( values['minInclusive'] ) {
         // create <minInclusive> element
         minInclusive = elementHelper.createElement('execution:MinInclusive', { 'value': values['minInclusive'] }, getBusinessObject(element), bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, object, 'minInclusive', minInclusive));
@@ -244,10 +248,14 @@ module.exports = function(group, element, bpmnFactory, translate) {
       var commands = [],
           object = getSelectedObject(element, node),
           maxInclusive = object.maxInclusive;
-      if (!maxInclusive) {
+      if (maxInclusive) {
+        // delete <maxInclusive> element
+        commands.push(cmdHelper.removeElementsFromList(element, object, 'maxInclusive', null, maxInclusive));
+      }
+      if ( values['maxInclusive'] ) {
         // create <maxInclusive> element
         maxInclusive = elementHelper.createElement('execution:MaxInclusive', { 'value': values['maxInclusive'] }, getBusinessObject(element), bpmnFactory);
-       commands.push(cmdHelper.addElementsTolist(element, object, 'maxInclusive', maxInclusive));
+        commands.push(cmdHelper.addElementsTolist(element, object, 'maxInclusive', maxInclusive));
       }
       return commands;
     },

@@ -658,7 +658,11 @@ console.log(properties);
       var commands = [],
           object = getSelectedRestriction(element, node),
           minInclusive = object.minInclusive;
-      if (!minInclusive) {
+      if (minInclusive) {
+        // delete <minInclusive> element
+        commands.push(cmdHelper.removeElementsFromList(element, object, 'minInclusive', null, minInclusive));
+      }
+      if ( values['minInclusive'] ) {
         // create <minInclusive> element
         minInclusive = elementHelper.createElement('execution:MinInclusive', { 'value': values['minInclusive'] }, object, bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, object, 'minInclusive', minInclusive));
@@ -688,10 +692,14 @@ console.log(properties);
       var commands = [],
           object = getSelectedRestriction(element, node),
           maxInclusive = object.maxInclusive;
-      if (!maxInclusive) {
+      if (maxInclusive) {
+        // delete <maxInclusive> element
+        commands.push(cmdHelper.removeElementsFromList(element, object, 'maxInclusive', null, maxInclusive));
+      }
+      if ( values['maxInclusive'] ) {
         // create <maxInclusive> element
         maxInclusive = elementHelper.createElement('execution:MaxInclusive', { 'value': values['maxInclusive'] }, object, bpmnFactory);
-       commands.push(cmdHelper.addElementsTolist(element, object, 'maxInclusive', maxInclusive));
+        commands.push(cmdHelper.addElementsTolist(element, object, 'maxInclusive', maxInclusive));
       }
       return commands;
     },
