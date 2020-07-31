@@ -586,7 +586,7 @@ console.log(properties);
 
   // Attribute key entry
   group.entries.push(entryFactory.validationAwareTextField({
-    id: 'restriction-attribute',
+    id: 'resource-restriction-attribute',
     label: translate('Attribute key'),
     modelProperty: 'attribute',
 
@@ -615,9 +615,34 @@ console.log(properties);
     }
   }));
 
+  // Required entry
+  var requiredEntry = entryFactory.checkbox({
+    id: 'resource-restriction-required',
+    label: translate('Value is required'),
+    modelProperty: 'required',
+    get: function(element, node) {
+      var object = getSelectedRestriction(element, node) || {},
+          values = {};
+      values['required'] = object['required'];
+      return values;
+    },
+    set: function(element, values, node) {
+      var commands = [];
+      var object = getSelectedRestriction(element, node),
+          properties = {};
+      properties['required'] = values['required'] || undefined;
+      commands.push(cmdHelper.updateBusinessObject(element, object, properties));
+      return commands;
+    },
+    hidden: function(element, node) {
+      return !getSelectedRestriction(element, node);
+    }
+  });
+  group.entries.push(requiredEntry);
+
   // minInclusive input field
   group.entries.push(entryFactory.textField({
-    id: 'restriction-mininclusive',
+    id: 'resource-restriction-mininclusive',
     label: translate('Value must be larger or equal to'),
     modelProperty: 'minInclusive',
     get: function(element, node) {
@@ -647,7 +672,7 @@ console.log(properties);
 
   // maxInclusive input field
   group.entries.push(entryFactory.textField({
-    id: 'restriction-maxinclusive',
+    id: 'resource-restriction-maxinclusive',
     label: translate('Value must be smaller or equal to'),
     modelProperty: 'maxInclusive',
     get: function(element, node) {
@@ -677,7 +702,7 @@ console.log(properties);
 
   // Enumeration list entry
   group.entries.push(entryFactory.table({
-    id: 'enumeration-list',
+    id: 'resource-enumeration-list',
     modelProperties: [ 'value' ],
     labels: [ translate('Value') ],
     addLabel: translate('Add allowed value'),
@@ -718,7 +743,7 @@ console.log(properties);
 
   // Negate entry
   var negateEntry = entryFactory.checkbox({
-    id: 'restriction-negate',
+    id: 'resource-restriction-negate',
     label: translate('Negate restriction'),
     modelProperty: 'negate',
     get: function(element, node) {
@@ -740,5 +765,4 @@ console.log(properties);
     }
   });
   group.entries.push(negateEntry);
-
 };
