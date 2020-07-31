@@ -118,6 +118,11 @@
           "isAttr": true
         },
         {
+          "name": "required",
+          "type": "Boolean",
+          "isAttr": true
+        },
+        {
           "name": "negate",
           "type": "Boolean",
           "isAttr": true

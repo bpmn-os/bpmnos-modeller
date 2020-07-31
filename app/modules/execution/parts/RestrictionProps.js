@@ -171,6 +171,31 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
+  // Required entry
+  var requiredEntry = entryFactory.checkbox({
+    id: 'restriction-required',
+    label: translate('Value is required'),
+    modelProperty: 'required',
+    get: function(element, node) {
+      var object = getSelectedObject(element, node) || {},
+          values = {};
+      values['required'] = object['required'];
+      return values;
+    },
+    set: function(element, values, node) {
+      var commands = [];
+      var object = getSelectedObject(element, node),
+          properties = {};
+      properties['required'] = values['required'] || undefined;
+      commands.push(cmdHelper.updateBusinessObject(element, object, properties));
+      return commands;
+    },
+    hidden: function(element, node) {
+      return !getSelectedObject(element, node);
+    }
+  });
+  group.entries.push(requiredEntry);
+
   // minInclusive input field
   group.entries.push(entryFactory.textField({
     id: 'restriction-mininclusive',
