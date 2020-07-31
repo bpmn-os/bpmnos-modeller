@@ -218,7 +218,7 @@ function ExecutionPropertiesProvider(
       messageTab,
       requestTab,
       releaseTab,
-      resourcesTab,
+//      resourcesTab,
     ];
   };
 
