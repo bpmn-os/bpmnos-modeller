@@ -79,7 +79,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
   // Attributes entry
   var attributesEntry = extensionElements(element, bpmnFactory, {
-    id: 'attribute',
+    id: 'attributes',
     label: translate('Attributes'),
     modelProperty: 'key',
     prefix: 'Attribute',
@@ -105,7 +105,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
       var attribute = elementHelper.createElement('execution:Attribute', { key: value, type: 'xs:string' }, containerElement, bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, containerElement, 'attribute', [ attribute ]));
-
+console.warn(commands);
       return commands;
     },
     removeExtensionElement: function(element, extensionElement, value, idx) {
