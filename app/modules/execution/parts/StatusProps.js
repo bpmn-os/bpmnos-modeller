@@ -105,7 +105,6 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
       var attribute = elementHelper.createElement('execution:Attribute', { key: value, type: 'xs:string' }, containerElement, bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, containerElement, 'attribute', [ attribute ]));
-console.warn(commands);
       return commands;
     },
     removeExtensionElement: function(element, extensionElement, value, idx) {
