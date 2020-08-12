@@ -15,6 +15,7 @@ var statusProps = require('./parts/StatusProps'),
     operatorProps = require('./parts/OperatorProps'),
     restrictionProps = require('./parts/RestrictionProps'),
     messageProps = require('./parts/MessageProps'),
+    timerProps = require('./parts/TimerProps'),
     requestProps = require('./parts/RequestProps'),
     releaseProps = require('./parts/ReleaseProps'),
     resourceProps = require('./parts/ResourceProps');
@@ -97,6 +98,19 @@ function createMessageTabGroups(element, bpmnFactory, elementRegistry, translate
 
   return [
     messageGroup
+  ];
+}
+
+function createTimerTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var timerGroup = {
+    id : 'timer-group',
+    label : translate('Timer'),
+    entries: []
+  };
+  timerProps(timerGroup, element, bpmnFactory, translate);
+
+  return [
+    timerGroup
   ];
 }
 
@@ -192,6 +206,12 @@ function ExecutionPropertiesProvider(
       groups: createMessageTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
+    var timerTab = {
+      id: 'timer',
+      label: translate('Timer'),
+      groups: createTimerTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
     var requestTab = {
       id: 'request',
       label: translate('Request'),
@@ -216,6 +236,7 @@ function ExecutionPropertiesProvider(
       operatorsTab,
       restrictionsTab,
       messageTab,
+      timerTab,
       requestTab,
       releaseTab,
       resourcesTab,
