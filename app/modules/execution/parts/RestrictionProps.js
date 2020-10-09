@@ -105,7 +105,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   // ID entry
   group.entries.push(entryFactory.validationAwareTextField({
     id: 'restriction-id',
-    label: translate('ID'),
+    label: translate('Id'),
     modelProperty: 'id',
 
     getProperty: function(element, node) {
@@ -140,10 +140,10 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
-  // Attribute key entry
+  // Attribute name entry
   group.entries.push(entryFactory.validationAwareTextField({
     id: 'restriction-attribute',
-    label: translate('Attribute key'),
+    label: translate('Attribute name'),
     modelProperty: 'attribute',
 
     getProperty: function(element, node) {
@@ -163,9 +163,8 @@ module.exports = function(group, element, bpmnFactory, translate) {
     validate: function(element, values, node) {
       var object = getSelectedObject(element, node);
       if (object) {
-        var attributeKey = values.attribute;
-        if (!attributeKey || attributeKey.trim() === '') {
-          return { attribute: 'Attribute key must not be empty' };
+        if (!values.attribute || values.attribute.trim() === '') {
+          return { attribute: 'Attribute name must not be empty' };
         }
       }
     }

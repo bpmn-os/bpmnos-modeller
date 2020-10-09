@@ -23,7 +23,12 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "key",
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "name",
           "type": "String",
           "isAttr": true
         },
@@ -113,6 +118,11 @@
           "isAttr": true
         },
         {
+          "name": "key",
+          "type": "String",
+          "isAttr": true
+        },
+        {
           "name": "attribute",
           "type": "String",
           "isAttr": true
@@ -176,6 +186,28 @@
           "isAttr": true
         }
       ]
+    },
+    {
+      "name": "Requirements", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        },
+       ]
+    },
+    {
+      "name": "Job", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        },
+       ]
     },
     {
       "name": "Send", 
@@ -251,18 +283,13 @@
           "isAttr": true
         },
         {
-          "name": "restrictions",
-          "type": "Restrictions",
+          "name": "requirements",
+          "type": "Requirements",
           "isMany": true
         },
         {
-          "name": "send",
-          "type": "Send",
-          "isMany": true
-        },
-        {
-          "name": "receive",
-          "type": "Receive",
+          "name": "job",
+          "type": "Job",
           "isMany": true
         },
        ]
@@ -281,24 +308,22 @@
           "type": "String",
           "isAttr": true
         },
-        {
-          "name": "send",
-          "type": "Send",
-          "isMany": true
-        },
-        {
-          "name": "receive",
-          "type": "Receive",
-          "isMany": true
-        },
        ]
     },
     {
-      "name": "CustomResource", 
-      "extends": [
-        "bpmn:Resource"
-      ],
+      "name": "Resource", 
+      "superClass": [ "Element" ],
       "properties": [
+        {
+          "name": "persist",
+          "type": "Boolean",
+          "isAttr": true
+        },
+        {
+          "name": "default",
+          "type": "String",
+          "isAttr": true
+        },
         {
           "name": "prepare",
           "type": "String",
@@ -314,9 +339,25 @@
           "type": "String",
           "isAttr": true
         },
+        {
+          "name": "capabilities",
+          "type": "Capabilities",
+          "isMany": true
+        },
        ]
     },
-    {
+     {
+      "name": "Capabilities", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "restriction",
+          "type": "Restriction",
+          "isMany": true
+        },
+      ]
+    },
+   {
       "name": "Context", 
       "superClass": [ "Element" ],
       "properties": [

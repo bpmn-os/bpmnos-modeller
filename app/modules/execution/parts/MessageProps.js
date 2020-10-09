@@ -7,7 +7,6 @@ var getExtensionElements = require('bpmn-js-properties-panel/lib/helper/Extensio
     removeEntry = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').removeEntry,
     entryFactory = require('bpmn-js-properties-panel/lib/factory/EntryFactory'),
     elementHelper = require('bpmn-js-properties-panel/lib/helper/ElementHelper'),
-    participantHelper = require('bpmn-js-properties-panel/lib/helper/ParticipantHelper'),
     cmdHelper = require('bpmn-js-properties-panel/lib/helper/CmdHelper'),
     utils = require('bpmn-js-properties-panel/lib/Utils'),
     find = require('lodash/find');
@@ -279,7 +278,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   /// attribute key entry
   group.entries.push(entryFactory.textField({
     id: 'send-content-attribute',
-    label: translate('Attribute key of status'),
+    label: translate('Attribute name of status'),
     modelProperty: 'attribute',
     get: function(element, node) {
       var content = getSelectedContent(sendContentsEntry, element, node, 'execution:Send') || {}; 
@@ -444,7 +443,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   /// attribute key entry
   group.entries.push(entryFactory.textField({
     id: 'receive-content-attribute',
-    label: translate('Attribute key of status'),
+    label: translate('Attribute name of status'),
     modelProperty: 'attribute',
     get: function(element, node) {
       var content = getSelectedContent(receiveContentsEntry, element, node, 'execution:Receive') || {}; 

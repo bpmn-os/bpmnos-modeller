@@ -25,12 +25,12 @@ module.exports = function(group, element, bpmnFactory, translate) {
   /// Attribute value input field
   group.entries.push(entryFactory.textField({
     id: 'timer-attribute',
-    label: translate('Attribute key'),
-    modelProperty: 'key',
+    label: translate('Attribute name of status'),
+    modelProperty: 'name',
     get: function(element, node) {
       var extensionElement = getBusinessObject(element).get('extensionElements') || {};
       var attribute = (extensionElement.values || [])[0] || {};
-      return { key: attribute.key };
+      return { name: attribute.name };
     },
     set: function(element, values, node) {
       var commands = [];

@@ -81,7 +81,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   var attributesEntry = extensionElements(element, bpmnFactory, {
     id: 'attributes',
     label: translate('Attributes'),
-    modelProperty: 'key',
+    modelProperty: 'id',
     prefix: 'Attribute',
     createExtensionElement: function(element, extensionElement, value) {
       var bo = getBusinessObject(element), commands = [];
@@ -103,7 +103,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
         ));
       }
 
-      var attribute = elementHelper.createElement('execution:Attribute', { key: value, type: 'xs:string' }, containerElement, bpmnFactory);
+      var attribute = elementHelper.createElement('execution:Attribute', { id: value, type: 'xs:string' }, containerElement, bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, containerElement, 'attribute', [ attribute ]));
       return commands;
     },
@@ -129,15 +129,15 @@ module.exports = function(group, element, bpmnFactory, translate) {
   });
   group.entries.push(attributesEntry);
 
-  // Attribute key entry
+  // Attribute id entry
   group.entries.push(entryFactory.validationAwareTextField({
-    id: 'attribute-key',
-    label: translate('Key'),
-    modelProperty: 'key',
+    id: 'attribute-id',
+    label: translate('Id'),
+    modelProperty: 'id',
 
     getProperty: function(element, node) {
       var attribute = getSelectedAttribute(element, node) || {}; 
-      return attribute.key;
+      return attribute.id;
     },
 
     setProperty: function(element, properties, node) {
@@ -152,16 +152,46 @@ module.exports = function(group, element, bpmnFactory, translate) {
     validate: function(element, values, node) {
       var attribute = getSelectedAttribute(element, node) || {};
       if (attribute) {
-        var keyValue = values.key;
-        if (!keyValue || keyValue.trim() === '') {
-          return { key: 'Key must not be empty.' };
+        var idValue = values.id;
+        if (!idValue || idValue.trim() === '') {
+          return { id: 'Id must not be empty.' };
         }
         var attributes = helper.getObjectList(element,'execution:Status')
-        var existingKey = find(attributes, function(f) {
-          return f !== attribute && f.key === keyValue;
+        var existingId = find(attributes, function(f) {
+          return f !== attribute && f.id === idValue;
         });
-        if (existingKey) {
-          return { key: 'Key is already used.' };
+        if (existingId) {
+          return { id: 'Id is already used.' };
+        }
+      }
+    }
+  }));
+
+  // Attribute name entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'attribute-name',
+    label: translate('Name'),
+    modelProperty: 'name',
+
+    getProperty: function(element, node) {
+      var attribute = getSelectedAttribute(element, node) || {}; 
+      return attribute.name;
+    },
+
+    setProperty: function(element, properties, node) {
+      var attribute = getSelectedAttribute(element, node);
+      return cmdHelper.updateBusinessObject(element, attribute, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedAttribute(element, node);
+    },
+
+    validate: function(element, values, node) {
+      var attribute = getSelectedAttribute(element, node) || {};
+      if (attribute) {
+        if (!values.name || values.name.trim() === '') {
+          return { name: 'Name must not be empty.' };
         }
       }
     }
