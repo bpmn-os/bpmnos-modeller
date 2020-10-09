@@ -117,7 +117,7 @@ function createTimerTabGroups(element, bpmnFactory, elementRegistry, translate) 
 function createRequestTabGroups(element, bpmnFactory, elementRegistry, translate) {
   var requestGroup = {
     id : 'request-group',
-    label : translate('Resource allocation'),
+    label : translate('Resource allocations'),
     entries: []
   };
   requestProps(requestGroup, element, bpmnFactory, translate);
@@ -130,7 +130,7 @@ function createRequestTabGroups(element, bpmnFactory, elementRegistry, translate
 function createReleaseTabGroups(element, bpmnFactory, elementRegistry, translate) {
   var releaseGroup = {
     id : 'release-group',
-    label : translate('Resource allocation'),
+    label : translate('Resource allocations'),
     entries: []
   };
   releaseProps(releaseGroup, element, bpmnFactory, translate);
@@ -140,16 +140,16 @@ function createReleaseTabGroups(element, bpmnFactory, elementRegistry, translate
   ];
 }
 
-function createResourcesTabGroups(element, bpmnFactory, elementRegistry, translate) {
-  var resourcesGroup = {
+function createResourceTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var resourceGroup = {
     id : 'resource-group',
     label : translate('Resource'),
     entries: []
   };
-  resourceProps(resourcesGroup, element, bpmnFactory, translate);
+  resourceProps(resourceGroup, element, bpmnFactory, translate);
 
   return [
-    resourcesGroup
+    resourceGroup
   ];
 }
 
@@ -224,10 +224,10 @@ function ExecutionPropertiesProvider(
       groups: createReleaseTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
-    var resourcesTab = {
-      id: 'resources',
-      label: translate('Resources'),
-      groups: createResourcesTabGroups(element, bpmnFactory, elementRegistry, translate)
+    var resourceTab = {
+      id: 'resource',
+      label: translate('Resource'),
+      groups: createResourceTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
     return [
@@ -239,7 +239,7 @@ function ExecutionPropertiesProvider(
       timerTab,
       requestTab,
       releaseTab,
-      resourcesTab,
+      resourceTab,
     ];
   };
 

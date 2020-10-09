@@ -13,8 +13,13 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 var statusOperators = require('../operators.json');
 
 module.exports = function(group, element, bpmnFactory, translate) {
+  if ( !is(element, 'bpmn:Process') && !(is(element, 'bpmn:Participant') && getBO(element).get('processRef'))  && 
+       !is(element, 'bpmn:Activity')
+     ) {
+    return;
+  }
 
-  if ( !is(element, 'bpmn:Task') || getBusinessObject(element).type == "Request" || getBusinessObject(element).type == "Release") {
+  if ( is(element, 'bpmn:Task') && ( getBusinessObject(element).type == "Request" || getBusinessObject(element).type == "Release") ) {
     return;
   }
 
@@ -147,7 +152,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     get: function(element, node) {
       var object = getSelectedOperator(element, node) || {};
       return {
-        value: object.value || statusOperators[0].value,
+        name: object.name || statusOperators[0].value,
       };
     },
     set: function(element, values, node) {
@@ -159,22 +164,29 @@ module.exports = function(group, element, bpmnFactory, translate) {
     },
   }));
 
-  /// Attribute key input field
-  group.entries.push(entryFactory.textField({
-    id: 'attribute',
-    label: translate('Attribute key'),
+  // Attribute name entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'operator-attribute',
+    label: translate('Attribute name'),
     modelProperty: 'attribute',
-    get: function(element, node) {
-      var operator = getSelectedOperator(element, node) || {}; 
-      return { attribute: operator.attribute };
+    getProperty: function(element, node) {
+      var object = getSelectedOperator(element, node) || {};
+      return object.attribute;
     },
-
-    set: function(element, properties, node) {
-      var operator = getSelectedOperator(element, node);
-      return cmdHelper.updateBusinessObject(element, operator, properties);
+    setProperty: function(element, properties, node) {
+      var object = getSelectedOperator(element, node);
+      return cmdHelper.updateBusinessObject(element, object, properties);
     },
     hidden: function(element, node) {
       return !getSelectedOperator(element, node);
+    },
+    validate: function(element, values, node) {
+      var object = getSelectedOperator(element, node);
+      if (object) {
+        if (!values.attribute || values.attribute.trim() === '') {
+          return { attribute: 'Attribute name must not be empty' };
+        }
+      }
     }
   }));
 
