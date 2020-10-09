@@ -1,158 +1,77 @@
 'use strict';
 
-var is = require('bpmn-js/lib/util/ModelUtil').is;
 
-var removeEntry = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').removeEntry,
+var is = require('bpmn-js/lib/util/ModelUtil').is,
+    getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject;
+
+var getExtensionElements = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').getExtensionElements,
+    removeEntry = require('bpmn-js-properties-panel/lib/helper/ExtensionElementsHelper').removeEntry,
     entryFactory = require('bpmn-js-properties-panel/lib/factory/EntryFactory'),
     elementHelper = require('bpmn-js-properties-panel/lib/helper/ElementHelper'),
     cmdHelper = require('bpmn-js-properties-panel/lib/helper/CmdHelper'),
     utils = require('bpmn-js-properties-panel/lib/Utils'),
     find = require('lodash/find');
 
-var resourceElements = require('./ResourceElements'), 
-    resourceHelper = require('./ResourceHelper'),
-    extensionElements = require('./ExtensionElements'),
-    helper = require('./Helper');
+var extensionElements = require('./ExtensionElements'), helper = require('./Helper');
+
+
 
 module.exports = function(group, element, bpmnFactory, translate) {
-  function getSelectedResource(element, node) {
-    var selected = resourcesEntry.getSelected(element, node.parentNode);
-//console.warn("Selected",selected);
+
+  if ( !is(element, 'bpmn:Task') || getBusinessObject(element).type != "Resource" ) {
+    return;
+  }
+
+/*
+  function getSelectedContent(element, node) {
+    var selected = capabilitiesContentsEntry.getSelected(element, node.parentNode);
     if (selected.idx === -1) {
       return;
     }
-    return resourceHelper.getResource(selected.value);
+
+    return helper.getObject(element, selected.idx, 'execution:Capabilities');
   }
-
-  function getContainerElement(resource, type) {
-    if ( !resource.extensionElements ) return;
-//console.warn(resource.extensionElements.values, type);
-    return  resource.extensionElements.values.find( function(e) { return e.$type == type; } );
-  }
-
-  function getSelectedRestriction(element, node) {
-    var resource = getSelectedResource(element,node) || {};
-    var restrictions = getContainerElement(resource, 'execution:Restrictions') || {}; 
-    var selected = restrictionsEntry.getSelected(element, node.parentNode);
-    if (!resource || !restrictions.restriction || selected.idx === -1) {
-      return;
-    }
-    return restrictions.restriction[selected.idx];
-  }
-
-  function getSelectedAttribute(element, node, type) {
-    var resource = getSelectedResource(element,node) || {};
-    var attributes = getContainerElement(resource, type) || {};
-    var entry = (type == 'execution:Status') ? statusEntry : contextEntry;  
-    var selected = entry.getSelected(element, node.parentNode);
-//console.warn(resource ,attributes.attribute,  selected.idx);
-    if (!resource || !attributes.attribute || selected.idx === -1) {
-      return;
-    }
-    return attributes.attribute[selected.idx];
-  }
-
-
-  // Resources entry
-  var resourcesEntry = resourceElements(element, bpmnFactory, {
-    id: 'resources',
-    label: translate('Resources'),
-    modelProperty: 'id',
-    prefix: 'Resource',
-    createExtensionElements: function(element, extensionElement, value) {
-//console.warn("ResourceProps:createExtensionElements",extensionElement,value);
-      var commands = [];
-// Customize extension element
-      return commands;
-    },
-    removeExtensionElements: function(element, extensionElement, value, idx) {
-//console.warn("ResourceProps:removeExtensionElements",value,idx);
-	return [];
-    },
-/*
-    onSelectionChange: function(element, node, event, scope) {
-console.log("onSelectionChange",element, node, event, scope);
-      return;
-    },
 */
-  });
-  group.entries.push(resourcesEntry);
-
-  // Resource ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
-    id: 'resource-id',
-    label: translate('Resource Id'),
-    modelProperty: 'id',
-
-    getProperty: function(element, node) {
-//console.warn("getProperty");
-      var resource = getSelectedResource(element, node) || {}; 
-      return resource.id;
-    },
-
-    setProperty: function(element, properties, node) {
-//console.warn("setProperty");
-      var resource = getSelectedResource(element, node);
-      return cmdHelper.updateBusinessObject(element, resource, properties);
-    },
-
-    hidden: function(element, node) {
-//console.warn("hidden");
-      return !getSelectedResource(element, node);
-    },
-
-    validate: function(element, values, node) {
-      var resource = getSelectedResource(element, node) || {};
-      if (resource) {
-        var IdValue = values.id;
-        if (!IdValue || IdValue.trim() === '') {
-          return { id: 'Id must not be empty.' };
-        }
-        var resources = resourceHelper.getResources();
-        var existingId = find(resources, function(f) {
-          return f !== resource && f.id === IdValue;
-        });
-        if (existingId) {
-          return { id: 'Id is already used.' };
-        }
-      }
+  function getSelectedObject(element, node) {
+    var selected = capabilitiesEntry.getSelected(element, node.parentNode);
+    if (selected.idx === -1) {
+      return;
     }
-  }));
+    return helper.getObject(element, selected.idx, 'execution:Capabilities');
+  }
 
+  // Persist entry
+  var persistEntry = entryFactory.checkbox({
+    id: 'persist',
+    label: translate('Persist'),
+    modelProperty: 'persist',
+    get: function(element, node) {
+      var attrs = getBusinessObject(element)['$attrs'];
+      var persist = attrs.persist;
+      if ( persist == undefined ) persist = true;
+      return { persist: persist };
+    }
+  });
+  group.entries.push(persistEntry);
+
+
+  /// Default process entry
+  group.entries.push(entryFactory.textField({
+    id: 'default',
+    label: translate('Default process Id'),
+    modelProperty: 'execution:default',
+  }));
   /// Preparation process entry
   group.entries.push(entryFactory.textField({
     id: 'prepare',
     label: translate('Preparation process Id'),
     modelProperty: 'execution:prepare',
-    get: function(element, node) {
-      var content = getSelectedResource(element, node) || {}; 
-      return { 'execution:prepare': content.prepare };
-    },
-    set: function(element, properties, node) {
-      var content = getSelectedResource(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedResource(element, node);
-    }
   }));
-
   /// Service process entry
   group.entries.push(entryFactory.textField({
     id: 'service',
     label: translate('Service process Id'),
     modelProperty: 'execution:service',
-    get: function(element, node) {
-      var content = getSelectedResource(element, node) || {}; 
-      return { 'execution:service': content.service };
-    },
-    set: function(element, properties, node) {
-      var content = getSelectedResource(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedResource(element, node);
-    }
   }));
 
   /// Finishing process entry
@@ -160,351 +79,35 @@ console.log("onSelectionChange",element, node, event, scope);
     id: 'finish',
     label: translate('Finishing process Id'),
     modelProperty: 'execution:finish',
-    get: function(element, node) {
-      var content = getSelectedResource(element, node) || {}; 
-      return { 'execution:finish': content.finish };
-    },
-    set: function(element, properties, node) {
-      var content = getSelectedResource(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedResource(element, node);
-    }
   }));
 
   //////////////////////
-  // Status entry
+  // Capabilities entry
   //////////////////////
 
-  // Attributes entry
-  var statusEntry = extensionElements(element, bpmnFactory, {
-    id: 'status',
-    label: translate('Status attributes'),
-    modelProperty: 'key',
-    prefix: 'Attribute',
-    createExtensionElement: function(element, extensionElement, value, node) {
-      var commands = [];
-      var resource = getSelectedResource(element, node);
-//console.warn(extensionElement);
-      extensionElement = resource.extensionElements;
-      if ( !extensionElement ) {
-        extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, resource, bpmnFactory);
-        commands.push(cmdHelper.updateBusinessObject( resource, resource, { extensionElements: extensionElement }));
-      }
-      var containerElement = getContainerElement(resource,'execution:Status');
-      if (!containerElement) {
-        containerElement = elementHelper.createElement('execution:Status', {}, extensionElement, bpmnFactory);
-        commands.push(cmdHelper.addAndRemoveElementsFromList(
-          resource,
-          extensionElement,
-          'values',
-          'extensionElements',
-          [containerElement],
-          []
-        ));
-      }
-      var attribute = elementHelper.createElement('execution:Attribute', { key: value, type: 'xs:string' }, containerElement, bpmnFactory);
-      commands.push(cmdHelper.addElementsTolist(resource, containerElement, 'attribute', [ attribute ]));
-
-      return commands;
-    },
-    removeExtensionElement: function(element, extensionElement, value, idx, node) {
-      var commands = [];
-      var resource = getSelectedResource(element, node) || {};
-      var extensionElement = resource.extensionElements;
-      if ( !extensionElement ) return;
-      var containerElement = getContainerElement(resource,'execution:Status') || {};
-      var item = containerElement.attribute[idx];
-//console.warn(containerElement);
-      if (containerElement.attribute.length < 2) {
-        commands.push(removeEntry(resource, extensionElement, containerElement));
-      } else {
-        commands.push(cmdHelper.removeElementsFromList(resource, containerElement, 'attribute', null, [item]));
-      }
-
-      return commands;
-    },
-    getExtensionElements: function(element, node) {
-      var resource = getSelectedResource(element, node) || {};
-      var extensionElement = resource.extensionElements;
-      if ( !extensionElement ) return;
-      var containerElement = getContainerElement(resource,'execution:Status') || {};
-      return containerElement.attribute;
-    },
-    hideExtensionElements: function(element, node) {
-      return !getSelectedResource(element, node);
-    }
-  });
-  group.entries.push(statusEntry);
-
-  // Attribute key entry
-  group.entries.push(entryFactory.validationAwareTextField({
-    id: 'status-attribute-key',
-    label: translate('Key'),
-    modelProperty: 'key',
-
-    getProperty: function(element, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Status') || {}; 
-      return attribute.key;
-    },
-
-    setProperty: function(element, properties, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Status');
-      return cmdHelper.updateBusinessObject(element, attribute, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedAttribute(element, node, 'execution:Status');
-    },
-
-    validate: function(element, values, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Status') || {};
-      if (attribute) {
-        var keyValue = values.key;
-        if (!keyValue || keyValue.trim() === '') {
-          return { key: 'Key must not be empty.' };
-        }
-        var resource = getSelectedResource(element, node) || {};
-        var attributes = (getContainerElement(resource, 'execution:Status') || {}).attribute;
-        var existingKey = find(attributes, function(f) {
-          return f !== attribute && f.key === keyValue;
-        });
-        if (existingKey) {
-          return { key: 'Key is already used.' };
-        }
-      }
-    }
-  }));
-///
-
-  // Select attribute type
-  group.entries.push(entryFactory.selectBox({
-    id: 'send-attribute-type',
-    label: translate('Type'),
-    modelProperty : 'type',
-    emptyParameter: false,
-    selectOptions: [
-//      { name: '<inherit>', value: '' },
-      { name: 'string', value: 'xs:string' },
-      { name: 'integer', value: 'xs:integer' },
-      { name: 'decimal', value: 'xs:decimal' },
-      { name: 'boolean', value: 'xs:boolean' }
-    ],
-    get: function(element, node) {
-      var object = getSelectedAttribute(element, node, 'execution:Status') || {};
-      return {
-        type: object.type || 'xs:string'
-      };
-    },
-    set: function(element, properties, node) {
-console.log(properties);
-//      if ( properties.type == '' ) properties.type = 'xs:string';
-      var attribute = getSelectedAttribute(element, node, 'execution:Status');
-      return cmdHelper.updateBusinessObject(element, attribute, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedAttribute(element, node, 'execution:Status');
-    },
-  }));
-
-  /// Attribute value input field
-  group.entries.push(entryFactory.textField({
-    id: 'send-attribute-value',
-    label: translate('Value'),
-    modelProperty: 'value',
-    get: function(element, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Status') || {}; 
-      return { value: attribute.value };
-    },
-
-    set: function(element, properties, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Status');
-      return cmdHelper.updateBusinessObject(element, attribute, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedAttribute(element, node, 'execution:Status');
-    }
-  }));
-
-  //////////////////////
-  // Context entry
-  //////////////////////
-
-  // Attributes entry
-  var contextEntry = extensionElements(element, bpmnFactory, {
-    id: 'context',
-    label: translate('Context attributes'),
-    modelProperty: 'key',
-    prefix: 'Attribute',
-    createExtensionElement: function(element, extensionElement, value, node) {
-      var commands = [];
-      var resource = getSelectedResource(element, node);
-//console.warn(extensionElement);
-      extensionElement = resource.extensionElements;
-      if ( !extensionElement ) {
-        extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, resource, bpmnFactory);
-        commands.push(cmdHelper.updateBusinessObject( resource, resource, { extensionElements: extensionElement }));
-      }
-      var containerElement = getContainerElement(resource,'execution:Context');
-      if (!containerElement) {
-        containerElement = elementHelper.createElement('execution:Context', {}, extensionElement, bpmnFactory);
-        commands.push(cmdHelper.addAndRemoveElementsFromList(
-          resource,
-          extensionElement,
-          'values',
-          'extensionElements',
-          [containerElement],
-          []
-        ));
-      }
-      var attribute = elementHelper.createElement('execution:Attribute', { key: value, type: 'xs:string' }, containerElement, bpmnFactory);
-      commands.push(cmdHelper.addElementsTolist(resource, containerElement, 'attribute', [ attribute ]));
-
-      return commands;
-    },
-    removeExtensionElement: function(element, extensionElement, value, idx, node) {
-      var commands = [];
-      var resource = getSelectedResource(element, node) || {};
-      var extensionElement = resource.extensionElements;
-      if ( !extensionElement ) return;
-      var containerElement = getContainerElement(resource,'execution:Context') || {};
-      var item = containerElement.attribute[idx];
-//console.warn(containerElement);
-      if (containerElement.attribute.length < 2) {
-        commands.push(removeEntry(resource, extensionElement, containerElement));
-      } else {
-        commands.push(cmdHelper.removeElementsFromList(resource, containerElement, 'attribute', null, [item]));
-      }
-
-      return commands;
-    },
-    getExtensionElements: function(element, node) {
-      var resource = getSelectedResource(element, node) || {};
-      var extensionElement = resource.extensionElements;
-      if ( !extensionElement ) return;
-      var containerElement = getContainerElement(resource,'execution:Context') || {};
-      return containerElement.attribute;
-    },
-    hideExtensionElements: function(element, node) {
-      return !getSelectedResource(element, node);
-    }
-  });
-  group.entries.push(contextEntry);
-
-  // Attribute key entry
-  group.entries.push(entryFactory.validationAwareTextField({
-    id: 'context-attribute-key',
-    label: translate('Key'),
-    modelProperty: 'key',
-
-    getProperty: function(element, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Context') || {}; 
-      return attribute.key;
-    },
-
-    setProperty: function(element, properties, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Context');
-      return cmdHelper.updateBusinessObject(element, attribute, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedAttribute(element, node, 'execution:Context');
-    },
-
-    validate: function(element, values, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Context') || {};
-      if (attribute) {
-        var keyValue = values.key;
-        if (!keyValue || keyValue.trim() === '') {
-          return { key: 'Key must not be empty.' };
-        }
-        var resource = getSelectedResource(element, node) || {};
-        var attributes = (getContainerElement(resource, 'execution:Context') || {}).attribute;
-        var existingKey = find(attributes, function(f) {
-          return f !== attribute && f.key === keyValue;
-        });
-        if (existingKey) {
-          return { key: 'Key is already used.' };
-        }
-      }
-    }
-  }));
-///
-
-  // Select attribute type
-  group.entries.push(entryFactory.selectBox({
-    id: 'context-attribute-type',
-    label: translate('Type'),
-    modelProperty : 'type',
-    emptyParameter: false,
-    selectOptions: [
-//      { name: '<inherit>', value: '' },
-      { name: 'string', value: 'xs:string' },
-      { name: 'integer', value: 'xs:integer' },
-      { name: 'decimal', value: 'xs:decimal' },
-      { name: 'boolean', value: 'xs:boolean' }
-    ],
-    get: function(element, node) {
-      var object = getSelectedAttribute(element, node, 'execution:Context') || {};
-      return {
-        type: object.type || 'xs:string'
-      };
-    },
-    set: function(element, properties, node) {
-console.log(properties);
-//      if ( properties.type == '' ) properties.type = 'xs:string';
-      var attribute = getSelectedAttribute(element, node, 'execution:Context');
-      return cmdHelper.updateBusinessObject(element, attribute, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedAttribute(element, node, 'execution:Context');
-    },
-  }));
-
-  /// Attribute value input field
-  group.entries.push(entryFactory.textField({
-    id: 'context-attribute-value',
-    label: translate('Value'),
-    modelProperty: 'value',
-    get: function(element, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Context') || {}; 
-      return { value: attribute.value };
-    },
-
-    set: function(element, properties, node) {
-      var attribute = getSelectedAttribute(element, node, 'execution:Context');
-      return cmdHelper.updateBusinessObject(element, attribute, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedAttribute(element, node, 'execution:Context');
-    }
-  }));
-
-  //////////////////////
-  // Restrictions entry
-  //////////////////////
-
-  // Select box entry
-  var restrictionsEntry = extensionElements(element, bpmnFactory, {
-    id: 'restrictions',
-    label: translate('Restrictions'),
+  // Capabilities
+  var capabilitiesEntry = extensionElements(element, bpmnFactory, {
+    id: 'capabilities',
+    label: translate('Capabilities'),
     modelProperty: 'id',
     prefix: 'Restriction',
-    createExtensionElement: function(element, extensionElement, value, node) {
-      var commands = [];
-      var resource = getSelectedResource(element, node);
-//console.warn(extensionElement);
-      extensionElement = resource.extensionElements;
-      if ( !extensionElement ) {
-        extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, resource, bpmnFactory);
-        commands.push(cmdHelper.updateBusinessObject( resource, resource, { extensionElements: extensionElement }));
+    createExtensionElement: function(element, extensionElement, value) {
+      var bo = getBusinessObject(element), commands = [];
+
+      if (!extensionElement) {
+        if (is(element, 'bpmn:Participant')) {
+          extensionElement = participant.createElement('bpmn:ExtensionElements', { values: [] }, bo, bpmnFactory);
+        }
+        else {
+          extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, bo, bpmnFactory);
+        }
+        commands.push(cmdHelper.updateProperties(element, { extensionElements: extensionElement }));
       }
-      var containerElement = getContainerElement(resource,'execution:Restrictions');
+      var containerElement = helper.getContainerElement(element,'execution:Capabilities');
       if (!containerElement) {
-        containerElement = elementHelper.createElement('execution:Restrictions', {}, extensionElement, bpmnFactory);
+        containerElement = elementHelper.createElement('execution:Capabilities', {}, extensionElement, bpmnFactory);
         commands.push(cmdHelper.addAndRemoveElementsFromList(
-          resource,
+          element,
           extensionElement,
           'values',
           'extensionElements',
@@ -512,62 +115,56 @@ console.log(properties);
           []
         ));
       }
+
       var restriction = elementHelper.createElement('execution:Restriction', { id: value }, containerElement, bpmnFactory);
-      commands.push(cmdHelper.addElementsTolist(resource, containerElement, 'restriction', [ restriction ]));
+        commands.push(cmdHelper.addElementsTolist(element, containerElement, 'restriction', [ restriction ]));
 
       return commands;
     },
-    removeExtensionElement: function(element, extensionElement, value, idx, node) {
-      var commands = [];
-      var resource = getSelectedResource(element, node) || {};
-      var extensionElement = resource.extensionElements;
-      if ( !extensionElement ) return;
-      var containerElement = getContainerElement(resource,'execution:Restrictions') || {};
-      var item = containerElement.restriction[idx];
-//console.warn(containerElement);
+    removeExtensionElement: function(element, extensionElement, value, idx) {
+      var containerElement = helper.getContainerElement(element,'execution:Capabilities');
+      var entry = containerElement.restriction[idx],
+          commands = [];
+
       if (containerElement.restriction.length < 2) {
-        commands.push(removeEntry(resource, extensionElement, containerElement));
+        commands.push(removeEntry(getBusinessObject(element), element, containerElement));
       } else {
-        commands.push(cmdHelper.removeElementsFromList(resource, containerElement, 'restriction', null, [item]));
+        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'restriction', null, [entry]));
       }
 
       return commands;
     },
-    getExtensionElements: function(element, node) {
-      var resource = getSelectedResource(element, node) || {};
-      var extensionElement = resource.extensionElements;
-      if ( !extensionElement ) return;
-      var containerElement = getContainerElement(resource,'execution:Restrictions') || {};
-      return containerElement.restriction;
+    getExtensionElements: function(element) {
+      return helper.getObjectList(element,'execution:Capabilities');
     },
     hideExtensionElements: function(element, node) {
-      return !getSelectedResource(element, node);
+      return false;
     }
   });
-  group.entries.push(restrictionsEntry);
+  group.entries.push(capabilitiesEntry);
 
   // ID entry
   group.entries.push(entryFactory.validationAwareTextField({
-    id: 'restriction-id',
-    label: translate('ID'),
+    id: 'capability-id',
+    label: translate('Id'),
     modelProperty: 'id',
 
     getProperty: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {};
+      var object = getSelectedObject(element, node) || {};
       return object.id;
     },
 
     setProperty: function(element, properties, node) {
-      var object = getSelectedRestriction(element, node);
+      var object = getSelectedObject(element, node);
       return cmdHelper.updateBusinessObject(element, object, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
+      return !getSelectedObject(element, node);
     },
 
     validate: function(element, values, node) {
-      var object = getSelectedRestriction(element, node);
+      var object = getSelectedObject(element, node);
       if (object) {
         var idValue = values.id;
         if (!idValue || idValue.trim() === '') {
@@ -584,69 +181,43 @@ console.log(properties);
     }
   }));
 
-  // Attribute key entry
+  // Key entry
   group.entries.push(entryFactory.validationAwareTextField({
-    id: 'resource-restriction-attribute',
-    label: translate('Attribute key'),
-    modelProperty: 'attribute',
+    id: 'capability-key',
+    label: translate('Key'),
+    modelProperty: 'key',
 
     getProperty: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {};
-      return object.attribute;
+      var object = getSelectedObject(element, node) || {};
+      return object.key;
     },
 
     setProperty: function(element, properties, node) {
-      var object = getSelectedRestriction(element, node);
+      var object = getSelectedObject(element, node);
       return cmdHelper.updateBusinessObject(element, object, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
+      return !getSelectedObject(element, node);
     },
 
     validate: function(element, values, node) {
-      var object = getSelectedRestriction(element, node);
+      var object = getSelectedObject(element, node);
       if (object) {
-        var attributeKey = values.attribute;
-        if (!attributeKey || attributeKey.trim() === '') {
-          return { attribute: 'Attribute key must not be empty' };
+        if (!values.key || values.key.trim() === '') {
+          return { key: 'Key name must not be empty' };
         }
       }
     }
   }));
 
-  // Required entry
-  var requiredEntry = entryFactory.checkbox({
-    id: 'resource-restriction-required',
-    label: translate('Value is required'),
-    modelProperty: 'required',
-    get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
-          values = {};
-      values['required'] = object['required'];
-      return values;
-    },
-    set: function(element, values, node) {
-      var commands = [];
-      var object = getSelectedRestriction(element, node),
-          properties = {};
-      properties['required'] = values['required'] || undefined;
-      commands.push(cmdHelper.updateBusinessObject(element, object, properties));
-      return commands;
-    },
-    hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
-    }
-  });
-  group.entries.push(requiredEntry);
-
   // minInclusive input field
   group.entries.push(entryFactory.textField({
-    id: 'resource-restriction-mininclusive',
+    id: 'capability-mininclusive',
     label: translate('Value must be larger or equal to'),
     modelProperty: 'minInclusive',
     get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
+      var object = getSelectedObject(element, node) || {},
           values = {};
       var minInclusive = object['minInclusive'];
       if ( minInclusive ) {
@@ -656,7 +227,7 @@ console.log(properties);
     },
     set: function(element, values, node) {
       var commands = [],
-          object = getSelectedRestriction(element, node),
+          object = getSelectedObject(element, node),
           minInclusive = object.minInclusive;
       if (minInclusive) {
         // delete <minInclusive> element
@@ -664,23 +235,23 @@ console.log(properties);
       }
       if ( values['minInclusive'] ) {
         // create <minInclusive> element
-        minInclusive = elementHelper.createElement('execution:MinInclusive', { 'value': values['minInclusive'] }, object, bpmnFactory);
+        minInclusive = elementHelper.createElement('execution:MinInclusive', { 'value': values['minInclusive'] }, getBusinessObject(element), bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, object, 'minInclusive', minInclusive));
       }
       return commands;
     },
     hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
+      return !getSelectedObject(element, node);
     }
   }));
 
   // maxInclusive input field
   group.entries.push(entryFactory.textField({
-    id: 'resource-restriction-maxinclusive',
+    id: 'capability-maxinclusive',
     label: translate('Value must be smaller or equal to'),
     modelProperty: 'maxInclusive',
     get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
+      var object = getSelectedObject(element, node) || {},
           values = {};
       var maxInclusive = object['maxInclusive'];
       if ( maxInclusive ) {
@@ -690,7 +261,7 @@ console.log(properties);
     },
     set: function(element, values, node) {
       var commands = [],
-          object = getSelectedRestriction(element, node),
+          object = getSelectedObject(element, node),
           maxInclusive = object.maxInclusive;
       if (maxInclusive) {
         // delete <maxInclusive> element
@@ -698,42 +269,43 @@ console.log(properties);
       }
       if ( values['maxInclusive'] ) {
         // create <maxInclusive> element
-        maxInclusive = elementHelper.createElement('execution:MaxInclusive', { 'value': values['maxInclusive'] }, object, bpmnFactory);
+        maxInclusive = elementHelper.createElement('execution:MaxInclusive', { 'value': values['maxInclusive'] }, getBusinessObject(element), bpmnFactory);
         commands.push(cmdHelper.addElementsTolist(element, object, 'maxInclusive', maxInclusive));
       }
       return commands;
     },
     hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
+      return !getSelectedObject(element, node);
     }
   }));
 
   // Enumeration list entry
   group.entries.push(entryFactory.table({
-    id: 'resource-enumeration-list',
+    id: 'capability-enumeration-list',
     modelProperties: [ 'value' ],
     labels: [ translate('Value') ],
     addLabel: translate('Add allowed value'),
     getElements: function(element, node) {
-      var object = getSelectedRestriction(element, node);
+      var object = getSelectedObject(element, node);
       return object ? object.enumeration : [];
     },
     addElement: function(element, node) {
       var commands = [],
-          object = getSelectedRestriction(element, node);
+          object = getSelectedObject(element, node);
+      var bo = getBusinessObject(element);
       var newEnumerationValue = elementHelper.createElement('execution:Enumeration', { value: undefined }, object, bpmnFactory);
       commands.push(cmdHelper.addElementsTolist(element, object, 'enumeration', newEnumerationValue ));
       return commands;
     },
     updateElement: function(element, data, node, idx) {
-      var object = getSelectedRestriction(element, node),
+      var object = getSelectedObject(element, node),
           item = object.enumeration[idx];
       data.value = data.value || undefined;
       return cmdHelper.updateBusinessObject(element, item, data);
     },
     removeElement: function(element, node, idx) {
       var commands = [],
-          object = getSelectedRestriction(element, node),
+          object = getSelectedObject(element, node),
           item = object.enumeration[idx];
       commands.push(cmdHelper.removeElementsFromList(
         element,
@@ -745,32 +317,198 @@ console.log(properties);
       return commands;
     },
     show: function(element, node) {
-      return !!getSelectedRestriction(element, node);
+      return !!getSelectedObject(element, node);
     }
   }));
-
+/*
   // Negate entry
   var negateEntry = entryFactory.checkbox({
-    id: 'resource-restriction-negate',
+    id: 'restriction-negate',
     label: translate('Negate restriction'),
     modelProperty: 'negate',
     get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
+      var object = getSelectedObject(element, node) || {},
           values = {};
       values['negate'] = object['negate'];
       return values;
     },
     set: function(element, values, node) {
       var commands = [];
-      var object = getSelectedRestriction(element, node),
+      var object = getSelectedObject(element, node),
           properties = {};
       properties['negate'] = values['negate'] || undefined;
       commands.push(cmdHelper.updateBusinessObject(element, object, properties));
       return commands;
     },
     hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
+      return !getSelectedObject(element, node);
     }
   });
   group.entries.push(negateEntry);
+*/
+
+
+/*
+  var capabilitiesContentsEntry = extensionElements(element, bpmnFactory, {
+    id: 'capabilities',
+    label: translate('Capabilities'),
+    modelProperty: 'id',
+    prefix: 'Content',
+    createExtensionElement: function(element, extensionElement, value, node) {
+      var bo = getBusinessObject(element), commands = [];
+
+      if (!extensionElement) {
+        extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, bo, bpmnFactory);
+        commands.push(cmdHelper.updateProperties(element, { extensionElements: extensionElement }));
+      }
+
+      var containerElement = helper.getContainerElement(element,'execution:Capabilities');
+      if (!containerElement) {
+        containerElement = elementHelper.createElement('execution:Capabilities', {}, extensionElement, bpmnFactory);
+        commands.push(cmdHelper.addAndRemoveElementsFromList(
+          element,
+          extensionElement,
+          'values',
+          'extensionElements',
+          [containerElement],
+          []
+        ));
+      }
+
+      var content = elementHelper.createElement('execution:Content', { id: value }, containerElement, bpmnFactory);
+        commands.push(cmdHelper.addElementsTolist(element, containerElement, 'content', [ content ]));
+
+      return commands;
+    },
+    removeExtensionElement: function(element, extensionElement, value, idx, node) {
+      var containerElement = helper.getContainerElement(element,'execution:Capabilities');
+      var entry = containerElement.content[idx],
+          commands = [];
+
+      if (containerElement.content.length < 2) {
+        commands.push(removeEntry(getBusinessObject(element), element, containerElement));
+      } else {
+        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'content', null, [entry]));
+      }
+
+      return commands;
+    },
+    getExtensionElements: function(element, node) {
+      return helper.getObjectList(element,'execution:Capabilities');
+    },
+    hideExtensionElements: function(element, node) {
+      return false;
+    }
+  });
+  group.entries.push(capabilitiesContentsEntry);
+
+
+  // Content ID entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'capabilities-content-id',
+    label: translate('Content Id'),
+    modelProperty: 'id',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(element, node) || {}; 
+      return content.id;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(element, node) || {};
+      if (content) {
+        var IdValue = values.id;
+        if (!IdValue || IdValue.trim() === '') {
+          return { id: 'Id must not be empty.' };
+        }
+        var message = helper.getObjectList(element,'execution:Capabilities')
+        var existingId = find(message, function(f) {
+          return f !== content && f.id === IdValue;
+        });
+        if (existingId) {
+          return { id: 'Id is already used.' };
+        }
+      }
+    }
+  }));
+
+  // Content key entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'capabilities-content-key',
+    label: translate('Key'),
+    modelProperty: 'key',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(element, node) || {}; 
+      return content.key;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(element, node) || {};
+      if (content) {
+        var keyValue = values.key;
+        if (!keyValue || keyValue.trim() === '') {
+          return { key: 'Key must not be empty.' };
+        }
+      }
+    }
+  }));
+
+  /// attribute key entry
+  group.entries.push(entryFactory.textField({
+    id: 'capabilities-content-attribute',
+    label: translate('Attribute name of status'),
+    modelProperty: 'attribute',
+    get: function(element, node) {
+      var content = getSelectedContent(element, node) || {}; 
+      return { attribute: content.attribute };
+    },
+
+    set: function(element, properties, node) {
+      var content = getSelectedContent(element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedContent(element, node);
+    }
+  }));
+
+  /// Content value input field
+  group.entries.push(entryFactory.textField({
+    id: 'capabilities-content-value',
+    label: translate('Value'),
+    modelProperty: 'value',
+    get: function(element, node) {
+      var content = getSelectedContent(element, node) || {}; 
+      return { value: content.value };
+    },
+
+    set: function(element, properties, node) {
+      var content = getSelectedContent(element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedContent(element, node);
+    }
+  }));
+*/
+
 };

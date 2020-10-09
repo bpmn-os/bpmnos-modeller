@@ -102,7 +102,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   // ID entry
   group.entries.push(entryFactory.validationAwareTextField({
     id: 'release-id',
-    label: translate('ID'),
+    label: translate('Id'),
     modelProperty: 'id',
 
     getProperty: function(element, node) {
@@ -140,7 +140,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   /// Request id input field
   group.entries.push(entryFactory.textField({
     id: 'request',
-    label: translate('Request'),
+    label: translate('Id of request to be released'),
     modelProperty: 'request',
     get: function(element, node) {
       var content = getSelectedRelease(element, node) || {}; 
@@ -155,7 +155,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !getSelectedRelease(element, node);
     }
   }));
-
+/*
 
   //////////////////////
   // Send content entry
@@ -475,5 +475,5 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !getSelectedContent(receiveContentsEntry, element, node);
     }
   }));
-
+*/
 };

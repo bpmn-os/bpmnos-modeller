@@ -111,7 +111,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   // ID entry
   group.entries.push(entryFactory.validationAwareTextField({
     id: 'request-id',
-    label: translate('ID'),
+    label: translate('Id'),
     modelProperty: 'id',
 
     getProperty: function(element, node) {
@@ -150,270 +150,21 @@ module.exports = function(group, element, bpmnFactory, translate) {
   // Requirements entry
   //////////////////////
 
-  // Select box entry
-  var restrictionsEntry = extensionElements(element, bpmnFactory, {
-    id: 'request-restrictions',
-    label: translate('Resource restrictions'),
-    modelProperty: 'id',
-    prefix: 'Restriction',
-    createExtensionElement: function(element, extensionElement, value, node) {
-      var commands = [];
-      var request = getSelectedRequest(element, node);
-      var containerElement = (request.restrictions || [])[0];
-      if (!containerElement) {
-        containerElement = elementHelper.createElement('execution:Restrictions', {}, request, bpmnFactory);
-        commands.push(cmdHelper.addAndRemoveElementsFromList(
-          element,
-          request,
-          'restrictions',
-          'request',
-          [containerElement],
-          []
-        ));
-      }
-
-      var restriction = elementHelper.createElement('execution:Restriction', { id: value }, containerElement, bpmnFactory);
-        commands.push(cmdHelper.addElementsTolist(element, containerElement, 'restriction', [ restriction ]));
-
-      return commands;
-    },
-    removeExtensionElement: function(element, extensionElement, value, idx, node) {
-      var commands = [];
-      var request = getSelectedRequest(element, node);
-      var containerElement = (request.restrictions || [])[0];
-      var item = containerElement.restriction[idx];
-      if (containerElement.restriction.length < 2) {
-        commands.push(cmdHelper.removeElementsFromList(element, request, 'restrictions', null, [containerElement]));
-      } else {
-        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'restriction', null, [item]));
-      }
-
-      return commands;
-    },
-    getExtensionElements: function(element, node) {
-      var request = getSelectedRequest(element, node) || {};
-      return ((request.restrictions || [])[0] || {}).restriction;
-    },
-    hideExtensionElements: function(element, node) {
-      return !getSelectedRequest(element, node);
-    }
-  });
-  group.entries.push(restrictionsEntry);
-
-  // ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
-    id: 'request-restriction-id',
-    label: translate('ID'),
-    modelProperty: 'id',
-
-    getProperty: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {};
-      return object.id;
-    },
-
-    setProperty: function(element, properties, node) {
-      var object = getSelectedRestriction(element, node);
-      return cmdHelper.updateBusinessObject(element, object, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
-    },
-
-    validate: function(element, values, node) {
-      var object = getSelectedRestriction(element, node);
-      if (object) {
-        var idValue = values.id;
-        if (!idValue || idValue.trim() === '') {
-          return { id: 'Id must not be empty.' };
-        }
-        var objects = helper.getObjectList(element,'execution:Restrictions');
-        var existingID = find(objects, function(f) {
-          return f !== object && f.id === idValue;
-        });
-        if (existingID) {
-          return { id: 'Id is already used.' };
-        }
-      }
-    }
-  }));
-
-  // Attribute key entry
-  group.entries.push(entryFactory.validationAwareTextField({
-    id: 'request-restriction-attribute',
-    label: translate('Attribute key'),
-    modelProperty: 'attribute',
-
-    getProperty: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {};
-      return object.attribute;
-    },
-
-    setProperty: function(element, properties, node) {
-      var object = getSelectedRestriction(element, node);
-      return cmdHelper.updateBusinessObject(element, object, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
-    },
-
-    validate: function(element, values, node) {
-      var object = getSelectedRestriction(element, node);
-      if (object) {
-        var attributeKey = values.attribute;
-        if (!attributeKey || attributeKey.trim() === '') {
-          return { attribute: 'Attribute key must not be empty' };
-        }
-      }
-    }
-  }));
-
-  // minInclusive input field
-  group.entries.push(entryFactory.textField({
-    id: 'request-restriction-mininclusive',
-    label: translate('Value must be larger or equal to'),
-    modelProperty: 'minInclusive',
-    get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
-          values = {};
-      var minInclusive = object['minInclusive'];
-      if ( minInclusive ) {
-	values['minInclusive'] = minInclusive[0].value;
-      }
-      return values;
-    },
-    set: function(element, values, node) {
-      var commands = [],
-          object = getSelectedRestriction(element, node),
-          minInclusive = object.minInclusive;
-      if (!minInclusive) {
-        // create <minInclusive> element
-        minInclusive = elementHelper.createElement('execution:MinInclusive', { 'value': values['minInclusive'] }, getBusinessObject(element), bpmnFactory);
-        commands.push(cmdHelper.addElementsTolist(element, object, 'minInclusive', minInclusive));
-      }
-      return commands;
-    },
-    hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
-    }
-  }));
-
-  // maxInclusive input field
-  group.entries.push(entryFactory.textField({
-    id: 'request-restriction-maxinclusive',
-    label: translate('Value must be smaller or equal to'),
-    modelProperty: 'maxInclusive',
-    get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
-          values = {};
-      var maxInclusive = object['maxInclusive'];
-      if ( maxInclusive ) {
-	values['maxInclusive'] = maxInclusive[0].value;
-      }
-      return values;
-    },
-    set: function(element, values, node) {
-      var commands = [],
-          object = getSelectedRestriction(element, node),
-          maxInclusive = object.maxInclusive;
-      if (!maxInclusive) {
-        // create <maxInclusive> element
-        maxInclusive = elementHelper.createElement('execution:MaxInclusive', { 'value': values['maxInclusive'] }, getBusinessObject(element), bpmnFactory);
-       commands.push(cmdHelper.addElementsTolist(element, object, 'maxInclusive', maxInclusive));
-      }
-      return commands;
-    },
-    hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
-    }
-  }));
-
-  // Enumeration list entry
-  group.entries.push(entryFactory.table({
-    id: 'request-enumeration-list',
-    modelProperties: [ 'value' ],
-    labels: [ translate('Value') ],
-    addLabel: translate('Add allowed value'),
-    getElements: function(element, node) {
-      var object = getSelectedRestriction(element, node);
-      return object ? object.enumeration : [];
-    },
-    addElement: function(element, node) {
-      var commands = [],
-          object = getSelectedRestriction(element, node);
-      var bo = getBusinessObject(element);
-      var newEnumerationValue = elementHelper.createElement('execution:Enumeration', { value: undefined }, object, bpmnFactory);
-      commands.push(cmdHelper.addElementsTolist(element, object, 'enumeration', newEnumerationValue ));
-      return commands;
-    },
-    updateElement: function(element, data, node, idx) {
-      var object = getSelectedRestriction(element, node),
-          item = object.enumeration[idx];
-      data.value = data.value || undefined;
-      return cmdHelper.updateBusinessObject(element, item, data);
-    },
-    removeElement: function(element, node, idx) {
-      var commands = [],
-          object = getSelectedRestriction(element, node),
-          item = object.enumeration[idx];
-      commands.push(cmdHelper.removeElementsFromList(
-        element,
-        object,
-        'enumeration',
-        null,
-        [ item ]
-      ));
-      return commands;
-    },
-    show: function(element, node) {
-      return !!getSelectedRestriction(element, node);
-    }
-  }));
-
-  // Negate entry
-  var negateEntry = entryFactory.checkbox({
-    id: 'request-restriction-negate',
-    label: translate('Negate restriction'),
-    modelProperty: 'negate',
-    get: function(element, node) {
-      var object = getSelectedRestriction(element, node) || {},
-          values = {};
-      values['negate'] = object['negate'];
-      return values;
-    },
-    set: function(element, values, node) {
-      var commands = [];
-      var object = getSelectedRestriction(element, node),
-          properties = {};
-      properties['negate'] = values['negate'] || undefined;
-      commands.push(cmdHelper.updateBusinessObject(element, object, properties));
-      return commands;
-    },
-    hidden: function(element, node) {
-      return !getSelectedRestriction(element, node);
-    }
-  });
-  group.entries.push(negateEntry);
-
-  //////////////////////
-  // Send content entry
-  //////////////////////
-  var sendContentsEntry = extensionElements(element, bpmnFactory, {
-    id: 'send',
-    label: translate('Send'),
+  var requirementsContentsEntry = extensionElements(element, bpmnFactory, {
+    id: 'requirements',
+    label: translate('Requirements'),
     modelProperty: 'id',
     prefix: 'Content',
     createExtensionElement: function(element, extensionElement, value, node) {
       var commands = [];
       var request = getSelectedRequest(element, node);
-      var containerElement = (request.send || [])[0];
+      var containerElement = (request.requirements || [])[0];
       if (!containerElement) {
-        containerElement = elementHelper.createElement('execution:Send', {}, request, bpmnFactory);
+        containerElement = elementHelper.createElement('execution:Requirements', {}, request, bpmnFactory);
         commands.push(cmdHelper.addAndRemoveElementsFromList(
           element,
           request,
-          'send',
+          'requirements',
           'request',
           [containerElement],
           []
@@ -428,10 +179,10 @@ module.exports = function(group, element, bpmnFactory, translate) {
     removeExtensionElement: function(element, extensionElement, value, idx, node) {
       var commands = [];
       var request = getSelectedRequest(element, node);
-      var containerElement = (request.send || [])[0];
+      var containerElement = (request.requirements || [])[0];
       var item = containerElement.content[idx];
       if (containerElement.content.length < 2) {
-        commands.push(cmdHelper.removeElementsFromList(element, request, 'send', null, [containerElement]));
+        commands.push(cmdHelper.removeElementsFromList(element, request, 'requirements', null, [containerElement]));
       } else {
         commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'content', null, [item]));
       }
@@ -440,42 +191,42 @@ module.exports = function(group, element, bpmnFactory, translate) {
     },
     getExtensionElements: function(element, node) {
       var request = getSelectedRequest(element, node) || {};
-      return ((request.send || [])[0] || {}).content;
+      return ((request.requirements || [])[0] || {}).content;
     },
     hideExtensionElements: function(element, node) {
       return !getSelectedRequest(element, node);
     }
   });
-  group.entries.push(sendContentsEntry);
+  group.entries.push(requirementsContentsEntry);
 
   // Content ID entry
   group.entries.push(entryFactory.validationAwareTextField({
-    id: 'send-content-id',
+    id: 'requirements-content-id',
     label: translate('Content Id'),
     modelProperty: 'id',
 
     getProperty: function(element, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node) || {}; 
+      var content = getSelectedContent(requirementsContentsEntry, element, node) || {}; 
       return content.id;
     },
 
     setProperty: function(element, properties, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node);
+      var content = getSelectedContent(requirementsContentsEntry, element, node);
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedContent(sendContentsEntry, element, node);
+      return !getSelectedContent(requirementsContentsEntry, element, node);
     },
 
     validate: function(element, values, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node) || {};
+      var content = getSelectedContent(requirementsContentsEntry, element, node) || {};
       if (content) {
         var IdValue = values.id;
         if (!IdValue || IdValue.trim() === '') {
           return { id: 'Id must not be empty.' };
         }
-        var message = helper.getObjectList(element,'execution:Send')
+        var message = helper.getObjectList(element,'execution:Requirements')
         var existingId = find(message, function(f) {
           return f !== content && f.id === IdValue;
         });
@@ -488,26 +239,26 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
   // Content key entry
   group.entries.push(entryFactory.validationAwareTextField({
-    id: 'send-content-key',
+    id: 'requirements-content-key',
     label: translate('Key'),
     modelProperty: 'key',
 
     getProperty: function(element, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node) || {}; 
+      var content = getSelectedContent(requirementsContentsEntry, element, node) || {}; 
       return content.key;
     },
 
     setProperty: function(element, properties, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node);
+      var content = getSelectedContent(requirementsContentsEntry, element, node);
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
 
     hidden: function(element, node) {
-      return !getSelectedContent(sendContentsEntry, element, node);
+      return !getSelectedContent(requirementsContentsEntry, element, node);
     },
 
     validate: function(element, values, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node) || {};
+      var content = getSelectedContent(requirementsContentsEntry, element, node) || {};
       if (content) {
         var keyValue = values.key;
         if (!keyValue || keyValue.trim() === '') {
@@ -519,42 +270,202 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
   /// attribute key entry
   group.entries.push(entryFactory.textField({
-    id: 'send-content-attribute',
-    label: translate('Attribute key of status'),
+    id: 'requirements-content-attribute',
+    label: translate('Attribute name of status'),
     modelProperty: 'attribute',
     get: function(element, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node) || {}; 
+      var content = getSelectedContent(requirementsContentsEntry, element, node) || {}; 
       return { attribute: content.attribute };
     },
 
     set: function(element, properties, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node);
+      var content = getSelectedContent(requirementsContentsEntry, element, node);
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
     hidden: function(element, node) {
-      return !getSelectedContent(sendContentsEntry, element, node);
+      return !getSelectedContent(requirementsContentsEntry, element, node);
     }
   }));
 
   /// Content value input field
   group.entries.push(entryFactory.textField({
-    id: 'send-content-value',
+    id: 'requirements-content-value',
     label: translate('Value'),
     modelProperty: 'value',
     get: function(element, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node) || {}; 
+      var content = getSelectedContent(requirementsContentsEntry, element, node) || {}; 
       return { value: content.value };
     },
 
     set: function(element, properties, node) {
-      var content = getSelectedContent(sendContentsEntry, element, node);
+      var content = getSelectedContent(requirementsContentsEntry, element, node);
       return cmdHelper.updateBusinessObject(element, content, properties);
     },
     hidden: function(element, node) {
-      return !getSelectedContent(sendContentsEntry, element, node);
+      return !getSelectedContent(requirementsContentsEntry, element, node);
     }
   }));
 
+
+  //////////////////////
+  // Job content entry
+  //////////////////////
+  var jobContentsEntry = extensionElements(element, bpmnFactory, {
+    id: 'job',
+    label: translate('Job content'),
+    modelProperty: 'id',
+    prefix: 'Content',
+    createExtensionElement: function(element, extensionElement, value, node) {
+      var commands = [];
+      var request = getSelectedRequest(element, node);
+      var containerElement = (request.job || [])[0];
+      if (!containerElement) {
+        containerElement = elementHelper.createElement('execution:Job', {}, request, bpmnFactory);
+        commands.push(cmdHelper.addAndRemoveElementsFromList(
+          element,
+          request,
+          'job',
+          'request',
+          [containerElement],
+          []
+        ));
+      }
+
+      var content = elementHelper.createElement('execution:Content', { id: value }, containerElement, bpmnFactory);
+        commands.push(cmdHelper.addElementsTolist(element, containerElement, 'content', [ content ]));
+
+      return commands;
+    },
+    removeExtensionElement: function(element, extensionElement, value, idx, node) {
+      var commands = [];
+      var request = getSelectedRequest(element, node);
+      var containerElement = (request.job || [])[0];
+      var item = containerElement.content[idx];
+      if (containerElement.content.length < 2) {
+        commands.push(cmdHelper.removeElementsFromList(element, request, 'job', null, [containerElement]));
+      } else {
+        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'content', null, [item]));
+      }
+
+      return commands;
+    },
+    getExtensionElements: function(element, node) {
+      var request = getSelectedRequest(element, node) || {};
+      return ((request.job || [])[0] || {}).content;
+    },
+    hideExtensionElements: function(element, node) {
+      return !getSelectedRequest(element, node);
+    }
+  });
+  group.entries.push(jobContentsEntry);
+
+  // Content ID entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'job-content-id',
+    label: translate('Content Id'),
+    modelProperty: 'id',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node) || {}; 
+      return content.id;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(jobContentsEntry, element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node) || {};
+      if (content) {
+        var IdValue = values.id;
+        if (!IdValue || IdValue.trim() === '') {
+          return { id: 'Id must not be empty.' };
+        }
+        var message = helper.getObjectList(element,'execution:Job')
+        var existingId = find(message, function(f) {
+          return f !== content && f.id === IdValue;
+        });
+        if (existingId) {
+          return { id: 'Id is already used.' };
+        }
+      }
+    }
+  }));
+
+  // Content key entry
+  group.entries.push(entryFactory.validationAwareTextField({
+    id: 'job-content-key',
+    label: translate('Key'),
+    modelProperty: 'key',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node) || {}; 
+      return content.key;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(jobContentsEntry, element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node) || {};
+      if (content) {
+        var keyValue = values.key;
+        if (!keyValue || keyValue.trim() === '') {
+          return { key: 'Key must not be empty.' };
+        }
+      }
+    }
+  }));
+
+  /// attribute key entry
+  group.entries.push(entryFactory.textField({
+    id: 'job-content-attribute',
+    label: translate('Attribute name of status'),
+    modelProperty: 'attribute',
+    get: function(element, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node) || {}; 
+      return { attribute: content.attribute };
+    },
+
+    set: function(element, properties, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedContent(jobContentsEntry, element, node);
+    }
+  }));
+
+  /// Content value input field
+  group.entries.push(entryFactory.textField({
+    id: 'job-content-value',
+    label: translate('Value'),
+    modelProperty: 'value',
+    get: function(element, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node) || {}; 
+      return { value: content.value };
+    },
+
+    set: function(element, properties, node) {
+      var content = getSelectedContent(jobContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedContent(jobContentsEntry, element, node);
+    }
+  }));
+/*
   //////////////////////
   // Receive content entry
   //////////////////////
@@ -714,5 +625,5 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !getSelectedContent(receiveContentsEntry, element, node);
     }
   }));
-
+*/
 };
