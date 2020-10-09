@@ -183,6 +183,22 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
     };
   }
 
+  function appendResource(event, element) {
+    if (autoPlace) {
+      var shape = createResourceShape(bpmnFactory, elementFactory);
+
+      autoPlace.append(element, shape);
+    } else {
+      appendResourceStart(event, element);
+    }
+  }
+
+  function appendResourceStart(event, element) {
+    var shape = createResourceShape(bpmnFactory, elementFactory);
+
+    create.start(event, shape, element);
+  }
+
   function appendRequest(event, element) {
     if (autoPlace) {
       var shape = createRequestShape(bpmnFactory, elementFactory);
@@ -381,6 +397,14 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
             dragstart: appendReleaseStart,
             click: appendRelease
           }
+        },
+        'append.append-resource': {
+          group: 'activity',
+          className: 'bpmn-icon-resource',
+          title: translate('Append Resource'),
+          action: {
+            dragstart: appendResourceStart,
+          }
         }
       });
     }
@@ -482,6 +506,15 @@ function isEventType(eventBo, type, definition) {
   });
 
   return isType && isDefinition;
+}
+
+function createResourceShape(bpmnFactory, elementFactory) {
+  var businessObject = bpmnFactory.create('bpmn:Task');
+
+  businessObject.type = 'Resource';
+  var element = elementFactory.createShape({ type: 'bpmn:Task', businessObject: businessObject });
+  element.height /= 2;
+  return element;
 }
 
 function createRequestShape(bpmnFactory, elementFactory) {

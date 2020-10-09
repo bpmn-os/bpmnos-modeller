@@ -45,11 +45,32 @@ ResourceRenderer.prototype.drawShape = function(parentNode, element) {
       height = element.height;
 
   // set line thickness for request / release
+  var boundary = drawRect(0, width, height, 0);
   var border = (type == 'Release') ? 4 : 2;
-  var rect = drawRect(0, width, height, border);
-  svgAppend(parentNode, rect);
-  rect = drawRect(width/3, width/3, height, border);
-  svgAppend(parentNode, rect);
+  if ( type == 'Resource') {
+
+    var halfcircle = drawShape('path', { d: "M" + 0.45*height + ",0  a1,1 0 0,0 0," + height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
+    svgAppend(parentNode, halfcircle);
+    halfcircle = drawShape('path', { d: "M" + (width-0.45*height) + ",0  a1,1 0 0,1 0," + height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
+    svgAppend(parentNode, halfcircle);
+    var line =  drawShape('line', { x1: 0.45*height, y1: 0, x2: width-0.45*height, y2: 0, stroke: 'black', strokeWidth: 2, fill: 'white' } );
+    svgAppend(parentNode, line);
+    line =  drawShape('line', { x1: 0.45*height, y1: height, x2: width-0.45*height, y2: height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
+    svgAppend(parentNode, line);
+ 
+    var circle = drawCircle(0.2*height, width, height);
+    svgAppend(parentNode, circle);
+    circle = drawCircle(height, width, height);
+    svgAppend(parentNode, circle);
+    circle = drawCircle(1.8*height, width, height);
+    svgAppend(parentNode, circle);
+  }
+  else {
+    var rect = drawRect(0, width, height, border);
+    svgAppend(parentNode, rect);
+    var rect = drawRect(width/3, width/3, height, border);
+    svgAppend(parentNode, rect);
+  }
 
   if (businessObject.name) {
     var lines = businessObject.name.trim().split('\n');
@@ -70,7 +91,8 @@ ResourceRenderer.prototype.drawShape = function(parentNode, element) {
     });
     svgAppend(parentNode, textArea);
   }
-  return rect;
+
+  return boundary;
 };
 
 ResourceRenderer.prototype.getShapePath = function(shape) {
@@ -91,4 +113,26 @@ function drawRect(x, width, height, border) {
   });
 
   return rect;
+}
+
+
+function drawShape(type, attr) {
+  var shape = svgCreate(type);
+  svgAttr(shape,attr);
+  return shape;
+}
+
+function drawCircle(x, width, height) {
+  var circle = svgCreate('circle');
+
+  svgAttr(circle, {
+    cx: x + height/4,
+    cy: height/2,
+    r: height/4,
+    stroke: 'black',
+    strokeWidth: 8,
+    fill: 'white'
+  });
+
+  return circle;
 }

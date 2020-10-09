@@ -72,6 +72,11 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
     };
   }
 
+  function createResource(event) {
+    var shape = createResourceShape(bpmnFactory, elementFactory);
+
+    create.start(event, shape);
+  }
   function createRequest(event) {
     var shape = createRequestShape(bpmnFactory, elementFactory);
 
@@ -172,6 +177,15 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
         click: createRelease
       }
     },
+    'create.resource': {
+      group: 'activity',
+      className: 'bpmn-icon-resource',
+      title: translate('Create Resource'),
+      action: {
+        dragstart: createResource,
+        click: createResource
+      }
+    },
     'create.data-object': createAction(
       'bpmn:DataObjectReference', 'data-object', 'bpmn-icon-data-object'
     ),
@@ -191,6 +205,15 @@ PaletteProvider.prototype.getPaletteEntries = function(element) {
 
   return actions;
 };
+
+function createResourceShape(bpmnFactory, elementFactory) {
+  var businessObject = bpmnFactory.create('bpmn:Task');
+
+  businessObject.type = 'Resource';
+  var element = elementFactory.createShape({ type: 'bpmn:Task', businessObject: businessObject });
+  element.height /= 2;
+  return element;
+}
 
 function createRequestShape(bpmnFactory, elementFactory) {
   var businessObject = bpmnFactory.create('bpmn:Task');
