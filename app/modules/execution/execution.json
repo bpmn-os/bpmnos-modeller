@@ -19,6 +19,17 @@
        ]
     },
     {
+      "name": "Data", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "attribute",
+          "type": "Attribute",
+          "isMany": true
+        },
+       ]
+    },
+    {
       "name": "Attribute",
       "superClass": [ "Element" ],
       "properties": [

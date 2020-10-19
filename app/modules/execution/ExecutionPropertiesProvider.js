@@ -12,6 +12,7 @@ var idProps = require('../bpmn/parts/IdProps'),
 
 // execution properties
 var statusProps = require('./parts/StatusProps'),
+    dataProps = require('./parts/DataProps'),
     operatorProps = require('./parts/OperatorProps'),
     restrictionProps = require('./parts/RestrictionProps'),
     messageProps = require('./parts/MessageProps'),
@@ -58,6 +59,21 @@ function createStatusTabGroups(element, bpmnFactory, elementRegistry, translate)
 
   return [
     statusGroup
+  ];
+}
+
+function createDataTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var dataGroup = {
+    id: 'data-group',
+    label: translate('Data'),
+    entries: []
+  };
+  var dataOptions;
+
+  dataProps(dataGroup, element, bpmnFactory, translate);
+
+  return [
+    dataGroup
   ];
 }
 
@@ -188,6 +204,12 @@ function ExecutionPropertiesProvider(
       groups: createStatusTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
+    var dataTab = {
+      id: 'data',
+      label: translate('Data'),
+      groups: createDataTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
     var operatorsTab = {
       id: 'operators',
       label: translate('Operators'),
@@ -233,6 +255,7 @@ function ExecutionPropertiesProvider(
     return [
       generalTab,
       statusTab,
+      dataTab,
       operatorsTab,
       restrictionsTab,
       messageTab,
