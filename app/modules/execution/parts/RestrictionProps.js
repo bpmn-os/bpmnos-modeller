@@ -19,7 +19,8 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
   if ( !is(element, 'bpmn:Process') && !(is(element, 'bpmn:Participant') && getBO(element).get('processRef'))  && 
        !is(element, 'bpmn:Activity') && 
-       !is(element, 'bpmn:SequenceFlow') 
+       !is(element, 'bpmn:SequenceFlow') &&
+       (!( is(element, 'bpmn:CatchEvent') && getBusinessObject(element).eventDefinitions && getBusinessObject(element).eventDefinitions[0].$type == "bpmn:ConditionalEventDefinition"))
      ) {
     return;
   }
