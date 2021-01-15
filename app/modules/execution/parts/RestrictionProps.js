@@ -104,7 +104,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(selectEntry);
 
   // ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'restriction-id',
     label: translate('Id'),
     modelProperty: 'id',
@@ -142,7 +142,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Attribute name entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'restriction-attribute',
     label: translate('Attribute name'),
     modelProperty: 'attribute',
@@ -172,7 +172,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Required entry
-  var requiredEntry = entryFactory.checkbox({
+  var requiredEntry = entryFactory.checkbox(translate, {
     id: 'restriction-required',
     label: translate('Value is required'),
     modelProperty: 'required',
@@ -197,7 +197,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(requiredEntry);
 
   // minInclusive input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'restriction-mininclusive',
     label: translate('Value must be larger or equal to'),
     modelProperty: 'minInclusive',
@@ -231,7 +231,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // maxInclusive input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'restriction-maxinclusive',
     label: translate('Value must be smaller or equal to'),
     modelProperty: 'maxInclusive',
@@ -265,7 +265,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Enumeration list entry
-  group.entries.push(entryFactory.table({
+  group.entries.push(entryFactory.table(translate, {
     id: 'enumeration-list',
     modelProperties: [ 'value' ],
     labels: [ translate('Value') ],
@@ -307,7 +307,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Negate entry
-  var negateEntry = entryFactory.checkbox({
+  var negateEntry = entryFactory.checkbox(translate, {
     id: 'restriction-negate',
     label: translate('Negate restriction'),
     modelProperty: 'negate',

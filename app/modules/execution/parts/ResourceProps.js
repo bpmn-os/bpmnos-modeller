@@ -41,7 +41,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }
 
   // Persist entry
-  var persistEntry = entryFactory.checkbox({
+  var persistEntry = entryFactory.checkbox(translate, {
     id: 'persist',
     label: translate('Persist'),
     modelProperty: 'persist',
@@ -56,26 +56,26 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
 
   /// Default process entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'default',
     label: translate('Default process Id'),
     modelProperty: 'execution:default',
   }));
   /// Preparation process entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'prepare',
     label: translate('Preparation process Id'),
     modelProperty: 'execution:prepare',
   }));
   /// Service process entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'service',
     label: translate('Service process Id'),
     modelProperty: 'execution:service',
   }));
 
   /// Finishing process entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'finish',
     label: translate('Finishing process Id'),
     modelProperty: 'execution:finish',
@@ -144,7 +144,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(capabilitiesEntry);
 
   // ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'capability-id',
     label: translate('Id'),
     modelProperty: 'id',
@@ -182,7 +182,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Key entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'capability-key',
     label: translate('Key'),
     modelProperty: 'key',
@@ -212,7 +212,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // minInclusive input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'capability-mininclusive',
     label: translate('Value must be larger or equal to'),
     modelProperty: 'minInclusive',
@@ -246,7 +246,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // maxInclusive input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'capability-maxinclusive',
     label: translate('Value must be smaller or equal to'),
     modelProperty: 'maxInclusive',
@@ -280,7 +280,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Enumeration list entry
-  group.entries.push(entryFactory.table({
+  group.entries.push(entryFactory.table(translate, {
     id: 'capability-enumeration-list',
     modelProperties: [ 'value' ],
     labels: [ translate('Value') ],
@@ -322,7 +322,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 /*
   // Negate entry
-  var negateEntry = entryFactory.checkbox({
+  var negateEntry = entryFactory.checkbox(translate, {
     id: 'restriction-negate',
     label: translate('Negate restriction'),
     modelProperty: 'negate',
@@ -404,7 +404,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
 
   // Content ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'capabilities-content-id',
     label: translate('Content Id'),
     modelProperty: 'id',
@@ -442,7 +442,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Content key entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'capabilities-content-key',
     label: translate('Key'),
     modelProperty: 'key',
@@ -473,7 +473,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// attribute key entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'capabilities-content-attribute',
     label: translate('Attribute name of status'),
     modelProperty: 'attribute',
@@ -492,7 +492,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// Content value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'capabilities-content-value',
     label: translate('Value'),
     modelProperty: 'value',

@@ -6,12 +6,15 @@ var entryFactory = require('bpmn-js-properties-panel/lib/factory/EntryFactory'),
     cmdHelper = require('bpmn-js-properties-panel/lib/helper/CmdHelper');
 
 module.exports = function(group, element, translate, options) {
+  if (!options) {
+    options = {};
+  }
 
   var description = options && options.description;
 
   // Id
-  group.entries.push(entryFactory.validationAwareTextField({
-    id: 'id',
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
+    id: options.id || 'id',
     label: translate('Id'),
     description: description && translate(description),
     modelProperty: 'id',

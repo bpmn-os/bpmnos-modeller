@@ -23,7 +23,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }
 
   /// Attribute value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'timer-attribute',
     label: translate('Attribute name of status'),
     modelProperty: 'name',
@@ -63,7 +63,7 @@ console.warn(attribute);
   }));
 
   /// Attribute value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'timer-value',
     label: translate('Value'),
     modelProperty: 'value',

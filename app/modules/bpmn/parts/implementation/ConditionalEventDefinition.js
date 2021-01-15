@@ -28,7 +28,7 @@ module.exports = function(group, element, bpmnFactory, conditionalEventDefinitio
     };
   };
 
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'variableName',
     label: translate('Variable Name'),
     modelProperty : 'variableName',
@@ -41,14 +41,14 @@ module.exports = function(group, element, bpmnFactory, conditionalEventDefinitio
     is(element, 'bpmn:StartEvent') && !isEventSubProcess(element.parent);
 
   if (!isConditionalStartEvent) {
-    group.entries.push(entryFactory.textField({
-      id: 'variableEvent',
-      label: translate('Variable Event'),
+    group.entries.push(entryFactory.textField(translate, {
+      id: 'variableEvents',
+      label: translate('Variable Events'),
       description: translate('Specify more than one variable change event as a comma separated list.'),
-      modelProperty : 'variableEvent',
+      modelProperty : 'variableEvents',
 
-      get: getValue('variableEvent'),
-      set: setValue('variableEvent')
+      get: getValue('variableEvents'),
+      set: setValue('variableEvents')
     }));
   }
 };

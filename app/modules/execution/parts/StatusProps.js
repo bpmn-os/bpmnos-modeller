@@ -33,7 +33,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }
 
   // Process id entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'process-id',
     label: translate('Process Id'),
     modelProperty: 'id',
@@ -56,7 +56,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Process id entry of participant
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'participant-process-id',
     label: translate('(Sub-)Process Id'),
     modelProperty: 'id',
@@ -130,7 +130,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(attributesEntry);
 
   // Attribute id entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'attribute-id',
     label: translate('Id'),
     modelProperty: 'id',
@@ -168,7 +168,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Attribute name entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'attribute-name',
     label: translate('Name'),
     modelProperty: 'name',
@@ -198,7 +198,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Select attribute type
-  group.entries.push(entryFactory.selectBox({
+  group.entries.push(entryFactory.selectBox(translate, {
     id: 'attribute-type',
     label: translate('Type'),
     modelProperty : 'type',
@@ -228,7 +228,7 @@ console.log(properties);
   }));
 
   /// Attribute value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'attribute-value',
     label: translate('Value'),
     modelProperty: 'value',

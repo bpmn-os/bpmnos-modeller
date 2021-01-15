@@ -104,7 +104,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(operatorsEntry);
 
   // ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'operator-id',
     label: translate('ID'),
     modelProperty: 'id',
@@ -143,7 +143,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
 
   // Select operator entry
-  group.entries.push(entryFactory.selectBox({
+  group.entries.push(entryFactory.selectBox(translate, {
     id: 'operator-name',
     label: translate('Status operator'),
     modelProperty : 'name',
@@ -165,7 +165,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Attribute name entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'operator-attribute',
     label: translate('Attribute name'),
     modelProperty: 'attribute',
@@ -221,7 +221,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(parametersEntry);
 
   // Parameter name entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'parameter-name',
     label: translate('Name'),
     modelProperty: 'name',
@@ -260,7 +260,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// Parameter value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'parameter-value',
     label: translate('Value'),
     modelProperty: 'value',
@@ -280,7 +280,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 */
 
   // [FormData] form field constraints table
-  group.entries.push(entryFactory.table({
+  group.entries.push(entryFactory.table(translate, {
     id: 'parameters',
     modelProperties: [ 'name', 'value' ],
     labels: [ translate('Name'), translate('Value') ],
@@ -332,7 +332,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 /*
   // Parameter entry
-  group.entries.push(entryFactory.table({
+  group.entries.push(entryFactory.table(translate, {
     id: 'parameters',
     labels: [ translate('Name'), translate('Value') ],
     modelProperties: [ 'name', 'value' ],

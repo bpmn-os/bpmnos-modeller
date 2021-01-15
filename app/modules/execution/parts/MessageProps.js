@@ -32,7 +32,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }
 
   // Participant name entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'participant',
     label: translate('Participant name'),
     modelProperty: 'participant',
@@ -68,7 +68,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// Process entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'process',
     label: translate('Process Id'),
     modelProperty: 'process',
@@ -105,7 +105,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// Instance entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'instance',
     label: translate('Attribute name containing instance Id'),
     modelProperty: 'instance',
@@ -142,7 +142,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
 
   /// Request entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'request',
     label: translate('Request Id'),
     modelProperty: 'request',
@@ -226,7 +226,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(messageContentsEntry);
 
   // Content ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'message-content-id',
     label: translate('Content Id'),
     modelProperty: 'id',
@@ -264,7 +264,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Content key entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'message-content-key',
     label: translate('Key'),
     modelProperty: 'key',
@@ -295,7 +295,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// attribute key entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'message-content-attribute',
     label: translate('Attribute name of status'),
     modelProperty: 'attribute',
@@ -315,7 +315,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
 
   /// Content value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'message-content-value',
     label: translate('Value'),
     modelProperty: 'value',

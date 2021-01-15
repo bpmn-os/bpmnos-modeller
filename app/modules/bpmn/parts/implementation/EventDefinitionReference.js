@@ -79,7 +79,7 @@ module.exports = function(element, definition, bpmnFactory, options) {
              '<div class="bpp-field-wrapper">' +
                '<select id="camunda-' + escapeHTML(elementName) + '" name="selectedElement" data-value>' +
                '</select>' +
-               '<button class="add" id="addElement" data-action="addElement"><span>+</span></button>' +
+               '<button class="action-button add" id="addElement" data-action="addElement"><span>+</span></button>' +
              '</div>' +
           '</div>',
 
@@ -97,6 +97,7 @@ module.exports = function(element, definition, bpmnFactory, options) {
       var props = {};
 
       if (!selection || typeof selection === 'undefined') {
+
         // remove reference to element
         props[referenceProperty] = undefined;
         return cmdHelper.updateBusinessObject(element, definition, props);
@@ -121,6 +122,7 @@ module.exports = function(element, definition, bpmnFactory, options) {
     },
 
     addElement: function(element, inputNode) {
+
       // note: this generated id will be used as name
       // of the element and not as id
       var id = utils.nextId(newElementIdPrefix);

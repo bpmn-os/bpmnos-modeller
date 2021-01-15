@@ -100,7 +100,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(releaseEntry);
 
   // ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'release-id',
     label: translate('Id'),
     modelProperty: 'id',
@@ -138,7 +138,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// Request id input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'request',
     label: translate('Id of request to be released'),
     modelProperty: 'request',
@@ -210,7 +210,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(sendContentsEntry);
 
   // Content ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'send-content-id',
     label: translate('Content Id'),
     modelProperty: 'id',
@@ -248,7 +248,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Content key entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'send-content-key',
     label: translate('Key'),
     modelProperty: 'key',
@@ -279,7 +279,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// attribute key entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'send-content-attribute',
     label: translate('Attribute key of status'),
     modelProperty: 'attribute',
@@ -298,7 +298,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// Content value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'send-content-value',
     label: translate('Value'),
     modelProperty: 'value',
@@ -369,7 +369,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   group.entries.push(receiveContentsEntry);
 
   // Content ID entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'receive-content-id',
     label: translate('Content Id'),
     modelProperty: 'id',
@@ -407,7 +407,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   // Content key entry
-  group.entries.push(entryFactory.validationAwareTextField({
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'receive-content-key',
     label: translate('Key'),
     modelProperty: 'key',
@@ -438,7 +438,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   }));
 
   /// attribute key entry
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'receive-content-attribute',
     label: translate('Attribute key of status'),
     modelProperty: 'attribute',
@@ -458,7 +458,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
 
   /// Content value input field
-  group.entries.push(entryFactory.textField({
+  group.entries.push(entryFactory.textField(translate, {
     id: 'receive-content-value',
     label: translate('Value'),
     modelProperty: 'value',
