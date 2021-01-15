@@ -5,8 +5,7 @@
   "main": "app/index.js",
   "scripts": {
     "all": "grunt",
-    "dev": "grunt auto-build",
-    "postinstall": "patch-package"
+    "dev": "grunt auto-build"
   },
   "author": {
     "name": "Asvin Goel"
@@ -34,7 +33,6 @@
     "bpmn-js-properties-panel": "^0.32.2",
     "bpmn-moddle": "^5.1.6",
     "diagram-js": "^5.0.0",
-    "patch-package": "^6.2.2",
     "tiny-svg": "^2.2.0"
   }
 }
