@@ -26,6 +26,7 @@ var modeler = new BpmnModeler({
   propertiesPanel: {
     parent: '#properties-panel'
   },
+  keyboard: { bindTo: document },
   additionalModules: [
     {
       __init__: [ 'contextPadProvider', 'renderer', 'paletteProvider', ],
