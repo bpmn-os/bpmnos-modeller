@@ -221,25 +221,14 @@
        ]
     },
     {
-      "name": "Send", 
+      "name": "Message", 
       "superClass": [ "Element" ],
       "properties": [
         {
           "name": "content",
           "type": "Content",
           "isMany": true
-        },
-       ]
-    },
-    {
-      "name": "Receive", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "content",
-          "type": "Content",
-          "isMany": true
-        },
+        }
        ]
     },
     {
