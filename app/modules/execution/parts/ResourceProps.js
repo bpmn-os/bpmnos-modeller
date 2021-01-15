@@ -22,16 +22,6 @@ module.exports = function(group, element, bpmnFactory, translate) {
     return;
   }
 
-/*
-  function getSelectedContent(element, node) {
-    var selected = capabilitiesContentsEntry.getSelected(element, node.parentNode);
-    if (selected.idx === -1) {
-      return;
-    }
-
-    return helper.getObject(element, selected.idx, 'execution:Capabilities');
-  }
-*/
   function getSelectedObject(element, node) {
     var selected = capabilitiesEntry.getSelected(element, node.parentNode);
     if (selected.idx === -1) {
@@ -40,6 +30,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     return helper.getObject(element, selected.idx, 'execution:Capabilities');
   }
 
+/*
   // Persist entry
   var persistEntry = entryFactory.checkbox(translate, {
     id: 'persist',
@@ -53,7 +44,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   });
   group.entries.push(persistEntry);
-
+*/
 
   /// Default process entry
   group.entries.push(entryFactory.textField(translate, {
@@ -320,6 +311,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !!getSelectedObject(element, node);
     }
   }));
+
 /*
   // Negate entry
   var negateEntry = entryFactory.checkbox(translate, {
@@ -345,170 +337,6 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   });
   group.entries.push(negateEntry);
-*/
-
-
-/*
-  var capabilitiesContentsEntry = extensionElements(element, bpmnFactory, {
-    id: 'capabilities',
-    label: translate('Capabilities'),
-    modelProperty: 'id',
-    prefix: 'Content',
-    createExtensionElement: function(element, extensionElement, value, node) {
-      var bo = getBusinessObject(element), commands = [];
-
-      if (!extensionElement) {
-        extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, bo, bpmnFactory);
-        commands.push(cmdHelper.updateProperties(element, { extensionElements: extensionElement }));
-      }
-
-      var containerElement = helper.getContainerElement(element,'execution:Capabilities');
-      if (!containerElement) {
-        containerElement = elementHelper.createElement('execution:Capabilities', {}, extensionElement, bpmnFactory);
-        commands.push(cmdHelper.addAndRemoveElementsFromList(
-          element,
-          extensionElement,
-          'values',
-          'extensionElements',
-          [containerElement],
-          []
-        ));
-      }
-
-      var content = elementHelper.createElement('execution:Content', { id: value }, containerElement, bpmnFactory);
-        commands.push(cmdHelper.addElementsTolist(element, containerElement, 'content', [ content ]));
-
-      return commands;
-    },
-    removeExtensionElement: function(element, extensionElement, value, idx, node) {
-      var containerElement = helper.getContainerElement(element,'execution:Capabilities');
-      var entry = containerElement.content[idx],
-          commands = [];
-
-      if (containerElement.content.length < 2) {
-        commands.push(removeEntry(getBusinessObject(element), element, containerElement));
-      } else {
-        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'content', null, [entry]));
-      }
-
-      return commands;
-    },
-    getExtensionElements: function(element, node) {
-      return helper.getObjectList(element,'execution:Capabilities');
-    },
-    hideExtensionElements: function(element, node) {
-      return false;
-    }
-  });
-  group.entries.push(capabilitiesContentsEntry);
-
-
-  // Content ID entry
-  group.entries.push(entryFactory.validationAwareTextField(translate, {
-    id: 'capabilities-content-id',
-    label: translate('Content Id'),
-    modelProperty: 'id',
-
-    getProperty: function(element, node) {
-      var content = getSelectedContent(element, node) || {}; 
-      return content.id;
-    },
-
-    setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedContent(element, node);
-    },
-
-    validate: function(element, values, node) {
-      var content = getSelectedContent(element, node) || {};
-      if (content) {
-        var IdValue = values.id;
-        if (!IdValue || IdValue.trim() === '') {
-          return { id: 'Id must not be empty.' };
-        }
-        var message = helper.getObjectList(element,'execution:Capabilities')
-        var existingId = find(message, function(f) {
-          return f !== content && f.id === IdValue;
-        });
-        if (existingId) {
-          return { id: 'Id is already used.' };
-        }
-      }
-    }
-  }));
-
-  // Content key entry
-  group.entries.push(entryFactory.validationAwareTextField(translate, {
-    id: 'capabilities-content-key',
-    label: translate('Key'),
-    modelProperty: 'key',
-
-    getProperty: function(element, node) {
-      var content = getSelectedContent(element, node) || {}; 
-      return content.key;
-    },
-
-    setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedContent(element, node);
-    },
-
-    validate: function(element, values, node) {
-      var content = getSelectedContent(element, node) || {};
-      if (content) {
-        var keyValue = values.key;
-        if (!keyValue || keyValue.trim() === '') {
-          return { key: 'Key must not be empty.' };
-        }
-      }
-    }
-  }));
-
-  /// attribute key entry
-  group.entries.push(entryFactory.textField(translate, {
-    id: 'capabilities-content-attribute',
-    label: translate('Attribute name of status'),
-    modelProperty: 'attribute',
-    get: function(element, node) {
-      var content = getSelectedContent(element, node) || {}; 
-      return { attribute: content.attribute };
-    },
-
-    set: function(element, properties, node) {
-      var content = getSelectedContent(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedContent(element, node);
-    }
-  }));
-
-  /// Content value input field
-  group.entries.push(entryFactory.textField(translate, {
-    id: 'capabilities-content-value',
-    label: translate('Value'),
-    modelProperty: 'value',
-    get: function(element, node) {
-      var content = getSelectedContent(element, node) || {}; 
-      return { value: content.value };
-    },
-
-    set: function(element, properties, node) {
-      var content = getSelectedContent(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-    hidden: function(element, node) {
-      return !getSelectedContent(element, node);
-    }
-  }));
 */
 
 };
