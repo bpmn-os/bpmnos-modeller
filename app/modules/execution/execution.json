@@ -346,7 +346,7 @@
         },
        ]
     },
-     {
+    {
       "name": "Capabilities", 
       "superClass": [ "Element" ],
       "properties": [
@@ -357,16 +357,37 @@
         },
       ]
     },
-   {
-      "name": "Context", 
+    {
+      "name": "Consolidator", 
       "superClass": [ "Element" ],
       "properties": [
-        {
-          "name": "attribute",
-          "type": "Attribute",
+       {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+       },
+       {
+          "name": "group",
+          "type": "Group",
           "isMany": true
         },
-       ]
+      ]
+    },
+    {
+      "name": "Group", 
+      "superClass": [ "Element" ],
+      "properties": [
+       {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+       },
+       {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        },
+      ]
     },
  ],
 
