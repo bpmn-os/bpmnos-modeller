@@ -16,7 +16,6 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 var consolidators = require('../consolidators.json');
 
 
-
 module.exports = function(group, element, bpmnFactory, translate) {
 
   if ( !is(element, 'bpmn:Task') || getBusinessObject(element).type != "Resource" ) {
@@ -29,6 +28,30 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return;
     }
     return helper.getObject(element, selected.idx, 'execution:Capabilities');
+  }
+
+  function getConsolidator(element) {
+      var bo = getBusinessObject(element);
+      var consolidator = helper.getContainerElement(bo, 'execution:Consolidator') || {};
+      return consolidator;
+  }
+
+  function getGroupName( node ) {
+      var name = node.dataset.entry;
+      var prefix = "consolidator-group-";
+//console.log( name, prefix);
+      name = name.substr( prefix.length, name.length -prefix.length);
+//console.log( name, prefix);
+      return name;
+  }
+
+  function getGroup( consolidator, node ) {
+      var name = getGroupName( node );
+      var i, groups = consolidator.group || [];
+      for (i = 0; i < groups.length; i++) {
+        if ( groups[i].$attrs.name == name ) return groups[i];
+      }
+      return;
   }
 
 /*
@@ -341,7 +364,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 */
 
   // Select consolidator entry
-  group.entries.push(entryFactory.selectBox(translate, {
+  var consolidatorEntry = entryFactory.selectBox(translate, {
     id: 'consolidator-name',
     label: translate('Consolidator'),
     modelProperty : 'name',
@@ -349,8 +372,10 @@ module.exports = function(group, element, bpmnFactory, translate) {
     selectOptions: consolidators,
     get: function(element, node) {
       // get consolidator in element
-      var bo = getBusinessObject(element);
-      var consolidator = helper.getContainerElement(bo, 'execution:Consolidator') || {};
+//      var bo = getBusinessObject(element);
+//      var consolidator = helper.getContainerElement(bo, 'execution:Consolidator') || {};
+
+      var consolidator = getConsolidator(element);
 console.log( (consolidator.$attrs || {}).name || consolidators[0].value);
       return {
         name: (consolidator.$attrs || {}).name || consolidators[0].value
@@ -390,10 +415,81 @@ console.log(consolidator);
     hidden: function(element, node) {
       return false;
     },
-  }));
+  });
+  group.entries.push(consolidatorEntry);
 
 /*
-  // Select consolidator group entry
+  // Consolidator group entries
 */
+  var i, groups = [];
+  for (i = 0; i < consolidators.length; i++) {
+     groups = groups.concat(consolidators[i].groups.filter((item) => groups.indexOf(item) < 0))
+  }
+//  console.log(groups);
+   
+ for ( i = 0; i < groups.length; i++) {
+  var groupname = groups[i];
+  var groupEntry = entryFactory.table(translate, {
+    id: 'consolidator-group-' + groupname,
+    modelProperties: [ 'key' ],
+    labels: [ translate('Key') ],
+    addLabel: translate('Group: ' + groupname),
+    getElements: function(element, node) {
+      var consolidator = getConsolidator(element);
+      var group = getGroup( consolidator, node ) || {};
+      return group.content || [];
+    },
+    addElement: function(element, node) {
+      var commands = [];
+      var consolidator = getConsolidator(element);
+      var group = getGroup( consolidator, node );
+      if ( !group ) {
+	 group = elementHelper.createElement('execution:Group', { name: getGroupName(node) }, consolidator, bpmnFactory);
+      commands.push(cmdHelper.addElementsTolist(element, consolidator, 'group', group ));
+      }
+
+      var newContent = elementHelper.createElement('execution:Content', { key: undefined }, group, bpmnFactory);
+      commands.push(cmdHelper.addElementsTolist(element, group, 'content', newContent ));
+console.log(newContent);
+      return commands;
+    },
+    updateElement: function(element, data, node, idx) {
+      var consolidator = getConsolidator(element);
+      var group = getGroup( consolidator, node ) || {};
+      var item = group.content[idx];
+      data.vale = data.value || undefined;
+      return cmdHelper.updateBusinessObject(element, item, data);
+    },
+    removeElement: function(element, node, idx) {
+      var commands = [];
+      var consolidator = getConsolidator(element);
+      var group = getGroup( consolidator, node );
+      var item = group.content[idx];
+      commands.push(cmdHelper.removeElementsFromList(
+        element,
+        group,
+        'content',
+        null,
+        [ item ]
+      ));
+      return commands;
+    },
+    show: function(element, node) {
+      var consolidator = getConsolidator(element);
+      var name = getGroupName( node );
+      if ( !consolidator.$attrs ) return false;
+      for (var i = 0; i < consolidators.length; i++) {
+        if ( consolidators[i].value == consolidator.$attrs.name ) {
+	   for (var j = 0; j < consolidators[i].groups.length; j++) {
+             if ( consolidators[i].groups[j] == name ) return true;
+	   }
+        }
+      }
+      return false;
+    }
+  });
+
+  group.entries.push( groupEntry );
+ } // end for
 
 };
