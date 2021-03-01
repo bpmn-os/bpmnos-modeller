@@ -13,6 +13,7 @@ var getExtensionElements = require('bpmn-js-properties-panel/lib/helper/Extensio
     find = require('lodash/find');
 
 var extensionElements = require('./ExtensionElements'), helper = require('./Helper');
+var consolidators = require('../consolidators.json');
 
 
 
@@ -337,6 +338,62 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   });
   group.entries.push(negateEntry);
+*/
+
+  // Select consolidator entry
+  group.entries.push(entryFactory.selectBox(translate, {
+    id: 'consolidator-name',
+    label: translate('Consolidator'),
+    modelProperty : 'name',
+    emptyParameter: false,
+    selectOptions: consolidators,
+    get: function(element, node) {
+      // get consolidator in element
+      var bo = getBusinessObject(element);
+      var consolidator = helper.getContainerElement(bo, 'execution:Consolidator') || {};
+console.log( (consolidator.$attrs || {}).name || consolidators[0].value);
+      return {
+        name: (consolidator.$attrs || {}).name || consolidators[0].value
+      };
+    },
+    set: function(element, values, node) {
+console.log(consolidators,values);
+      var bo = getBusinessObject(element);
+      var consolidator = helper.getContainerElement(bo, 'execution:Consolidator')
+      if ( values.name == "none" ) {
+	return removeEntry(bo, element, consolidator);
+      }
+      var commands = [];
+      var extensionElement = bo.get('extensionElements');
+      if ( !extensionElement ) {
+          extensionElement = elementHelper.createElement('bpmn:ExtensionElements', { values: [] }, bo, bpmnFactory);
+          commands.push(cmdHelper.updateProperties(element, { extensionElements: extensionElement }));
+      }
+
+      if ( !consolidator ) {
+        consolidator = elementHelper.createElement('execution:Consolidator', { name: "none"}, extensionElement, bpmnFactory);
+console.log(consolidator);
+
+        commands.push(cmdHelper.addAndRemoveElementsFromList(
+          element,
+          extensionElement,
+          'values',
+          'extensionElements',
+          [consolidator],
+          []
+        ));
+      }
+
+      commands.push( cmdHelper.updateBusinessObject(element, consolidator, values) );
+      return commands;
+    },
+    hidden: function(element, node) {
+      return false;
+    },
+  }));
+
+/*
+  // Select consolidator group entry
 */
 
 };
