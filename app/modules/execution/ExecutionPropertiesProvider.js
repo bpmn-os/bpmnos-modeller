@@ -254,15 +254,15 @@ function ExecutionPropertiesProvider(
 
     return [
       generalTab,
-      statusTab,
-      dataTab,
-      operatorsTab,
-      restrictionsTab,
       messageTab,
       timerTab,
       requestTab,
       releaseTab,
       resourceTab,
+      dataTab,
+      statusTab,
+      restrictionsTab,
+      operatorsTab,
     ];
   };
 
