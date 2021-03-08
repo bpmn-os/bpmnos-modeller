@@ -15,7 +15,7 @@
           "name": "attribute",
           "type": "Attribute",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -26,7 +26,7 @@
           "name": "attribute",
           "type": "Attribute",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -63,7 +63,7 @@
           "name": "operator",
           "type": "Operator",
           "isMany": true
-        },
+        }
       ]
     },
     {
@@ -89,7 +89,7 @@
           "name": "parameter",
           "type": "Parameter",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -116,7 +116,7 @@
           "name": "restriction",
           "type": "Restriction",
           "isMany": true
-        },
+        }
       ]
     },
     {
@@ -206,7 +206,7 @@
           "name": "content",
           "type": "Content",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -217,7 +217,7 @@
           "name": "content",
           "type": "Content",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -270,7 +270,7 @@
           "name": "release",
           "type": "Release",
           "isMany": true
-        },
+        }
       ]
     },
     {
@@ -291,7 +291,7 @@
           "name": "job",
           "type": "Job",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -307,7 +307,7 @@
           "name": "request",
           "type": "String",
           "isAttr": true
-        },
+        }
        ]
     },
     {
@@ -343,7 +343,7 @@
           "name": "capabilities",
           "type": "Capabilities",
           "isMany": true
-        },
+        }
        ]
     },
     {
@@ -354,7 +354,7 @@
           "name": "restriction",
           "type": "Restriction",
           "isMany": true
-        },
+        }
       ]
     },
     {
@@ -370,7 +370,7 @@
           "name": "group",
           "type": "Group",
           "isMany": true
-        },
+        }
       ]
     },
     {
@@ -386,10 +386,9 @@
           "name": "content",
           "type": "Content",
           "isMany": true
-        },
+        }
       ]
-    },
+    }
  ],
-
   "emumerations": [ ]
 }
