@@ -57,6 +57,11 @@
           "name": "objective",
           "type": "String",
           "isAttr": true
+        },
+        {
+          "name": "weight",
+          "type": "String",
+          "isAttr": true
         }
       ]
     },
