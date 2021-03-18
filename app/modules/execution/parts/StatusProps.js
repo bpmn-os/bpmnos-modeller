@@ -246,4 +246,32 @@ console.log(properties);
     }
   }));
 
+  // Select attribute objective
+  group.entries.push(entryFactory.selectBox(translate, {
+    id: 'attribute-objective',
+    label: translate('Objective'),
+    modelProperty : 'objective',
+    emptyParameter: false,
+    selectOptions: [
+      { name: 'none', value: '' },
+      { name: 'maximize', value: 'maximize' },
+      { name: 'minimize', value: 'minimize' }
+    ],
+    get: function(element, node) {
+      var object = getSelectedAttribute(element, node) || {};
+      return {
+        objective: object.objective || ''
+
+      };
+    },
+    set: function(element, properties, node) {
+      if ( properties.objective == '' ) properties.objective = undefined;
+      var attribute = getSelectedAttribute(element, node);
+      return cmdHelper.updateBusinessObject(element, attribute, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedAttribute(element, node);
+    },
+  }));
+
 };

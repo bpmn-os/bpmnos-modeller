@@ -52,6 +52,11 @@
           "name": "value",
           "type": "String",
           "isAttr": true
+        },
+        {
+          "name": "objective",
+          "type": "String",
+          "isAttr": true
         }
       ]
     },
