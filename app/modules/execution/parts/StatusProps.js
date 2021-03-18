@@ -265,13 +265,49 @@ console.log(properties);
       };
     },
     set: function(element, properties, node) {
-      if ( properties.objective == '' ) properties.objective = undefined;
+//console.log(properties);
+      if ( properties.objective == '' ) {
+	properties.objective = undefined;
+	properties.weight = undefined;
+      }
+      else if ( !properties.weight ) {
+	properties.weight = "1";
+      }
+//console.log(properties);
       var attribute = getSelectedAttribute(element, node);
       return cmdHelper.updateBusinessObject(element, attribute, properties);
     },
     hidden: function(element, node) {
       return !getSelectedAttribute(element, node);
     },
+  }));
+
+  /// Attribute weight input field
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
+    id: 'attribute-weight',
+    label: translate('Objective weight'),
+    modelProperty: 'weight',
+    getProperty: function(element, node) {
+      var attribute = getSelectedAttribute(element, node) || {}; 
+      return attribute.weight;
+    },
+
+    setProperty: function(element, properties, node) {
+      var attribute = getSelectedAttribute(element, node);
+      return cmdHelper.updateBusinessObject(element, attribute, properties);
+    },
+    hidden: function(element, node) {
+      var attribute = getSelectedAttribute(element, node) || {}; 
+      return !attribute.objective;
+    },
+    validate: function(element, values, node) {
+      var attribute = getSelectedAttribute(element, node) || {};
+      if (attribute) {
+        if ( !values.weight || parseFloat(values.weight) <= 0) {
+          return { weight: 'Weight must be a positive number!' };
+        }
+      }
+    }
   }));
 
 };
