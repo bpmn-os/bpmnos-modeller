@@ -303,7 +303,7 @@ console.log(properties);
     validate: function(element, values, node) {
       var attribute = getSelectedAttribute(element, node) || {};
       if (attribute) {
-        if ( !values.weight || parseFloat(values.weight) <= 0) {
+        if ( !values.weight || isNaN(values.weight) || parseFloat(values.weight) <= 0) {
           return { weight: 'Weight must be a positive number!' };
         }
       }
