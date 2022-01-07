@@ -376,13 +376,13 @@ module.exports = function(group, element, bpmnFactory, translate) {
 //      var consolidator = helper.getContainerElement(bo, 'execution:Consolidator') || {};
 
       var consolidator = getConsolidator(element);
-console.log( (consolidator.$attrs || {}).name || consolidators[0].value);
+//console.log( (consolidator.$attrs || {}).name || consolidators[0].value);
       return {
         name: (consolidator.$attrs || {}).name || consolidators[0].value
       };
     },
     set: function(element, values, node) {
-console.log(consolidators,values);
+//console.log(consolidators,values);
       var bo = getBusinessObject(element);
       var consolidator = helper.getContainerElement(bo, 'execution:Consolidator')
       if ( values.name == "none" ) {
@@ -397,7 +397,7 @@ console.log(consolidators,values);
 
       if ( !consolidator ) {
         consolidator = elementHelper.createElement('execution:Consolidator', { name: "none"}, extensionElement, bpmnFactory);
-console.log(consolidator);
+//console.log(consolidator);
 
         commands.push(cmdHelper.addAndRemoveElementsFromList(
           element,
