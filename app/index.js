@@ -1,6 +1,7 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
 import propertiesPanelModule from 'bpmn-js-properties-panel';
+import TokenSimulationModule from 'bpmn-js-token-simulation';
 
 //import bpmnProviderModule from 'bpmn-js-properties-panel/lib/provider/bpmn';
 
@@ -35,7 +36,8 @@ var modeler = new BpmnModeler({
       paletteProvider: [ 'type', ResourcePaletteProvider ]
     },
    propertiesPanelModule,
-   executionPropertiesProviderModule
+   executionPropertiesProviderModule,
+   TokenSimulationModule
   ],
   moddleExtensions: {
     resource: resourcePackage,

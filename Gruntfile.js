@@ -61,6 +61,14 @@ module.exports = function(grunt) {
           }
         ]
       },
+      bpmn_js_token_simulation: {
+        files: [
+          {
+            src: resolvePath('bpmn-js-token-simulation', 'assets/css/bpmn-js-token-simulation.css'),
+            dest: 'dist/css/bpmn-js-token-simulation.css'
+          }
+        ]
+      },
       app: {
         files: [
           {
