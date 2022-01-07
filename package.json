@@ -5,7 +5,8 @@
   "main": "app/index.js",
   "scripts": {
     "all": "grunt",
-    "dev": "grunt auto-build"
+    "dev": "grunt auto-build",
+    "postinstall": "patch-package"
   },
   "author": {
     "name": "Asvin Goel"
