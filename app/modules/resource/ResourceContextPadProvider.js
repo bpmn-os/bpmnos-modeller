@@ -404,6 +404,7 @@ ContextPadProvider.prototype.getContextPadEntries = function(element) {
           title: translate('Append Resource'),
           action: {
             dragstart: appendResourceStart,
+            click: appendResource
           }
         }
       });
