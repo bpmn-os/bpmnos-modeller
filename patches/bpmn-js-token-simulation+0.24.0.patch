@@ -1,17 +1,20 @@
 diff --git a/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/PauseHandler.js b/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/PauseHandler.js
-index 2e7d232..9fea826 100644
+index 2e7d232..c38b28d 100644
 --- a/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/PauseHandler.js
 +++ b/node_modules/bpmn-js-token-simulation/lib/features/context-pads/handler/PauseHandler.js
-@@ -9,6 +9,13 @@ export default function PauseHandler(simulator) {
+@@ -9,6 +9,16 @@ export default function PauseHandler(simulator) {
  }
  
  PauseHandler.prototype.createContextPads = function(element) {
-+  if ( element.type == 'bpmn:Task' && 
++  if ( element.type == 'bpmn:ReceiveTask' || 
++       ( element.type == 'bpmn:Task' && 
 +         ( element.businessObject.type == 'Resource'  
 +           || element.businessObject.type == 'Request' 
-+           || element.businessObject.type == 'Release' )
++           || element.businessObject.type == 'Release' 
++         )
++       )
 +     ) {
-+     return;
++     return [] ;
 +  }
  
    return [
