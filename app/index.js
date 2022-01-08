@@ -171,7 +171,7 @@ if (downloadSVG) {
   });
 }
 
-// Panel separator
+// Resize propertie panel
 // A function is used for dragging and moving
 function dragElement(element, direction)
 {
@@ -180,6 +180,7 @@ function dragElement(element, direction)
     const second = document.getElementById("rightbox");
 
     element.onmousedown = onMouseDown;
+    element.ontouchstart = onTouchStart;
 
     function onMouseDown(e)
     {
@@ -203,6 +204,41 @@ function dragElement(element, direction)
         //console.log("mouse move: " + e.clientX);
         var delta = {x: e.clientX - md.e.clientX,
                      y: e.clientY - md.e.clientY};
+
+        if (direction === "H" ) // Horizontal
+        {
+            // Prevent splitter to become moved out of visible area
+            delta.x = Math.min(Math.max(delta.x, -md.firstWidth),
+                       md.secondWidth);
+		
+            element.style.left = md.offsetLeft + delta.x + "px";
+            first.style.width = (md.firstWidth + delta.x) + "px";
+            second.style.width = (md.secondWidth - delta.x) + "px";
+        }
+    }
+
+    function onTouchStart(e)
+    {
+        //console.log("touch start: " + e.clientX);
+        md = {e,
+              offsetLeft:  element.offsetLeft,
+              offsetTop:   element.offsetTop,
+              firstWidth:  first.offsetWidth,
+              secondWidth: second.offsetWidth
+             };
+
+        document.ontouchmove = onTouchMove;
+        document.ontouchend = () => {
+            //console.log("touch end");
+            document.ontouchmove = document.ontouchend = null;
+        }
+    }
+
+    function onTouchMove(e)
+    {
+        //console.log("mouse move: " + e.touches[0].clientX);
+        var delta = {x: e.touches[0].clientX - md.e.touches[0].clientX,
+                     y: e.touches[0].clientY - md.e.touches[0].clientY};
 
         if (direction === "H" ) // Horizontal
         {
