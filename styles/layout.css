@@ -41,10 +41,16 @@
     height: 100%;
 }
 
+
 .set-animation-speed {
   bottom: auto;
   top: 22px;
   left: 250px;
+}
+
+.token-simulation-scopes {
+  top: 62px;
+  left: 60px;
 }
 
 #properties-panel {
