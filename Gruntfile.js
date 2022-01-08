@@ -82,7 +82,7 @@ module.exports = function(grunt) {
       styles: {
         files: {
           'dist/css/resource.css': 'styles/resource.css',
-          'dist/css/panel.css': 'styles/panel.css'
+          'dist/css/layout.css': 'styles/layout.css'
         }
       }
     },
