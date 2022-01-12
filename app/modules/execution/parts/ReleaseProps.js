@@ -16,7 +16,7 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 
 module.exports = function(group, element, bpmnFactory, translate) {
 
-  if ( !is(element, 'bpmn:Transaction') || getBusinessObject(element).type != "Release") {
+  if ( !is(element, 'bpmn:Task') || getBusinessObject(element).type != "Release") {
     return;
   }
 
