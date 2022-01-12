@@ -16,7 +16,7 @@ var extensionElements = require('./ExtensionElements'), helper = require('./Help
 
 module.exports = function(group, element, bpmnFactory, translate) {
 
-  if ( !is(element, 'bpmn:Task') || getBusinessObject(element).type != "Request") {
+  if ( !is(element, 'bpmn:Transaction') || getBusinessObject(element).type != "Request") {
     return;
   }
 
@@ -143,6 +143,25 @@ module.exports = function(group, element, bpmnFactory, translate) {
           return { id: 'Id is already used.' };
         }
       }
+    }
+  }));
+
+  /// Update process entry
+  group.entries.push(entryFactory.textField(translate, {
+    id: 'update',
+    label: translate('Id of update process'),
+    modelProperty: 'update',
+    get: function(element, node) {
+      var content = getSelectedRequest(element, node) || {}; 
+      return { update: content.update };
+    },
+
+    set: function(element, properties, node) {
+      var content = getSelectedRequest(element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+    hidden: function(element, node) {
+      return !getSelectedRequest(element, node);
     }
   }));
 

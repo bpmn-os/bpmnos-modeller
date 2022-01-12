@@ -293,6 +293,11 @@
           "isAttr": true
         },
         {
+          "name": "update",
+          "type": "String",
+          "isAttr": true
+        },
+        {
           "name": "requirements",
           "type": "Requirements",
           "isMany": true
@@ -310,6 +315,11 @@
       "properties": [
         {
           "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "update",
           "type": "String",
           "isAttr": true
         },
