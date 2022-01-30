@@ -1,0 +1,45 @@
+diff --git a/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js b/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js
+index 677f85a..fe6fa57 100644
+--- a/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js
++++ b/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js
+@@ -194,11 +194,35 @@ export default function Log(
+         scope
+       });
+     } else if (is(element, 'bpmn:Task')) {
+-      this.log({
+-        text: elementName || 'Task',
+-        icon: 'bpmn-icon-task',
+-        scope
+-      });
++      const bo = getBusinessObject(element);
++      if ( bo.type == 'Request' ) {
++        this.log({
++          text: elementName || 'Request',
++          icon: 'bpmn-icon-request',
++          scope
++        });
++      }
++      else if ( bo.type == 'Release' ) {
++        this.log({
++          text: elementName || 'Release',
++          icon: 'bpmn-icon-release',
++          scope
++        });
++      }
++      else if ( bo.type == 'Resource' ) {
++        this.log({
++          text: elementName || 'Resource',
++          icon: 'bpmn-icon-resource',
++          scope
++        });
++      }
++      else {
++        this.log({
++          text: elementName || 'Task',
++          icon: 'bpmn-icon-task',
++          scope
++        });
++      }
+     } else if (is(element, 'bpmn:UserTask')) {
+       this.log({
+         text: elementName || 'User Task',
