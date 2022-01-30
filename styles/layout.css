@@ -42,13 +42,13 @@
 }
 
 
-.set-animation-speed {
+.bts-set-animation-speed {
   bottom: auto;
   top: 22px;
   left: 250px;
 }
 
-.token-simulation-scopes {
+.bts-scopes {
   top: 62px;
   left: 60px;
 }
