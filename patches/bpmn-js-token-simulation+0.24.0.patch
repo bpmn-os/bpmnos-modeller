@@ -22,7 +22,7 @@ index 2e7d232..057e8a4 100644
      this.createPauseContextPad(element)
    ];
 diff --git a/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js b/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js
-index ac0322e..80f941b 100644
+index ac0322e..6db4fc0 100644
 --- a/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js
 +++ b/node_modules/bpmn-js-token-simulation/lib/features/log/Log.js
 @@ -199,11 +199,35 @@ export default function Log(
@@ -37,21 +37,21 @@ index ac0322e..80f941b 100644
 +      const bo = getBusinessObject(element);
 +      if ( bo.type == 'Request' ) {
 +        this.log({
-+          text: elementName || 'RequestTask',
++          text: elementName || 'Request',
 +          icon: 'bpmn-icon-request',
 +          scope
 +        });
 +      }
 +      else if ( bo.type == 'Release' ) {
 +        this.log({
-+          text: elementName || 'ReleaseTask',
++          text: elementName || 'Release',
 +          icon: 'bpmn-icon-release',
 +          scope
 +        });
 +      }
 +      else if ( bo.type == 'Resource' ) {
 +        this.log({
-+          text: elementName || 'ResourceTask',
++          text: elementName || 'Resource',
 +          icon: 'bpmn-icon-resource',
 +          scope
 +        });
