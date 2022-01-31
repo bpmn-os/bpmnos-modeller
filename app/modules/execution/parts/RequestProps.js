@@ -450,7 +450,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   /// attribute key entry
   group.entries.push(entryFactory.textField(translate, {
     id: 'job-content-attribute',
-    label: translate('Attribute name of status'),
+    label: translate('Attribute name'),
     modelProperty: 'attribute',
     get: function(element, node) {
       var content = getSelectedContent(jobContentsEntry, element, node) || {}; 

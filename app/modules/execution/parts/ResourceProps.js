@@ -376,7 +376,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
 
   var jobContentsEntry = extensionElements(element, bpmnFactory, {
     id: 'job',
-    label: translate('Job content'),
+    label: translate('Expected job content'),
     modelProperty: 'id',
     prefix: 'Content',
     createExtensionElement: function(element, extensionElement, value) {
@@ -425,37 +425,6 @@ module.exports = function(group, element, bpmnFactory, translate) {
   });
   group.entries.push(jobContentsEntry);
 
-  /// attribute key entry
-   group.entries.push(entryFactory.validationAwareTextField(translate, {
-    id: 'job-attribute',
-    label: translate('Attribute'),
-    modelProperty: 'attribute',
-
-    getProperty: function(element, node) {
-      var content = getSelectedContent(element, node) || {}; 
-      return content.attribute;
-    },
-
-    setProperty: function(element, properties, node) {
-      var content = getSelectedContent(element, node);
-      return cmdHelper.updateBusinessObject(element, content, properties);
-    },
-
-    hidden: function(element, node) {
-      return !getSelectedContent(element, node);
-    },
-
-    validate: function(element, values, node) {
-      var content = getSelectedContent(element, node) || {};
-      if (content) {
-        var attributeValue = values.attribute;
-        if (!attributeValue || attributeValue.trim() === '') {
-          return { attribute: 'Attribute must not be empty.' };
-        }
-      }
-    }
-  }));
-
   // Content key entry
    group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'job-key',
@@ -487,6 +456,36 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
+  /// attribute name entry
+   group.entries.push(entryFactory.validationAwareTextField(translate, {
+    id: 'job-attribute',
+    label: translate('Attribute name'),
+    modelProperty: 'attribute',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(element, node) || {}; 
+      return content.attribute;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(element, node) || {};
+      if (content) {
+        var attributeValue = values.attribute;
+        if (!attributeValue || attributeValue.trim() === '') {
+          return { attribute: 'Attribute must not be empty.' };
+        }
+      }
+    }
+  }));
 
   // Select consolidator entry
   var consolidatorEntry = entryFactory.selectBox(translate, {
