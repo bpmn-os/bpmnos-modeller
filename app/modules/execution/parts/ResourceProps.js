@@ -196,15 +196,15 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
-  // Key entry
+  // Attribute entry
   group.entries.push(entryFactory.validationAwareTextField(translate, {
-    id: 'capability-key',
-    label: translate('Key'),
-    modelProperty: 'key',
+    id: 'capability-attribute',
+    label: translate('Attribute'),
+    modelProperty: 'attribute',
 
     getProperty: function(element, node) {
       var object = getSelectedObject(element, node) || {};
-      return object.key;
+      return object.attribute;
     },
 
     setProperty: function(element, properties, node) {
@@ -219,8 +219,8 @@ module.exports = function(group, element, bpmnFactory, translate) {
     validate: function(element, values, node) {
       var object = getSelectedObject(element, node);
       if (object) {
-        if (!values.key || values.key.trim() === '') {
-          return { key: 'Key name must not be empty' };
+        if (!values.attribute || values.attribute.trim() === '') {
+          return { attribute: 'Attribute name must not be empty' };
         }
       }
     }
