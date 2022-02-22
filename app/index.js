@@ -1,19 +1,19 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
-import propertiesPanelModule from 'bpmn-js-properties-panel';
+import PropertiesPanelModule from 'bpmn-js-properties-panel';
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 
 //import bpmnProviderModule from 'bpmn-js-properties-panel/lib/provider/bpmn';
 
-//import executionPropertiesProviderModule from './modules/camunda';
-//import executionModdleDescriptor from './modules/camunda/camunda.json';
+//import ExecutionPropertiesProviderModule from './modules/camunda';
+//import ExecutionModdleDescriptor from './modules/camunda/camunda.json';
 
-import executionPropertiesProviderModule from './modules/execution';
-import executionModdleDescriptor from './modules/execution/execution.json';
+import ExecutionPropertiesProviderModule from './modules/execution';
+import ExecutionModdleDescriptor from './modules/execution/execution.json';
 
 import sampleProcess from '../resources/newDiagram.bpmn';
 
-import resourcePackage from './modules/resource/resource.json';
+import ResourcePackage from './modules/resource/resource.json';
 
 import {
   ResourceContextPadProvider,
@@ -35,13 +35,13 @@ var modeler = new BpmnModeler({
       renderer: [ 'type', ResourceRenderer ],
       paletteProvider: [ 'type', ResourcePaletteProvider ]
     },
-   propertiesPanelModule,
-   executionPropertiesProviderModule,
+   PropertiesPanelModule,
+   ExecutionPropertiesProviderModule,
    TokenSimulationModule
   ],
   moddleExtensions: {
-    resource: resourcePackage,
-    execution: executionModdleDescriptor,
+    resource: ResourcePackage,
+    execution: ExecutionModdleDescriptor,
   }
 });
 
