@@ -165,6 +165,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
+/*
   //////////////////////
   // Requirements entry
   //////////////////////
@@ -324,7 +325,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
       return !getSelectedContent(requirementsContentsEntry, element, node);
     }
   }));
-
+*/
 
   //////////////////////
   // Job content entry

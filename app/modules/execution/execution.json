@@ -209,17 +209,6 @@
       ]
     },
     {
-      "name": "Requirements", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "content",
-          "type": "Content",
-          "isMany": true
-        }
-       ]
-    },
-    {
       "name": "Job", 
       "superClass": [ "Element" ],
       "properties": [
