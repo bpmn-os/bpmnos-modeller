@@ -48,7 +48,8 @@ ResourceRenderer.prototype.drawShape = function(parentNode, element) {
   var boundary = drawRect(0, width, height, 0);
   var border = (type == 'Release') ? 4 : 2;
   if ( type == 'Resource') {
-
+    var rect = drawRect(0.45*height, width-0.9*height, height, 0);
+    svgAppend(parentNode, rect);
     var halfcircle = drawShape('path', { d: "M" + 0.45*height + ",0  a1,1 0 0,0 0," + height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
     svgAppend(parentNode, halfcircle);
     halfcircle = drawShape('path', { d: "M" + (width-0.45*height) + ",0  a1,1 0 0,1 0," + height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
