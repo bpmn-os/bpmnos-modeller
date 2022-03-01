@@ -486,7 +486,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
       }
     }
   }));
-
+/*
   // Select consolidator entry
   var consolidatorEntry = entryFactory.selectBox(translate, {
     id: 'consolidator-name',
@@ -542,9 +542,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   });
   group.entries.push(consolidatorEntry);
 
-/*
   // Consolidator group entries
-*/
   var i, groups = [];
   for (i = 0; i < consolidators.length; i++) {
      groups = groups.concat(consolidators[i].groups.filter((item) => groups.indexOf(item) < 0))
@@ -615,5 +613,5 @@ console.log(newContent);
 
   group.entries.push( groupEntry );
  } // end for
-
+*/
 };
