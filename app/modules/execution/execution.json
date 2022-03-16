@@ -220,6 +220,17 @@
        ]
     },
     {
+      "name": "Response", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        }
+       ]
+    },
+    {
       "name": "Message", 
       "superClass": [ "Element" ],
       "properties": [
@@ -287,13 +298,13 @@
           "isAttr": true
         },
         {
-          "name": "requirements",
-          "type": "Requirements",
+          "name": "job",
+          "type": "Job",
           "isMany": true
         },
         {
-          "name": "job",
-          "type": "Job",
+          "name": "response",
+          "type": "Response",
           "isMany": true
         }
        ]
@@ -351,6 +362,16 @@
         {
           "name": "capabilities",
           "type": "Capabilities",
+          "isMany": true
+        },
+        {
+          "name": "job",
+          "type": "Job",
+          "isMany": true
+        },
+        {
+          "name": "response",
+          "type": "Response",
           "isMany": true
         }
        ]

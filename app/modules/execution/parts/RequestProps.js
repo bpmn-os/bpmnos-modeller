@@ -379,7 +379,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
   });
   group.entries.push(jobContentsEntry);
 
-  // Content ID entry
+  // Job content ID entry
   group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'job-content-id',
     label: translate('Content Id'),
@@ -417,7 +417,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
-  // Content key entry
+  // Job content key entry
   group.entries.push(entryFactory.validationAwareTextField(translate, {
     id: 'job-content-key',
     label: translate('Key'),
@@ -448,7 +448,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
-  /// attribute key entry
+  /// Job content attribute entry
   group.entries.push(entryFactory.textField(translate, {
     id: 'job-content-attribute',
     label: translate('Attribute name'),
@@ -467,7 +467,7 @@ module.exports = function(group, element, bpmnFactory, translate) {
     }
   }));
 
-  /// Content value input field
+  /// Job content value input field
   group.entries.push(entryFactory.textField(translate, {
     id: 'job-content-value',
     label: translate('Value'),
@@ -483,6 +483,158 @@ module.exports = function(group, element, bpmnFactory, translate) {
     },
     hidden: function(element, node) {
       return !getSelectedContent(jobContentsEntry, element, node);
+    }
+  }));
+
+  //////////////////////
+  // Response content entry
+  //////////////////////
+  var responseContentsEntry = extensionElements(element, bpmnFactory, {
+    id: 'response',
+    label: translate('Expected response content'),
+    modelProperty: 'id',
+    prefix: 'Content',
+    createExtensionElement: function(element, extensionElement, value, node) {
+      var commands = [];
+      var request = getSelectedRequest(element, node);
+      var containerElement = (request.response || [])[0];
+      if (!containerElement) {
+        containerElement = elementHelper.createElement('execution:Response', {}, request, bpmnFactory);
+        commands.push(cmdHelper.addAndRemoveElementsFromList(
+          element,
+          request,
+          'response',
+          'request',
+          [containerElement],
+          []
+        ));
+      }
+
+      var content = elementHelper.createElement('execution:Content', { id: value }, containerElement, bpmnFactory);
+        commands.push(cmdHelper.addElementsTolist(element, containerElement, 'content', [ content ]));
+
+      return commands;
+    },
+    removeExtensionElement: function(element, extensionElement, value, idx, node) {
+      var commands = [];
+      var request = getSelectedRequest(element, node);
+      var containerElement = (request.response || [])[0];
+      var item = containerElement.content[idx];
+      if (containerElement.content.length < 2) {
+        commands.push(cmdHelper.removeElementsFromList(element, request, 'response', null, [containerElement]));
+      } else {
+        commands.push(cmdHelper.removeElementsFromList(element, containerElement, 'content', null, [item]));
+      }
+
+      return commands;
+    },
+    getExtensionElements: function(element, node) {
+      var request = getSelectedRequest(element, node) || {};
+      return ((request.response || [])[0] || {}).content;
+    },
+    hideExtensionElements: function(element, node) {
+      return !getSelectedRequest(element, node);
+    }
+  });
+  group.entries.push(responseContentsEntry);
+
+  // Response content ID entry
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
+    id: 'response-content-id',
+    label: translate('Content Id'),
+    modelProperty: 'id',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node) || {}; 
+      return content.id;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(responseContentsEntry, element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node) || {};
+      if (content) {
+        var IdValue = values.id;
+        if (!IdValue || IdValue.trim() === '') {
+          return { id: 'Id must not be empty.' };
+        }
+        var message = helper.getObjectList(element,'execution:Response')
+        var existingId = find(message, function(f) {
+          return f !== content && f.id === IdValue;
+        });
+        if (existingId) {
+          return { id: 'Id is already used.' };
+        }
+      }
+    }
+  }));
+
+  // Response content key entry
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
+    id: 'response-content-key',
+    label: translate('Key'),
+    modelProperty: 'key',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node) || {}; 
+      return content.key;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(responseContentsEntry, element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node) || {};
+      if (content) {
+        var keyValue = values.key;
+        if (!keyValue || keyValue.trim() === '') {
+          return { key: 'Key must not be empty.' };
+        }
+      }
+    }
+  }));
+
+  // Response content attribute entry
+  group.entries.push(entryFactory.validationAwareTextField(translate, {
+    id: 'response-content-attribute',
+    label: translate('Attribute name'),
+    modelProperty: 'attribute',
+
+    getProperty: function(element, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node) || {}; 
+      return content.attribute;
+    },
+
+    setProperty: function(element, properties, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node);
+      return cmdHelper.updateBusinessObject(element, content, properties);
+    },
+
+    hidden: function(element, node) {
+      return !getSelectedContent(responseContentsEntry, element, node);
+    },
+
+    validate: function(element, values, node) {
+      var content = getSelectedContent(responseContentsEntry, element, node) || {};
+      if (content) {
+        var attributeValue = values.attribute;
+        if (!attributeValue || attributeValue.trim() === '') {
+          return { attribute: 'Attribute must not be empty.' };
+        }
+      }
     }
   }));
 
