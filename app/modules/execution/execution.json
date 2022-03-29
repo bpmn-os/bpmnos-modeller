@@ -272,6 +272,16 @@
       "superClass": [ "Element" ],
       "properties": [
          {
+          "name": "status",
+          "type": "Status",
+          "isMany": true
+        },
+         {
+          "name": "restrictions",
+          "type": "Restrictions",
+          "isMany": true
+        },
+         {
           "name": "request",
           "type": "Request",
           "isMany": true

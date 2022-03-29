@@ -19,7 +19,9 @@ var statusProps = require('./parts/StatusProps'),
     timerProps = require('./parts/TimerProps'),
     requestProps = require('./parts/RequestProps'),
     releaseProps = require('./parts/ReleaseProps'),
-    resourceProps = require('./parts/ResourceProps');
+    resourceProps = require('./parts/ResourceProps'),
+    allocationStatusProps = require('./parts/AllocationStatusProps'),
+    allocationRestrictionProps = require('./parts/AllocationRestrictionProps');
 
 var getBusinessObject = require('bpmn-js/lib/util/ModelUtil').getBusinessObject;
 
@@ -53,12 +55,23 @@ function createStatusTabGroups(element, bpmnFactory, elementRegistry, translate)
     label: translate('Status'),
     entries: []
   };
-  var statusOptions;
-
   statusProps(statusGroup, element, bpmnFactory, translate);
 
   return [
     statusGroup
+  ];
+}
+
+function createAllocationStatusTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var allocationStatusGroup = {
+    id: 'allocation-status-group',
+    label: translate('Status (Allocations)'),
+    entries: []
+  };
+  allocationStatusProps(allocationStatusGroup, element, bpmnFactory, translate);
+
+  return [
+    allocationStatusGroup
   ];
 }
 
@@ -68,8 +81,6 @@ function createDataTabGroups(element, bpmnFactory, elementRegistry, translate) {
     label: translate('Data'),
     entries: []
   };
-  var dataOptions;
-
   dataProps(dataGroup, element, bpmnFactory, translate);
 
   return [
@@ -101,6 +112,19 @@ function createRestrictionsTabGroups(element, bpmnFactory, elementRegistry, tran
 
   return [
     restrictionsGroup
+  ];
+}
+
+function createAllocationRestrictionsTabGroups(element, bpmnFactory, elementRegistry, translate) {
+  var allocationRestrictionsGroup = {
+    id : 'allocation-restrictions-group',
+    label : translate('Restrictions (Allocations)'),
+    entries: []
+  };
+  allocationRestrictionProps(allocationRestrictionsGroup, element, bpmnFactory, translate);
+
+  return [
+    allocationRestrictionsGroup
   ];
 }
 
@@ -204,6 +228,12 @@ function ExecutionPropertiesProvider(
       groups: createStatusTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
+    var allocationStatusTab = {
+      id: 'allocation-status',
+      label: translate('Status (Allocations)'),
+      groups: createAllocationStatusTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
     var dataTab = {
       id: 'data',
       label: translate('Data'),
@@ -220,6 +250,12 @@ function ExecutionPropertiesProvider(
       id: 'restrictions',
       label: translate('Restrictions'),
       groups: createRestrictionsTabGroups(element, bpmnFactory, elementRegistry, translate)
+    };
+
+    var allocationRestrictionsTab = {
+      id: 'allocation-restrictions',
+      label: translate('Restrictions (Allocations)'),
+      groups: createAllocationRestrictionsTabGroups(element, bpmnFactory, elementRegistry, translate)
     };
 
     var messageTab = {
@@ -261,7 +297,9 @@ function ExecutionPropertiesProvider(
       resourceTab,
       dataTab,
       statusTab,
+      allocationStatusTab,
       restrictionsTab,
+      allocationRestrictionsTab,
       operatorsTab,
     ];
   };
