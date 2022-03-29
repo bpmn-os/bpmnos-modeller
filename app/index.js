@@ -22,6 +22,8 @@ import {
 } from './modules/resource';
 
 
+var modelName = 'diagram';
+
 var modeler = new BpmnModeler({
   container: '#canvas',
   propertiesPanel: {
@@ -146,6 +148,7 @@ if (uploadBPMN) {
     };
 
     reader.readAsText(event.target.files[0]);
+    modelName = event.target.files[0].name.split('.')[0];
   });
 }
 
@@ -154,24 +157,25 @@ var downloadSVG = document.getElementById('js-download-svg');
 
 if (downloadBPMN) {
   downloadBPMN.addEventListener('click', function() {
-    modeler.saveXML({ format: true }, function(err, xml) {
-      downloadXML('diagram.bpmn', xml);
-      console.log(xml);
-    });
+
+    modeler.saveXML().then( function(model) {
+      downloadXML(modelName + '.bpmn', model.xml);
+      console.log(model.xml);
+    } );
     return false;
   });
 }
 if (downloadSVG) {
   downloadSVG.addEventListener('click', function() {
     modeler.saveSVG({}, function(err, svg) {
-      downloadXML('diagram.svg', svg);
+      downloadXML(modelName + '.svg', svg);
       console.log(svg);
     });
     return false;
   });
 }
 
-// Resize propertie panel
+// Resize properties panel
 // A function is used for dragging and moving
 function dragElement(element, direction)
 {
