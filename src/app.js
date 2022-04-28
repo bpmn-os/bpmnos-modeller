@@ -1,26 +1,20 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
-import PropertiesPanelModule from 'bpmn-js-properties-panel';
+
+import { BpmnPropertiesPanelModule /*, BpmnPropertiesProviderModule*/ } from 'bpmn-js-properties-panel';
+
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 
-//import bpmnProviderModule from 'bpmn-js-properties-panel/lib/provider/bpmn';
 
-//import ExecutionPropertiesProviderModule from './modules/camunda';
-//import ExecutionModdleDescriptor from './modules/camunda/camunda.json';
 
-import ExecutionPropertiesProviderModule from './modules/execution';
+import ExecutionPropertiesProviderModule from './modules/execution/';
 import ExecutionModdleDescriptor from './modules/execution/execution.json';
 
-import sampleProcess from '../resources/newDiagram.bpmn';
+import sampleProcess from './newDiagram.bpmn';
 
-import ResourcePackage from './modules/resource/resource.json';
+import ResourceModdleDescriptor from './modules/resource/resource.json';
 
-import {
-  ResourceContextPadProvider,
-  ResourcePaletteProvider,
-  ResourceRenderer
-} from './modules/resource';
-
+import ResourceExtensionModule from './modules/resource';
 
 var modelName = 'diagram';
 
@@ -31,18 +25,14 @@ var modeler = new BpmnModeler({
   },
   keyboard: { bindTo: document },
   additionalModules: [
-    {
-      __init__: [ 'contextPadProvider', 'renderer', 'paletteProvider', ],
-      contextPadProvider: [ 'type', ResourceContextPadProvider ],
-      renderer: [ 'type', ResourceRenderer ],
-      paletteProvider: [ 'type', ResourcePaletteProvider ]
-    },
-   PropertiesPanelModule,
+   ResourceExtensionModule,
+   BpmnPropertiesPanelModule,
+//   BpmnPropertiesProviderModule,
    ExecutionPropertiesProviderModule,
    TokenSimulationModule
   ],
   moddleExtensions: {
-    resource: ResourcePackage,
+    resource: ResourceModdleDescriptor,
     execution: ExecutionModdleDescriptor,
   }
 });

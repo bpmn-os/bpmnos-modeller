@@ -1,39 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>bpmn-js modeler demo</title>
+  <title>bpmn-js modeler</title>
   <meta charset="utf-8"/>
-  <link rel="stylesheet" href="css/diagram-js.css" />
-  <link rel="stylesheet" href="vendor/bpmn-font/css/bpmn-embedded.css" />
-  <link rel="stylesheet" href="css/bpmn-js-token-simulation.css" />
-  <link rel="stylesheet" href="css/resource.css" />
-  <link rel="stylesheet" href="css/layout.css" />
-  <link rel="stylesheet" href="css/app.css" />
+
+  <link rel="stylesheet" href="vendor/bpmn-js/diagram-js.css" />
+  <link rel="stylesheet" href="vendor/bpmn-js/bpmn-js.css" />
+  <link rel="stylesheet" href="vendor/bpmn-js/bpmn-font/css/bpmn-embedded.css" />
+  <link rel="stylesheet" href="vendor/bpmn-js-properties-panel/properties-panel.css" />
+  <link rel="stylesheet" href="vendor/bpmn-js-token-simulation/bpmn-js-token-simulation.css" />
+  <link rel="stylesheet" href="modules/resource/resource.css" />
+
+  <link rel="stylesheet" href="app.css" />
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
 <style></style>
 </head>
 <body>
-<!--
-  <div class="content with-diagram" id="js-drop-zone">
-
-    <div class="message intro">
-      <div class="note">
-        Drop BPMN diagram from your desktop or <a id="js-create-diagram" href>create a new diagram</a> to get started.
-      </div>
-    </div>
-
-    <div class="message error">
-      <div class="note">
-        <p>Ooops, we could not display the BPMN 2.0 diagram.</p>
-
-        <div class="details">
-          <span>Import Error Details</span>
-          <pre></pre>
-        </div>
-      </div>
-    </div>
-  </div>
--->
 <div class="container">
   <div id="leftbox"> 
     <div class="canvas" id="canvas"></div>
@@ -73,7 +55,7 @@
     <div class="properties-panel-parent" id="properties-panel"></div>
   </div>
 </div>
-  <script src="index.js"></script>
+  <script src="app.js"></script>
 
 <script>
 
