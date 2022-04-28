@@ -28,7 +28,7 @@ ResourceRenderer.$inject = [ 'eventBus', 'styles' ];
 
 
 ResourceRenderer.prototype.canRender = function(element) {
-  if (!is(element, 'bpmn:Task')) {
+  if (!is(element, 'bpmn:Activity')) {
     return;
   }
 

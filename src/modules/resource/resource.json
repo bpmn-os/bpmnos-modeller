@@ -7,8 +7,8 @@
   },
   "types": [
     {
-      "name": "ResourceTask",
-      "extends": [ "bpmn:Task" ],
+      "name": "ResourceActivity",
+      "extends": [ "bpmn:Activity" ],
       "properties": [
         {
           "name": "type",
