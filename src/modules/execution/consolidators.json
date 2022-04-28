@@ -1,4 +1,0 @@
-[
-   { "name": "None", "value": "none", "groups": [], "title": "No consolidation" },
-   { "name": "Default", "value" : "default", "groups": [ "unique", "cumulative" ], "title": "Consolidates request having the same attributes in the 'unique' group and determines the cumulative value for attributes in the 'cumulative' group" }
-]

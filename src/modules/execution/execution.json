@@ -19,17 +19,6 @@
        ]
     },
     {
-      "name": "Data", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "attribute",
-          "type": "Attribute",
-          "isMany": true
-        }
-       ]
-    },
-    {
       "name": "Attribute",
       "superClass": [ "Element" ],
       "properties": [
@@ -108,6 +97,11 @@
       "properties": [
         {
           "name": "name",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "attribute",
           "type": "String",
           "isAttr": true
         },
@@ -235,6 +229,11 @@
       "superClass": [ "Element" ],
       "properties": [
         {
+          "name": "parameter",
+          "type": "Parameter",
+          "isMany": true
+        },
+        {
           "name": "content",
           "type": "Content",
           "isMany": true
@@ -271,16 +270,6 @@
       "name": "Allocations", 
       "superClass": [ "Element" ],
       "properties": [
-         {
-          "name": "status",
-          "type": "Status",
-          "isMany": true
-        },
-         {
-          "name": "restrictions",
-          "type": "Restrictions",
-          "isMany": true
-        },
          {
           "name": "request",
           "type": "Request",
@@ -345,36 +334,6 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "persist",
-          "type": "Boolean",
-          "isAttr": true
-        },
-        {
-          "name": "default",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "prepare",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "service",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "finish",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "capabilities",
-          "type": "Capabilities",
-          "isMany": true
-        },
-        {
           "name": "job",
           "type": "Job",
           "isMany": true
@@ -385,50 +344,6 @@
           "isMany": true
         }
        ]
-    },
-    {
-      "name": "Capabilities", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "restriction",
-          "type": "Restriction",
-          "isMany": true
-        }
-      ]
-    },
-    {
-      "name": "Consolidator", 
-      "superClass": [ "Element" ],
-      "properties": [
-       {
-          "name": "id",
-          "type": "String",
-          "isAttr": true
-       },
-       {
-          "name": "group",
-          "type": "Group",
-          "isMany": true
-        }
-      ]
-    },
-    {
-      "name": "Group", 
-      "superClass": [ "Element" ],
-      "properties": [
-       {
-          "name": "id",
-          "type": "String",
-          "isAttr": true
-       },
-       {
-          "name": "content",
-          "type": "Content",
-          "isMany": true
-        }
-      ]
     }
- ],
-  "emumerations": [ ]
+  ]
 }
