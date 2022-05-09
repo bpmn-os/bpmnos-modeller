@@ -12,7 +12,6 @@ import {
 import { without } from 'min-dash';
 
 export default function RequestEntries(props) {
-
   const {
     idPrefix,
     request
@@ -25,14 +24,23 @@ export default function RequestEntries(props) {
     request
    },
    {
-    id: idPrefix + '-job-content',
-    component: JobContent,
+    id: idPrefix + '-request-message',
+    name: "Request message",
+    component: MessageContent,
     idPrefix,
     request
    },
    {
-    id: idPrefix + '-response-content',
-    component: ResponseContent,
+    id: idPrefix + '-ready-message',
+    name: "Ready message",
+    component: MessageContent,
+    idPrefix,
+    request
+   },
+   {
+    id: idPrefix + '-start-message',
+    name: "Start message",
+    component: MessageContent,
     idPrefix,
     request
    }
@@ -76,9 +84,10 @@ function RequestId(props) {
   });
 }
 
-function JobContent(props) {
+function MessageContent(props) {
   const {
     id,
+    name,
     element,
     request
   } = props;
@@ -87,21 +96,17 @@ function JobContent(props) {
   const commandStack = useService('commandStack');
   const translate = useService('translate');
 
-  const jobs = request.get('job');
+  const messages = request.get('message') || [];
+  let message = messages.find(message => message.name == name);
 
-  let content = [];
-  if ( jobs && jobs.length > 0 ) {
-    content = jobs[0].content;
-  }
+  let content = (message || {}).content || [];
 
   function addContent() {
     let commands = [];
 
-    // ensure 'execution:Job'
-    let jobs = request.get('job');
-    var job;
-    if ( !jobs || jobs.length == 0) {
-      job = createElement('execution:Job', {}, request, bpmnFactory);
+    // ensure 'execution:Message' with given name
+    if (!message) {
+      message = createElement('execution:Message', { name }, request, bpmnFactory);
 
       commands.push({
         cmd: 'element.updateModdleProperties',
@@ -109,26 +114,21 @@ function JobContent(props) {
           element,
           moddleElement: request,
           properties: {
-            job: [ ...request.get('job'), job ]
+            message: [ ...messages, message ]
           }
         }
       });
-
     }
-    else {
-      job = jobs[0];
-    }
-
     // create content
-    const content = createElement('execution:Content', { id: nextId('Content_') }, job, bpmnFactory);
+    const content = createElement('execution:Content', { id: nextId('Content_') }, message, bpmnFactory);
 
     commands.push({
       cmd:'element.updateModdleProperties', 
       context: {
         element,
-        moddleElement: job,
+        moddleElement: message,
         properties: {
-          content: [ ...job.get('content'), content ]
+          content: [ ...message.get('content'), content ]
         }
       }
     });
@@ -139,12 +139,11 @@ function JobContent(props) {
   }
 
   function removeContent(content) {
-    let job = request.get('job')[0];
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: job,
+      moddleElement: message,
       properties: {
-        content: without(job.get('content'), content)
+        content: without(message.get('content'), content)
       }
     });
   }
@@ -158,7 +157,7 @@ function JobContent(props) {
   return <ListEntry
     id={ id }
     element={ element }
-    label={ translate('Job content') }
+    label={ translate(name) }
     items={ content }
     component={ Content }
     onAdd={ addContent }
@@ -167,97 +166,4 @@ function JobContent(props) {
     autoFocusEntry
   />;
 }
-
-function ResponseContent(props) {
-  const {
-    id,
-    element,
-    request
-  } = props;
-
-  const bpmnFactory = useService('bpmnFactory');
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-
-  const responses = request.get('response');
-
-  let content = [];
-  if ( responses && responses.length > 0 ) {
-    content = responses[0].content;
-  }
-
-  function addContent() {
-    let commands = [];
-
-    // ensure 'execution:Response'
-    let responses = request.get('response');
-    var response;
-    if ( !responses || responses.length == 0) {
-      response = createElement('execution:Response', {}, request, bpmnFactory);
-
-      commands.push({
-        cmd: 'element.updateModdleProperties',
-        context: {
-          element,
-          moddleElement: request,
-          properties: {
-            response: [ ...request.get('response'), response ]
-          }
-        }
-      });
-
-    }
-    else {
-      response = responses[0];
-    }
-
-    // create content
-    const content = createElement('execution:Content', { id: nextId('Content_') }, response, bpmnFactory);
-
-    commands.push({
-      cmd:'element.updateModdleProperties', 
-      context: {
-        element,
-        moddleElement: response,
-        properties: {
-          content: [ ...response.get('content'), content ]
-        }
-      }
-    });
-
-    // commit all updates
-    commandStack.execute('properties-panel.multi-command-executor', commands);
-
-  }
-
-  function removeContent(content) {
-    let response = request.get('response')[0];
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: response,
-      properties: {
-        content: without(response.get('content'), content)
-      }
-    });
-  }
-
-  function compareKey(content, anotherContent) {
-    const [ key = '', anotherKey = '' ] = [ content.key, anotherContent.key ];
-
-    return key === anotherKey ? 0 : key > anotherKey ? 1 : -1;
-  }
-
-  return <ListEntry
-    id={ id }
-    element={ element }
-    label={ translate('Response') }
-    items={ content }
-    component={ Content }
-    onAdd={ addContent }
-    onRemove={ removeContent }
-    compareFn={ compareKey }
-    autoFocusEntry
-  />;
-}
-
 

@@ -1,4 +1,4 @@
-import { ListEntry } from '@bpmn-io/properties-panel';
+import { ListEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
 
@@ -25,6 +25,12 @@ export default function MessageEntries(props) {
 
   const entries = [
    {
+    id: idPrefix + '-name',
+    component: MessageName,
+    idPrefix,
+    message
+   },
+   {
     id: idPrefix + '-parameters',
     component: MessageParameters,
     idPrefix,
@@ -39,6 +45,48 @@ export default function MessageEntries(props) {
   ];
 
   return entries;
+}
+
+function MessageName(props) {
+  const {
+    idPrefix,
+    element,
+    message
+  } = props;
+
+  const bpmnFactory = useService('bpmnFactory');
+  const commandStack = useService('commandStack');
+  const translate = useService('translate');
+  const debounce = useService('debounceInput');
+
+  const setValue = (value) => {
+
+    // ensure 'execution:Message'
+    let message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: message,
+      properties: {
+        name: value
+      }
+    });
+  };
+
+  const getValue = () => {
+    if ( message ) {
+      return message.name;
+    }
+  };
+
+  return TextFieldEntry({
+    element: message,
+    id: idPrefix + '-name',
+    label: translate('Name'),
+    getValue,
+    setValue,
+    debounce
+  });
 }
 
 function MessageParameters(props) {

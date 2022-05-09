@@ -25,7 +25,6 @@ export function ensureCustomItem(bpmnFactory, commandStack, element, type = unde
 
     // (1) ensure 'bpmn:ExtensionElements'
     if (!extensionElements) {
-console.log("createElement");
       extensionElements = createElement(
         'bpmn:ExtensionElements',
         { values: [] },

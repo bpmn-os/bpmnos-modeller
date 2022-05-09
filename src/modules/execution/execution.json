@@ -203,31 +203,14 @@
       ]
     },
     {
-      "name": "Job", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "content",
-          "type": "Content",
-          "isMany": true
-        }
-       ]
-    },
-    {
-      "name": "Response", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "content",
-          "type": "Content",
-          "isMany": true
-        }
-       ]
-    },
-    {
       "name": "Message", 
       "superClass": [ "Element" ],
       "properties": [
+        {
+          "name": "name",
+          "type": "Name",
+          "isAttr": true
+        },
         {
           "name": "parameter",
           "type": "Parameter",
@@ -292,18 +275,8 @@
           "isAttr": true
         },
         {
-          "name": "update",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "job",
-          "type": "Job",
-          "isMany": true
-        },
-        {
-          "name": "response",
-          "type": "Response",
+          "name": "message",
+          "type": "Message",
           "isMany": true
         }
        ]
@@ -318,32 +291,21 @@
           "isAttr": true
         },
         {
-          "name": "update",
+          "name": "request",
           "type": "String",
           "isAttr": true
         },
         {
-          "name": "request",
-          "type": "String",
-          "isAttr": true
+          "name": "message",
+          "type": "Message",
+          "isMany": true
         }
        ]
     },
     {
       "name": "Resource", 
       "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "job",
-          "type": "Job",
-          "isMany": true
-        },
-        {
-          "name": "response",
-          "type": "Response",
-          "isMany": true
-        }
-       ]
+      "properties": []
     }
   ]
 }
