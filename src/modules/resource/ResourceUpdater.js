@@ -55,7 +55,7 @@ subProcessModeler.importXML(subProcessTemplates).then( function() {
 /**
  * A handler responsible for creating children to a resource subprocess when this is created
  */
-export default function ResourceUpdater(eventBus, modeling, elementFactory, elementRegistry) {
+export default function ResourceUpdater(eventBus, modeling, elementFactory, elementRegistry, editorActions, contextPad, dragging, directEditing) {
 
   CommandInterceptor.call(this, eventBus);
 
@@ -84,21 +84,121 @@ export default function ResourceUpdater(eventBus, modeling, elementFactory, elem
         element,
 //      element: parent, 
 //      element: targetElementRegistry.get('Templates'),
-      point: {x:100, y:100}
+      point: {x:0, y:0}
     };
 
     // paste tree
     targetCopyPaste.paste(pasteContext);
 
     modeling.resizeShape(element, { width, height, x, y } );
-
   }
+
   this.postExecute([
     'shape.create'
   ], ifNewResourceActivity(createChildren));
+
+
+  /// Disable modeling within resource activities
+
+  let modelingDisabled = false;
+
+  eventBus.on("root.set", function(event) {
+    console.log("Root set",event.element);
+    const bo = event.element.businessObject;
+    console.log(bo);
+    modelingDisabled = ( bo && ( bo.type == 'Resource' || bo.type == 'Request' || bo.type == 'Release' ) );
+  });
+
+  /// From:  bpmn-js-token-simulation/lib/features/disable-modeling/DisableModeling.js
+  function intercept(obj, fnName, cb) {
+    const fn = obj[fnName];
+    obj[fnName] = function() {
+      return cb.call(this, fn, arguments);
+    };
+  }
+
+  function ignoreIfModelingDisabled(obj, fnName) {
+    intercept(obj, fnName, function(fn, args) {
+      if (modelingDisabled) {
+        return;
+      }
+
+      return fn.apply(this, args);
+    });
+  }
+
+  function throwIfModelingDisabled(obj, fnName) {
+    intercept(obj, fnName, function(fn, args) {
+      if (modelingDisabled) {
+        throw new Error('model is read-only');
+      }
+
+      return fn.apply(this, args);
+    });
+  }
+
+  ignoreIfModelingDisabled(contextPad, 'open');
+
+  ignoreIfModelingDisabled(dragging, 'init');
+
+  ignoreIfModelingDisabled(directEditing, 'activate');
+
+  ignoreIfModelingDisabled(dragging, 'init');
+
+  ignoreIfModelingDisabled(directEditing, 'activate');
+
+  throwIfModelingDisabled(modeling, 'moveShape');
+  throwIfModelingDisabled(modeling, 'updateAttachment');
+  throwIfModelingDisabled(modeling, 'moveElements');
+  throwIfModelingDisabled(modeling, 'moveConnection');
+  throwIfModelingDisabled(modeling, 'layoutConnection');
+  throwIfModelingDisabled(modeling, 'createConnection');
+  throwIfModelingDisabled(modeling, 'createShape');
+  throwIfModelingDisabled(modeling, 'createLabel');
+  throwIfModelingDisabled(modeling, 'appendShape');
+  throwIfModelingDisabled(modeling, 'removeElements');
+  throwIfModelingDisabled(modeling, 'distributeElements');
+  throwIfModelingDisabled(modeling, 'removeShape');
+  throwIfModelingDisabled(modeling, 'removeConnection');
+  throwIfModelingDisabled(modeling, 'replaceShape');
+  throwIfModelingDisabled(modeling, 'pasteElements');
+  throwIfModelingDisabled(modeling, 'alignElements');
+  throwIfModelingDisabled(modeling, 'resizeShape');
+  throwIfModelingDisabled(modeling, 'createSpace');
+  throwIfModelingDisabled(modeling, 'updateWaypoints');
+  throwIfModelingDisabled(modeling, 'reconnectStart');
+  throwIfModelingDisabled(modeling, 'reconnectEnd');
+
+  intercept(editorActions, 'trigger', function(fn, args) {
+    const action = args[0];
+
+    if (modelingDisabled && isAnyAction([
+      'undo',
+      'redo',
+      'copy',
+      'paste',
+      'removeSelection',
+      'spaceTool',
+      'lassoTool',
+      'globalConnectTool',
+      'distributeElements',
+      'alignElements',
+      'directEditing',
+    ], action)) {
+      return;
+    }
+
+    return fn.apply(this, args);
+  });
+
+  // helpers //////////
+
+  function isAnyAction(actions, action) {
+    return actions.indexOf(action) > -1;
+  }
 
 }
 
 inherits(ResourceUpdater, CommandInterceptor);
 
-ResourceUpdater.$inject = [ 'eventBus', 'modeling', 'elementFactory', 'elementRegistry' ];
+ResourceUpdater.$inject = [ 'eventBus', 'modeling', 'elementFactory', 'elementRegistry', 'editorActions',  'contextPad', 'dragging', 'directEditing' ];
