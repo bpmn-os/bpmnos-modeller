@@ -103,9 +103,7 @@ export default function ResourceUpdater(eventBus, modeling, elementFactory, elem
   let modelingDisabled = false;
 
   eventBus.on("root.set", function(event) {
-    console.log("Root set",event.element);
     const bo = event.element.businessObject;
-    console.log(bo);
     modelingDisabled = ( bo && ( bo.type == 'Resource' || bo.type == 'Request' || bo.type == 'Release' ) );
   });
 
