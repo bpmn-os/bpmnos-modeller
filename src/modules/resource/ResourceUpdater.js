@@ -11,7 +11,7 @@ function ifNewResourceActivity(fn) {
   return function(event) {
     var context = event.context,
         element = context.shape;
-    if ( event.command == 'shape.create' && is(element, 'bpmn:SubProcess') && 
+    if ( (event.command == 'shape.create' || event.command == 'shape.resize')  && is(element, 'bpmn:SubProcess') && 
          ( element.businessObject.type == 'Resource' || element.businessObject.type == 'Request' || element.businessObject.type == 'Release' )
        ) {
       fn(event);
@@ -51,6 +51,9 @@ subProcessModeler.importXML(subProcessTemplates).then( function() {
 
 });
 
+function preventResize(evt) {
+  evt.context.newBounds = { x: evt.context.shape.x, y: evt.context.shape.y, width: evt.context.shape.width, height: evt.context.shape.height };
+}
 
 /**
  * A handler responsible for creating children to a resource subprocess when this is created
@@ -74,12 +77,6 @@ export default function ResourceUpdater(eventBus, modeling, elementFactory, elem
 //    const parent = targetElementRegistry.get(businessObject.id + '_plane');
 // console.log(parent);
 
-    // remember size of collapsed subprocess
-    const x = element.x,
-        y = element.y,
-        height = element.height, 
-        width = element.width;
-
     const pasteContext = {
         element,
 //      element: parent, 
@@ -89,9 +86,11 @@ export default function ResourceUpdater(eventBus, modeling, elementFactory, elem
 
     // paste tree
     targetCopyPaste.paste(pasteContext);
-
-    modeling.resizeShape(element, { width, height, x, y } );
   }
+
+  this.preExecute([
+    'shape.resize'
+  ], ifNewResourceActivity(preventResize));
 
   this.postExecute([
     'shape.create'
