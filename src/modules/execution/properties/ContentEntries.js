@@ -152,7 +152,7 @@ function ContentAttribute(props) {
   };
 
   const getValue = () => {
-    return content.key;
+    return content.attribute;
   };
 
   return TextFieldEntry({
