@@ -16,6 +16,7 @@ import { messageHandler } from './properties/MessageHandler';
 import { timerHandler } from './properties/TimerHandler';
 import { requestHandler } from './properties/RequestHandler';
 import { releaseHandler } from './properties/ReleaseHandler';
+import { ConsumableProperty } from './properties/ConsumableProperty';
 
 const LOW_PRIORITY = 500;
 
@@ -88,7 +89,8 @@ function GeneralGroup(element) {
     ...NameProps({ element }),
     ...IdProps({ element }),
     ...ProcessProps({ element }),
-    ...ExecutableProps({ element })
+    ...ExecutableProps({ element }),
+    ...ConsumableProperty({ element })
   ];
 
   return {
