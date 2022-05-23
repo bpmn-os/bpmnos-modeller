@@ -224,21 +224,24 @@ function RestrictionMinInclusive(props) {
           element,
           moddleElement: restriction,
           properties: {
-            minInclusive: without(restriction.get('minInclusive'), minInclusive)
+            minInclusive: restriction.get('minInclusive').pop()
           }
         }
       });
     }
-    // add  minInclusive element
-    minInclusive = createElement('execution:MinInclusive', { value }, status, bpmnFactory);
 
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: restriction,
-      properties: {
-        minInclusive: [ ...restriction.get('minInclusive'), minInclusive ]
-      }
-    });
+    if ( value ) {
+      // add  minInclusive element
+      minInclusive = createElement('execution:MinInclusive', { value }, status, bpmnFactory);
+
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: restriction,
+        properties: {
+          minInclusive: [ ...restriction.get('minInclusive'), minInclusive ]
+        }
+      });
+    }
   };
 
   const getValue = () => {
@@ -271,30 +274,34 @@ function RestrictionMaxInclusive(props) {
 
   const setValue = (value) => {
     let commands = [];
-    // delete prior maxInclusive element
     let maxInclusive = restriction.get('maxInclusive');
+
     if ( maxInclusive ) {
+      // delete prior maxInclusive element
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
           moddleElement: restriction,
           properties: {
-            maxInclusive: without(restriction.get('maxInclusive'), maxInclusive)
+            maxInclusive: restriction.get('maxInclusive').pop()
           }
         }
       });
     }
-    // add  maxInclusive element
-    maxInclusive = createElement('execution:MaxInclusive', { value }, status, bpmnFactory);
 
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: restriction,
-      properties: {
-        maxInclusive: [ ...restriction.get('maxInclusive'), maxInclusive ]
-      }
-    });
+    if ( value ) {
+      // add  maxInclusive element
+      maxInclusive = createElement('execution:MaxInclusive', { value }, status, bpmnFactory);
+
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: restriction,
+        properties: {
+          maxInclusive: [ ...restriction.get('maxInclusive'), maxInclusive ]
+        }
+      });
+    }
   };
 
   const getValue = () => {
