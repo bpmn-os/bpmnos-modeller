@@ -6,6 +6,7 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 import subProcessTemplates from './SubProcessTemplates.bpmn';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
+import ExecutionModdleDescriptor from '../../modules/execution/execution.json';
 
 function ifNewResourceActivity(fn) {
   return function(event) {
@@ -28,7 +29,12 @@ function selectChildren(elementRegistry, id) {
   return elements;
 }
 
-const subProcessModeler = new BpmnModeler();
+const subProcessModeler = new BpmnModeler({  
+  moddleExtensions: {
+    execution: ExecutionModdleDescriptor,
+  }
+});
+
 subProcessModeler.importXML(subProcessTemplates).then( function() {
     const sourceClipboard = subProcessModeler.get('clipboard'),
           sourceCopyPaste = subProcessModeler.get('copyPaste'),
@@ -79,8 +85,6 @@ export default function ResourceUpdater(eventBus, modeling, elementFactory, elem
 
     const pasteContext = {
         element,
-//      element: parent, 
-//      element: targetElementRegistry.get('Templates'),
       point: {x:0, y:0}
     };
 
