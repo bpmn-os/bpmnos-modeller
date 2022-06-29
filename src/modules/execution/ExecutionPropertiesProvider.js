@@ -89,8 +89,8 @@ function GeneralGroup(element) {
     ...NameProps({ element }),
     ...IdProps({ element }),
     ...ProcessProps({ element }),
-    ...ExecutableProps({ element }),
-    ...ConsumableProperty({ element })
+    ...ExecutableProps({ element })
+//    ...ConsumableProperty({ element })
   ];
 
   return {
