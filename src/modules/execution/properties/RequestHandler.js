@@ -69,13 +69,48 @@ function addFactory({ bpmnFactory, commandStack, element }) {
     // create 'execution:Request'
     let request = createElement('execution:Request', { id: nextId('Request_') }, allocations, bpmnFactory);
 
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: allocations,
-      properties: {
-        request: [ ...allocations.get('request'), request ]
+    let commands = [];
+
+    commands.push({
+      cmd: 'element.updateModdleProperties', 
+      context: {
+        element,
+        moddleElement: allocations,
+        properties: {
+          request: [ ...allocations.get('request'), request ]
+        }
       }
     });
+
+    let message = createElement('execution:Message', { name: 'Request message' }, request, bpmnFactory);
+    commands.push({
+      cmd: 'element.updateModdleProperties',
+      context: {
+        element,
+        moddleElement: request,
+        properties: {
+          message: [ ...request.get('message'), message ]
+        }
+      }
+    });
+
+    // create request message content
+    const content1 = createElement('execution:Content', { id: nextId('Content_'), key: 'ClientID', attribute: 'instance' }, message, bpmnFactory);
+    const content2 = createElement('execution:Content', { id: nextId('Content_'), key: 'RequestID', value: request.id }, message, bpmnFactory);
+
+    commands.push({
+      cmd: 'element.updateModdleProperties', 
+      context: {
+        element,
+        moddleElement: message,
+        properties: {
+          content: [ ...message.get('content'), content1, content2 ]
+        }
+      }
+    });
+
+    // commit all updates
+    commandStack.execute('properties-panel.multi-command-executor', commands);
   };
 }
 

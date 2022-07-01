@@ -61,13 +61,40 @@ function RequestId(props) {
   const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: request,
-      properties: {
-        id: value
+    let commands = [];
+    commands.push({
+      cmd: 'element.updateModdleProperties', 
+      context: {
+        element,
+        moddleElement: request,
+        properties: {
+          id: value
+        }
       }
     });
+
+    const message = request.get('message').find( message => message.name == 'Request message' );
+    if ( message ) {
+
+      const content = message.get('content').find( content => content.key == 'RequestID' );
+      if ( content ) {
+        commands.push({
+          cmd: 'element.updateModdleProperties', 
+          context: {
+            element,
+            moddleElement: content,
+            properties: {
+              value
+            }
+          }
+        });
+      }
+    }
+
+    // commit all updates
+    commandStack.execute('properties-panel.multi-command-executor', commands);
+
+
   };
 
   const getValue = () => {
