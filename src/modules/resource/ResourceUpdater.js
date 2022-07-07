@@ -129,7 +129,7 @@ export default function ResourceUpdater(eventBus, modeling, /*elementFactory,*/ 
     }
   });
 
-  let preventEditing = false;
+  let preventEditing = true;
   if ( preventEditing ) {
     /// Disable modeling within resource activities
     let modelingDisabled = false;
