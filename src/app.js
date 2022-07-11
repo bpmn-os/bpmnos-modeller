@@ -1,7 +1,7 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
 
-import { BpmnPropertiesPanelModule /*, BpmnPropertiesProviderModule*/ } from 'bpmn-js-properties-panel';
+import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel';
 
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 
@@ -27,7 +27,6 @@ var modeler = new BpmnModeler({
   additionalModules: [
    ResourceExtensionModule,
    BpmnPropertiesPanelModule,
-//   BpmnPropertiesProviderModule,
    ExecutionPropertiesProviderModule,
    TokenSimulationModule
   ],
@@ -47,7 +46,7 @@ var HIGH_PRIORITY = 100000;
 modeler.on('element.contextmenu', HIGH_PRIORITY, function(event) {
   element = event.element;
 
-  var businessObject = getBusinessObject(element);
+  var businessObject = getBusinessObject(element) || {};
 
   if (!businessObject.type) {
     return;
