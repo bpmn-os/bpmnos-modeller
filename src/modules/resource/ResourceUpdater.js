@@ -14,8 +14,8 @@ function ifNewResourceActivity(fn) {
   return function(event) {
     var context = event.context,
         element = context.shape;
-    if ( event.command == 'shape.create'  && is(element, 'bpmn:SubProcess') && 
-         ( element.businessObject.type == 'Resource' || element.businessObject.type == 'Request' || element.businessObject.type == 'Release' )
+    if ( event.command == 'shape.create'  && is(element, 'bpmn:SubProcess') && !element.children.length && 
+         ( element.businessObject.type == 'Resource' || element.businessObject.type == 'Request' || element.businessObject.type == 'Release' ) 
        ) {
       fn(event);
     }
