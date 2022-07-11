@@ -14,7 +14,7 @@ function ifNewResourceActivity(fn) {
   return function(event) {
     var context = event.context,
         element = context.shape;
-    if ( (event.command == 'shape.create' || event.command == 'shape.resize')  && is(element, 'bpmn:SubProcess') && 
+    if ( event.command == 'shape.create'  && is(element, 'bpmn:SubProcess') && 
          ( element.businessObject.type == 'Resource' || element.businessObject.type == 'Request' || element.businessObject.type == 'Release' )
        ) {
       fn(event);
@@ -98,19 +98,17 @@ export default function ResourceUpdater(eventBus, modeling, /*elementFactory,*/ 
     // put into clipboard
     targetClipboard.set(children[businessObject.type]);
 
-
+    const planeElement = elementRegistry.getAll().find(function(el) {
+      // determine plane element to paste children
+      return el.id == element.id + '_plane';
+    });
     const pasteContext = {
-      element,
-      point: {x:0, y:0}
+      element: planeElement,
+      point: {x: 500, y: 200}
     };
-
     // paste tree
     targetCopyPaste.paste(pasteContext);
   }
-
-  this.preExecute([
-    'shape.resize'
-  ], ifNewResourceActivity(preventResize));
 
   this.postExecute([
     'shape.create'
