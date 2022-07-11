@@ -82,7 +82,7 @@ function replaceIds(obj) {
 /**
  * A handler responsible for creating children to a resource subprocess when this is created
  */
-export default function ResourceUpdater(eventBus, modeling, /*elementFactory,*/ elementRegistry, editorActions, contextPad, dragging, directEditing) {
+export default function ResourceUpdater(eventBus, modeling, editorActions, contextPad, dragging, directEditing) {
 
   CommandInterceptor.call(this, eventBus);
 
@@ -98,7 +98,7 @@ export default function ResourceUpdater(eventBus, modeling, /*elementFactory,*/ 
     // put into clipboard
     targetClipboard.set(children[businessObject.type]);
 
-    const planeElement = elementRegistry.getAll().find(function(el) {
+    const planeElement = targetElementRegistry.getAll().find(function(el) {
       // determine plane element to paste children
       return el.id == element.id + '_plane';
     });
@@ -225,4 +225,4 @@ export default function ResourceUpdater(eventBus, modeling, /*elementFactory,*/ 
 
 inherits(ResourceUpdater, CommandInterceptor);
 
-ResourceUpdater.$inject = [ 'eventBus', 'modeling', /*'elementFactory',*/ 'elementRegistry', 'editorActions',  'contextPad', 'dragging', 'directEditing' ];
+ResourceUpdater.$inject = [ 'eventBus', 'modeling', 'editorActions',  'contextPad', 'dragging', 'directEditing' ];
