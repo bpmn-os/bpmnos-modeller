@@ -127,7 +127,8 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
     }
   });
 
-  let preventEditing = true;
+  const urlParams = new URLSearchParams(window.location.search);
+  let preventEditing = !urlParams.has('unlocked');
   if ( preventEditing ) {
     /// Disable modeling within resource activities
     let modelingDisabled = false;
