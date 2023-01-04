@@ -108,6 +108,17 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
     };
     // paste tree
     targetCopyPaste.paste(pasteContext);
+
+    // color all copied elements
+    var ids = []
+    for (var i=0; i < planeElement.di.planeElement.length; i++) {
+      ids.push(planeElement.di.planeElement[i].bpmnElement.id);
+    }
+   var elementsToColor = targetElementRegistry.getAll().filter( el => ids.find(id => id == el.id) );
+    modeling.setColor(elementsToColor, {
+      fill: '#FAFAFA'
+    });
+
   }
 
   this.postExecute([
