@@ -84,6 +84,9 @@ function replaceIds(obj) {
  */
 export default function ResourceUpdater(eventBus, modeling, editorActions, contextPad, dragging, directEditing) {
 
+  const urlParams = new URLSearchParams(window.location.search);
+  let preventEditing = !urlParams.has('unlocked');
+
   CommandInterceptor.call(this, eventBus);
 
   function createChildren(evt) {
@@ -109,16 +112,17 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
     // paste tree
     targetCopyPaste.paste(pasteContext);
 
-    // color all copied elements
-    var ids = []
-    for (var i=0; i < planeElement.di.planeElement.length; i++) {
-      ids.push(planeElement.di.planeElement[i].bpmnElement.id);
+    if ( preventEditing ) {
+      // color all copied elements
+      var ids = []
+      for (var i=0; i < planeElement.di.planeElement.length; i++) {
+        ids.push(planeElement.di.planeElement[i].bpmnElement.id);
+      }
+      var elementsToColor = targetElementRegistry.getAll().filter( el => ids.find(id => id == el.id) );
+      modeling.setColor(elementsToColor, {
+        fill: '#FAFAFA'
+      });
     }
-   var elementsToColor = targetElementRegistry.getAll().filter( el => ids.find(id => id == el.id) );
-    modeling.setColor(elementsToColor, {
-      fill: '#FAFAFA'
-    });
-
   }
 
   this.postExecute([
@@ -138,8 +142,6 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
     }
   });
 
-  const urlParams = new URLSearchParams(window.location.search);
-  let preventEditing = !urlParams.has('unlocked');
   if ( preventEditing ) {
     /// Disable modeling within resource activities
     let modelingDisabled = false;
