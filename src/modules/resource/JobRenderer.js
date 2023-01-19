@@ -44,7 +44,7 @@ export default function JobRenderer(
 
     var bpmnShape = this.drawBpmnShape(parentNode, shape);
 
-    var rect = drawRect(x+width/2-3, y-7.5, 6, 6, 1);
+    var rect = drawRect(x+width/2-4.5, y-7.5, 9, 6, 1);
     svgAppend(parentNode, rect);
 
     var rect = drawRect(x, y, width, height, 0);
