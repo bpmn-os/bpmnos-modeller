@@ -34,7 +34,7 @@ ResourceRenderer.prototype.canRender = function(element) {
 
   var businessObject = getBusinessObject(element);
 
-  return businessObject.type;
+  return (businessObject.type == 'Resource' || businessObject.type == 'Request' || businessObject.type == 'Release');
 };
 
 ResourceRenderer.prototype.drawShape = function(parentNode, element) {

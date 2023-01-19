@@ -7,16 +7,11 @@
   },
   "types": [
     {
-      "name": "ResourceActivity",
+      "name": "ResourceExtension",
       "extends": [ "bpmn:Activity" ],
       "properties": [
         {
           "name": "type",
-          "isAttr": true,
-          "type": "String"
-        },
-        {
-          "name": "consumable",
           "isAttr": true,
           "type": "String"
         }

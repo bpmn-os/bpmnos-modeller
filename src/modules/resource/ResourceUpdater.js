@@ -8,6 +8,7 @@ import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 import subProcessTemplates from './SubProcessTemplates.bpmn';
 import BpmnModeler from 'bpmn-js/lib/Modeler';
+import ResourceModdleDescriptor from '../../modules/resource/resource.json';
 import ExecutionModdleDescriptor from '../../modules/execution/execution.json';
 
 function ifNewResourceActivity(fn) {
@@ -33,6 +34,7 @@ function selectChildren(elementRegistry, id) {
 
 const subProcessModeler = new BpmnModeler({  
   moddleExtensions: {
+    resource: ResourceModdleDescriptor,
     execution: ExecutionModdleDescriptor,
   }
 });
