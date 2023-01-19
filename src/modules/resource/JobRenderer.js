@@ -40,7 +40,7 @@ export default function JobRenderer(
   this.drawShape = function(parentNode, shape) {
     var width = 14,
         height = 9;
-    var x = 9 , y = 14;
+    var x = 9 , y = 11;
 
     var bpmnShape = this.drawBpmnShape(parentNode, shape);
 
@@ -58,11 +58,11 @@ export default function JobRenderer(
     line =  drawCustomShape('line', { x1: x, y1: y+height, x2: (x+width), y2: y+height, stroke: 'black', strokeWidth: 1, fill: 'white' } );
     svgAppend(parentNode, line);
  
-    var circle = drawCircle(x+2, y+height/2);
+    var circle = drawCircle(x+1.5, y+height/2);
     svgAppend(parentNode, circle);
     circle = drawCircle(x+width/2+1, y+height/2);
     svgAppend(parentNode, circle);
-    circle = drawCircle(x+width, y+height/2);
+    circle = drawCircle(x+width+0.5, y+height/2);
     svgAppend(parentNode, circle);
 
     return bpmnShape;
