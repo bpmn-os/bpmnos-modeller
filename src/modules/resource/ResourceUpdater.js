@@ -18,7 +18,7 @@ function ifNewResourceActivity(fn) {
     if ( event.command == 'shape.create'  && is(element, 'bpmn:SubProcess') && !element.children.length && 
          ( element.businessObject.type == 'Resource' || element.businessObject.type == 'Request' || element.businessObject.type == 'Release' ) 
        ) {
-      fn(event);
+      fn(element);
     }
   };
 }
@@ -91,10 +91,8 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
 
   CommandInterceptor.call(this, eventBus);
 
-  function createChildren(evt) {
-    const context = evt.context,
-          element = context.shape,
-          businessObject = element.businessObject;
+  function createChildren(element) {
+    const businessObject = element.businessObject;
 
     const targetClipboard = modeler.get('clipboard'),
           targetCopyPaste = modeler.get('copyPaste'),
@@ -114,6 +112,9 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
     // paste tree
     targetCopyPaste.paste(pasteContext);
 
+    // clear clipboard
+    targetClipboard.clear();
+
     if ( preventEditing ) {
       // color all copied elements
       var ids = []
@@ -130,7 +131,6 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
   this.postExecute([
     'shape.create'
   ], ifNewResourceActivity(createChildren));
-
 
   eventBus.on('moddleCopy.canCopyProperty', function(context) {
     var property = context.property;

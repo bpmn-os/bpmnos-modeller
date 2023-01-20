@@ -1,5 +1,9 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
+import {
+  getBusinessObject,
+  is
+} from 'bpmn-js/lib/util/ModelUtil';
 
 import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel';
 

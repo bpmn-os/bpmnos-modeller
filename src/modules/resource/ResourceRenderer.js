@@ -20,6 +20,43 @@ import {
 
 export default function ResourceRenderer(eventBus) {
   BaseRenderer.call(this, eventBus, 2000);
+/*
+  function renderLabel(parentGfx, label, options) {
+    options = assign({
+      size: {
+        width: 100
+      }
+    }, options);
+
+    var text = textRenderer.createText(label || '', options);
+
+    svgClasses(text).add('djs-label');
+
+    svgAppend(parentGfx, text);
+console.log(text);
+    return text;
+  }
+
+  function renderExternalLabel(parentGfx, element) {
+    var box = {
+      width: 90,
+      height: 10,
+      x: element.width / 2 + element.x,
+      y: element.height /2 + element.y
+    };
+    return renderLabel(parentGfx, getLabel(element), {
+      box: box,
+      fitBox: true,
+      style: assign(
+          {},
+          textRenderer.getExternalStyle(),
+          {
+            fill: element.color
+          }
+      )
+    });
+  }
+*/
 }
 
 inherits(ResourceRenderer, BaseRenderer);
@@ -28,7 +65,7 @@ ResourceRenderer.$inject = [ 'eventBus', 'styles' ];
 
 
 ResourceRenderer.prototype.canRender = function(element) {
-  if (!is(element, 'bpmn:Activity')) {
+  if (!is(element, 'bpmn:Activity') || element.type == 'label') {
     return;
   }
 
@@ -38,6 +75,11 @@ ResourceRenderer.prototype.canRender = function(element) {
 };
 
 ResourceRenderer.prototype.drawShape = function(parentNode, element) {
+/*
+  if ( element.type == 'label' ) {
+      return renderExternalLabel(parentNode, element);
+  }
+*/
   var businessObject = element.businessObject,
       type = businessObject.type;
 
@@ -71,26 +113,6 @@ ResourceRenderer.prototype.drawShape = function(parentNode, element) {
     svgAppend(parentNode, rect);
     var rect = drawRect(width/3, width/3, height, border);
     svgAppend(parentNode, rect);
-  }
-
-  if (businessObject.name) {
-    var lines = businessObject.name.trim().split('\n');
-    var textArea = svgCreate('text');
-    var text = '';
-    var fontsize = 12;
-    for (var i = 0; i < lines.length; ++i) {
-      text += '<tspan x="' + width/2 + '" y="-' + ((lines.length-i)*fontsize-fontsize/2) + '">' + lines[i] + '</tspan>';
-    }
-    innerSVG(textArea,text);
-    svgAttr(textArea, {
-      fontFamily: 'Arial, sans-serif',
-      fontSize: fontsize,
-      textAnchor: 'middle',
-      width: width,
-      x: width,
-      y: 0
-    });
-    svgAppend(parentNode, textArea);
   }
 
   return boundary;
