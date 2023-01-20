@@ -1,15 +1,12 @@
 import BpmnModeler from 'bpmn-js/lib/Modeler';
 
 import {
-  getBusinessObject,
   is
 } from 'bpmn-js/lib/util/ModelUtil';
 
 import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel';
 
 import TokenSimulationModule from 'bpmn-js-token-simulation';
-
-
 
 import ExecutionPropertiesProviderModule from './modules/execution/';
 import ExecutionModdleDescriptor from './modules/execution/execution.json';
@@ -48,14 +45,6 @@ var element;
 var HIGH_PRIORITY = 100000;
 
 modeler.on('element.contextmenu', HIGH_PRIORITY, function(event) {
-  element = event.element;
-
-  var businessObject = getBusinessObject(element) || {};
-
-  if (!businessObject.type) {
-    return;
-  }
-
   event.originalEvent.preventDefault();
   event.originalEvent.stopPropagation();
 
