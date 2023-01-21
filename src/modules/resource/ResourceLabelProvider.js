@@ -10,7 +10,7 @@ import {
 /**
  * Provide external labels for custom elements.
  */
-export default function ResourceLabelProvider(eventBus, modeling, elementRegistry) {
+export default function ResourceLabelProvider(eventBus, modeling, textRenderer, elementRegistry) {
 
   eventBus.on("commandStack.shape.create.preExecute", function (event) {
     var context = event.context,
@@ -84,7 +84,7 @@ export default function ResourceLabelProvider(eventBus, modeling, elementRegistr
       // create external label
       var bounds = { width: 90, height: 14 };
       if ( element.businessObject.name ) {
-        bounds = modeler.get('textRenderer').getExternalLabelBounds({}, element.businessObject.name);
+        bounds = textRenderer.getExternalLabelBounds({}, element.businessObject.name);
       }
       bounds.x = element.x + element.width/2 - bounds.width/2;
       bounds.y = element.y + element.height + 16 - bounds.height/2;
@@ -123,6 +123,7 @@ export default function ResourceLabelProvider(eventBus, modeling, elementRegistr
 ResourceLabelProvider.$inject = [
   'eventBus',
   'modeling',
+  'textRenderer',
   'elementRegistry'
 ];
 
