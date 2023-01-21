@@ -85,6 +85,31 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
     }
   });
 
+  eventBus.on('element.changed', function(event) {
+    var element = event.element;
+    if ( is(element, 'bpmn:Activity') && 
+         ( element.businessObject.type == 'Resource' 
+           || element.businessObject.type == 'Request' 
+           || element.businessObject.type == 'Release' 
+         ) && element.type != 'label' && element.businessObject.name && !element.label
+       ) {
+      // create external label
+      var bounds = { width: 90, height: 14 };
+      if ( element.businessObject.name ) {
+        bounds = textRenderer.getExternalLabelBounds({}, element.businessObject.name);
+      }
+      bounds.x = element.x + element.width/2 - bounds.width/2;
+      bounds.y = element.y + element.height + 16 - bounds.height/2;
+
+      element.di.label = { bounds };
+      element.label = modeling.createLabel(element, bounds, {
+          id: element.businessObject.id + '_label',
+          businessObject: element.businessObject
+        }
+      );
+    }
+  });
+  
   eventBus.on('element.dblclick', 99999, function(event) {
     var element = event.element;
     if ( is(element, 'bpmn:Activity') && 
