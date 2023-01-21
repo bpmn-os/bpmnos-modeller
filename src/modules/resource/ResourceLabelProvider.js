@@ -31,7 +31,11 @@ export default function ResourceLabelProvider(eventBus, modeling, elementRegistr
   eventBus.on('commandStack.shape.create.postExecute', function(event) {
     var context = event.context,
         element = context.shape;
-    if ( element.type == 'label' && !element.businessObject
+    if ( element.type == 'label' && !element.businessObject &&
+         ( element.oldBusinessObject.type == 'Resource' 
+           || element.oldBusinessObject.type == 'Request' 
+           || element.oldBusinessObject.type == 'Release' 
+         )
        ) {
       // remove and re-create external label
       const businessObject = element.oldBusinessObject;
@@ -68,6 +72,27 @@ export default function ResourceLabelProvider(eventBus, modeling, elementRegistr
     }
   });
 
+  eventBus.on('element.dblclick', 99999, function(event) {
+    var element = event.element;
+    if ( is(element, 'bpmn:Activity') && 
+         ( element.businessObject.type == 'Resource' 
+           || element.businessObject.type == 'Request' 
+           || element.businessObject.type == 'Release' 
+         ) 
+         && element.type != 'label' && !element.label ) {
+      // create external label
+      element.name = undefined;
+      element.label = modeling.createLabel(element, 
+        { x: element.x + element.width/2, 
+          y: element.y + element.height + 16
+        }, {
+          id: element.businessObject.id + '_label',
+          businessObject: element.businessObject
+        }
+      );
+      return false;
+    }
+  });
 
   eventBus.on('shape.added', function(event) {
     var element = event.element;
@@ -76,16 +101,11 @@ export default function ResourceLabelProvider(eventBus, modeling, elementRegistr
            || element.businessObject.type == 'Request' 
            || element.businessObject.type == 'Release' 
          ) 
-         && element.type != 'label' && !element.label 
+         && element.type != 'label' && !element.label
          && element.di && element.di.label && element.di.label.bounds
        ) {
       // create external label
-      modeling.createLabel(element, 
-        { x: element.di.label.bounds.x, 
-          y: element.di.label.bounds.y,
-          width: element.di.label.bounds.width,
-          height: element.di.label.bounds.height
-        }, {
+      modeling.createLabel(element, element.di.label.bounds, {
           id: element.businessObject.id + '_label',
           businessObject: element.businessObject,
         }
