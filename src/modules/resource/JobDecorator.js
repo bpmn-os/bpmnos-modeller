@@ -14,7 +14,7 @@ import {
 } from 'bpmn-js/lib/util/ModelUtil';
 
 
-export default function JobRenderer(
+export default function JobDecorator(
     config, eventBus, styles,
     pathMap, canvas, textRenderer) {
 
@@ -106,12 +106,12 @@ function drawCircle(x, y) {
   return circle;
 }
 
-inherits(JobRenderer, BpmnRenderer);
+inherits(JobDecorator, BpmnRenderer);
 
-JobRenderer.prototype.drawBpmnShape = BpmnRenderer.prototype.drawShape;
+JobDecorator.prototype.drawBpmnShape = BpmnRenderer.prototype.drawShape;
 
 
-JobRenderer.$inject = [
+JobDecorator.$inject = [
   'config.bpmnRenderer',
   'eventBus',
   'styles',
