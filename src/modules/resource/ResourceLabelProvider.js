@@ -72,6 +72,19 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
     }
   });
 
+  eventBus.on('commandStack.shape.delete.postExecute', function(event) {
+    var context = event.context,
+        element = context.shape;
+    if ( is(element, 'bpmn:Activity') && 
+         ( element.businessObject.type == 'Resource' 
+           || element.businessObject.type == 'Request' 
+           || element.businessObject.type == 'Release' 
+         ) 
+         && element.type == 'label') {
+      element.businessObject.name = undefined;
+    }
+  });
+
   eventBus.on('element.dblclick', 99999, function(event) {
     var element = event.element;
     if ( is(element, 'bpmn:Activity') && 
