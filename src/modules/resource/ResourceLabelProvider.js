@@ -80,16 +80,22 @@ export default function ResourceLabelProvider(eventBus, modeling, elementRegistr
            || element.businessObject.type == 'Release' 
          ) 
          && element.type != 'label' && !element.label ) {
+
       // create external label
-      element.name = undefined;
-      element.label = modeling.createLabel(element, 
-        { x: element.x + element.width/2, 
-          y: element.y + element.height + 16
-        }, {
+      var bounds = { width: 90, height: 14 };
+      if ( element.businessObject.name ) {
+        bounds = modeler.get('textRenderer').getExternalLabelBounds({}, element.businessObject.name);
+      }
+      bounds.x = element.x + element.width/2 - bounds.width/2;
+      bounds.y = element.y + element.height + 16 - bounds.height/2;
+
+      element.di.label = { bounds };
+      element.label = modeling.createLabel(element, bounds, {
           id: element.businessObject.id + '_label',
           businessObject: element.businessObject
         }
       );
+
       return false;
     }
   });
