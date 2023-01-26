@@ -123,7 +123,7 @@ export default function ResourceUpdater(eventBus, modeling, editorActions, conte
       }
       var elementsToColor = targetElementRegistry.getAll().filter( el => ids.find(id => id == el.id) );
       modeling.setColor(elementsToColor, {
-        fill: '#FAFAFA'
+        fill: '#F3F3F3'
       });
     }
   }
