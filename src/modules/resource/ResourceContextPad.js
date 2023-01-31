@@ -20,7 +20,7 @@ export default class ResourceContextPad {
   }
 
   getContextPadEntries(element) {
-    if ( !is(element,"bpmn:FlowNode") || element.type == 'label' ) {
+    if ( !is(element,"bpmn:FlowNode") || element.type == 'label' || is(element,"bpmn:EndEvent") ) {
 	return;
     }
     const {
