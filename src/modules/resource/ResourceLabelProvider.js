@@ -117,6 +117,7 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
            || element.businessObject.type == 'Request' 
            || element.businessObject.type == 'Release' 
          ) && element.type != 'label' && element.businessObject.name && !element.label
+           && !element.id.endsWith('_plane') 
        ) {
       // create external label
       var bounds = { width: 90, height: 14 };
