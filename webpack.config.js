@@ -34,7 +34,8 @@ module.exports = {
           "css-loader",
           "less-loader",
         ],
-      },      {
+      },
+      {
         test: /\.bpmn$/,
         use: {
           loader: 'raw-loader'
