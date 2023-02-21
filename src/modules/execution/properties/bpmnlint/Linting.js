@@ -45,7 +45,9 @@ function LintingToggle() {
 
   eventBus.on('linting.toggle', function(event) {
     const lintingToggle = document.getElementById("lintingToggle");
-    lintingToggle.checked = event.active;
+    if ( lintingToggle ) {
+      lintingToggle.checked = event.active;
+    }
   });
 
   return toggleSwitch;
@@ -59,32 +61,35 @@ function Issues() {
 
   const warning = '<span class="icon warning"> <svg width="12" height="12" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="margin: auto;text-align: center;">  <path d="m256 323.95c-45.518 0-82.419 34.576-82.419 77.229 0 42.652 36.9 77.229 82.419 77.229 45.518 0 82.419-34.577 82.419-77.23 0-42.652-36.9-77.229-82.419-77.229zm-80.561-271.8 11.61 204.35c.544 9.334 8.78 16.64 18.755 16.64h100.39c9.975 0 18.211-7.306 18.754-16.64l11.611-204.35c.587-10.082-7.98-18.56-18.754-18.56h-123.62c-10.775 0-19.34 8.478-18.753 18.56z" fill="currentColor"></path></svg></span>&nbsp;';
 
-  const issueList = (
+  const issueListView = (
     <div id="issueList"/>
   );
 
   eventBus.on('linting.toggle', function(event) {
     if ( !event.active ) {
-      document.getElementById("issueList").innerHTML = "";
+      const issueList = document.getElementById("issueList");
+      if ( issueList ) {
+        issueList.innerHTML = "";
+      }
     }
   });
 
   eventBus.on('linting.completed', function(event) {
-console.log("Issues:",event.issues);
-//    const issues = document.getElementById("issueList");
-    let html = '';
-    for (var key in event.issues) {
-console.log(event.issues[key]);
-      html += html = '<div class="bjsl-issues"><div class="bjsl-current-element-issues"><div style="font-weight:bold;">' + key + '</div><ul>';
-      for (var i = 0; i < event.issues[key].length; i++) {
-        html += '<li class="' + event.issues[key][i].category + '">' + (event.issues[key][i].category == 'error' ? error : warning) + event.issues[key][i].message + '</li>';
+    const issueList = document.getElementById("issueList");
+    if ( issueList ) {
+      let html = '';
+      for (var key in event.issues) {
+        html += html = '<div class="bjsl-issues"><div class="bjsl-current-element-issues"><div style="font-weight:bold;">' + key + '</div><ul>';
+        for (var i = 0; i < event.issues[key].length; i++) {
+          html += '<li class="' + event.issues[key][i].category + '">' + (event.issues[key][i].category == 'error' ? error : warning) + event.issues[key][i].message + '</li>';
+        }
+        html += '</ul></div></div></div>';
       }
-      html += '</ul></div></div></div>';
+      issueList.innerHTML = html;
     }
-    document.getElementById("issueList").innerHTML = html;
   });
 
-  return issueList;
+  return issueListView;
 }
 
 

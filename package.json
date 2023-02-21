@@ -28,7 +28,7 @@
     "@bpmn-io/properties-panel": "^1.4.0",
     "bpmn-js-properties-panel": "^1.17.2",
     "bpmn-js-bpmnlint": "^0.20.1",
-    "bpmnlint-loader": "^0.1.6",
+    "bpmnlint-utils": "^1.0.2",
     "bpmn-js-token-simulation": "^0.31.0",
     "bpmn-moddle": "^8.0.0",
     "diagram-js": "^11.9.0",

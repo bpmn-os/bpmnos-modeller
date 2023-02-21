@@ -18,8 +18,7 @@ import ResourceModdleDescriptor from './modules/resource/resource.json';
 import ResourceExtensionModule from './modules/resource';
 
 import LintModule from 'bpmn-js-bpmnlint';
-
-import bpmnlintConfig from './.bpmnlintrc';
+import getLintConfig from './modules/linting';
 
 var modelName = 'diagram';
 
@@ -29,7 +28,7 @@ var modeler = new BpmnModeler({
     parent: '#properties-panel'
   },
   linting: {
-    bpmnlint: bpmnlintConfig
+    bpmnlint: getLintConfig()
   },
   keyboard: { bindTo: document },
   additionalModules: [
