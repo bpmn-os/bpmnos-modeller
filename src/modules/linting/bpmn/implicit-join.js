@@ -1,9 +1,9 @@
 const {
-  isAny
+  is
 } = require('bpmnlint-utils');
 
 /**
- * A rule that checks that no fake join is modeled by attempting
+ * A rule that checks that no implicit join is modeled by attempting
  * to give a task or event join semantics.
  *
  * Users should model a parallel joining gateway
@@ -13,17 +13,14 @@ module.exports = function() {
 
   function check(node, reporter) {
 
-    if (!isAny(node, [
-      'bpmn:Task',
-      'bpmn:Event'
-    ])) {
+    if ( is(node, 'bpmn:Gateway') || !is(node,'bpmn:FlowNode') ) {
       return;
     }
 
     const incoming = node.incoming || [];
 
     if (incoming.length > 1) {
-      reporter.report(node.id, 'Incoming flows do not join');
+      reporter.report(node.id, 'Incoming flows join implicitly');
     }
   }
 

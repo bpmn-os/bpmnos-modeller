@@ -13,6 +13,25 @@ function getProcess(node) {
   return;
 }
 
+function requiresCheck(node) {
+  const process = getProcess(node) || {};
+  if (!process.isExecutable) {
+    return false;
+  }
+  while ( node ) {
+    if ( is(node, 'bpmn:SubProcess') ) {
+      return !node.isExpanded;
+    } 
+    node = node.$parent;
+    if ( node && is(node, 'bpmn:SubProcess') 
+         && (node.type == "Resource" || node.type == "Request" || node.type == "Release" ) 
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Create a checker that identifies unsupported elements.
  *
@@ -25,16 +44,15 @@ function unsupportedNode(description, types, property, value) {
   return function() {
     function check(node, reporter) {
       types = Array.isArray(types) ? types : [ types ];
-      let process = getProcess(node) || {};
-      if ( process.isExecutable && isAny(node, types ) ) {
+      if ( requiresCheck(node) && isAny(node, types ) ) {
         if (!property) {
-          reporter.report(node.id, description + ' not supported for executable processes');
+          reporter.report(node.id, description);
         }
         else if ( value == undefined && node[property] ) {
-          reporter.report(node.id, description + ' not supported for executable processes');
+          reporter.report(node.id, description);
         }
         else if ( value != undefined && node[property] === value ) {
-          reporter.report(node.id, description + ' not supported for executable processes');
+          reporter.report(node.id, description);
         }
       }
     }
@@ -46,5 +64,5 @@ function unsupportedNode(description, types, property, value) {
   };
 }
 
-module.exports.getProcess = getProcess;
+module.exports.requiresCheck = requiresCheck;
 module.exports.unsupportedNode = unsupportedNode;

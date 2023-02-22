@@ -1,4 +1,4 @@
-const getProcess = require('./helper').getProcess;
+const requiresCheck = require('./helper').requiresCheck;
 
 const {
   is,
@@ -11,9 +11,9 @@ const {
 module.exports = function() {
 
   function check(node, reporter) {
-    let process = getProcess(node) || {};
+    let process = requiresCheck(node) || {};
     if ( process.isExecutable && is(node, 'bpmn:Event') && node.eventDefinitions && node.eventDefinitions.length > 1) {
-      reporter.report(node.id, 'Event has multiple event definitions', [ 'eventDefinitions' ]);
+      reporter.report(node.id, 'Multiple event definitions not supported by execution engine', [ 'eventDefinitions' ]);
     }
   }
 

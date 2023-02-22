@@ -1,23 +1,19 @@
 const {
-  isAny
+  is
 } = require('bpmnlint-utils');
 
 
 /**
- * A rule that checks that no implicit split is modeled
- * starting from a task.
+ * A rule that checks that no implicit split is modeled.
  *
- * users should model the parallel splitting gateway
+ * Users should model the parallel splitting gateway
  * explicitly instead.
  */
 module.exports = function() {
 
   function check(node, reporter) {
 
-    if (!isAny(node, [
-      'bpmn:Task',
-      'bpmn:Event'
-    ])) {
+    if ( is(node, 'bpmn:Gateway') || !is(node,'bpmn:FlowNode') ) {
       return;
     }
 
@@ -28,7 +24,7 @@ module.exports = function() {
     });
 
     if (outgoingWithoutCondition.length > 1) {
-      reporter.report(node.id, 'Flow splits implicitly');
+      reporter.report(node.id, 'Outgoing flows split implicitly');
     }
   }
 
