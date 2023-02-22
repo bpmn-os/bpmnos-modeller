@@ -19,7 +19,10 @@ module.exports = function() {
       const restrictions = customElements[i].restriction;
       if ( restrictions ) {
         for (var j=0; j < restrictions.length; j++) {
-          if ( restrictions[j].attribute && status.filter(attribute => attribute.name == restrictions[j].attribute).length == 0) {
+          if ( !restrictions[j].attribute ) {
+            reporter.report(node.id, "Attribute missing for restriction '" + restrictions[j].id + "'");
+          }
+          else if ( status.filter(attribute => attribute.name == restrictions[j].attribute).length == 0) {
             reporter.report(node.id, "Restriction on undeclared attribute '" + restrictions[j].attribute + "'");
           }
         }
@@ -27,7 +30,10 @@ module.exports = function() {
       const operators = customElements[i].operator;
       if ( operators ) {
         for (var j=0; j < operators.length; j++) {
-          if ( restrictions[j].attribute && status.filter(attribute => attribute.name == operators[j].attribute).length == 0) {
+          if ( !operators[j].attribute ) {
+            reporter.report(node.id, "Attribute missing for operator '" + operators[j].id + "'");
+          }
+          else if ( status.filter(attribute => attribute.name == operators[j].attribute).length == 0) {
             reporter.report(node.id, "Operator on undeclared attribute '" + operators[j].attribute + "'");
           }
         }
