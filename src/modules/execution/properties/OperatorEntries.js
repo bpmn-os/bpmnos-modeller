@@ -90,15 +90,23 @@ function OperatorType(props) {
   } = props;
 
   const commandStack = useService('commandStack');
+  const bpmnFactory = useService('bpmnFactory');
   const translate = useService('translate');
-//  const debounce = useService('debounceInput');
 
   const setValue = (value) => {
+    const option = operatorOptions.find(op => op.value == value) || {};
+    let parameters = [];
+    if ( option.parameters ) {
+      for (var i=0; i < option.parameters.length; i++ ) {
+        parameters.push( createElement('execution:Parameter', option.parameters[i], operator, bpmnFactory) );
+      }
+    }
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: operator,
       properties: {
-        type: value
+        type: value,
+        parameter: parameters
       }
     });
   };
