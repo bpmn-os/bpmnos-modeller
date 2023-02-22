@@ -20,6 +20,9 @@ import callActivity from "./engine/call-activity";
 import complexGateway from "./engine/complex-gateway";
 import inclusiveGateway from "./engine/inclusive-gateway";
 
+import attributeRedeclared from "./execution/attribute-redeclared"; 
+import attributeUndeclared from "./execution/attribute-undeclared"; 
+import gatekeeperRestrictions from "./execution/gatekeeper-restrictions";
 
 export default function() {
   return createLintConfig({
@@ -41,7 +44,10 @@ export default function() {
         "engine/multiple-event-definitions": "error",
         "engine/call-activity": "error",
         "engine/complex-gateway": "error",
-        "engine/inclusive-gateway": "error"
+        "engine/inclusive-gateway": "error",
+        "execution/attribute-redeclared": "error",
+        "execution/attribute-undeclared": "error",
+        "execution/gatekeeper-restrictions": "error"
       },
       plugins: [
         {
@@ -70,6 +76,14 @@ export default function() {
             "call-activity": callActivity,
             "complex-gateway": complexGateway,
             "inclusive-gateway": inclusiveGateway
+          }
+        },
+        {
+          name: "execution",
+          rules: {
+            "attribute-redeclared": attributeRedeclared,
+            "attribute-undeclared": attributeUndeclared,
+            "gatekeeper-restrictions": gatekeeperRestrictions
           }
         }
       ]
