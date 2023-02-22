@@ -34,7 +34,8 @@ module.exports = {
           "css-loader",
           "less-loader",
         ],
-      },      {
+      },
+      {
         test: /\.bpmn$/,
         use: {
           loader: 'raw-loader'
@@ -64,6 +65,7 @@ module.exports = {
         { from: 'src/index.html', to: '.' },
         { from: 'node_modules/bpmn-js/dist/assets', to: 'vendor/bpmn-js/' },
         { from: 'node_modules/bpmn-js-properties-panel/dist/assets', to: 'vendor/bpmn-js-properties-panel/' },
+        { from: 'node_modules/bpmn-js-bpmnlint/dist/assets/css', to: 'vendor/bpmn-js-bpmnlint/' },
         { from: 'node_modules/bpmn-js-token-simulation/assets/css', to: 'vendor/bpmn-js-token-simulation/' },
         { from: 'src/modules/resource/css', to: 'modules/resource/' },
       ]

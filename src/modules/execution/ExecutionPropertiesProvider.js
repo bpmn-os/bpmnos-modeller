@@ -1,5 +1,7 @@
 import { Group, ListGroup } from '@bpmn-io/properties-panel';
 
+import { Linting } from './properties/bpmnlint/';
+
 import {
   ProcessProps,
   IdProps,
@@ -40,8 +42,8 @@ export default class ExecutionPropertiesProvider {
 
   getGroups(element) {
     return (groups) => {
+      groups.push(ModelGroup());
       groups.push(GeneralGroup(element));
-      groups.push(DocumentationGroup(element));
 
       EXECUTION_GROUPS.forEach( group => addGroup( group, groups, element, this._injector ) );
 
@@ -81,6 +83,18 @@ function addGroup({ label, id, handler, component }, groups, element, injector) 
   }
 }
 
+
+
+function ModelGroup() {
+  return {
+    id: 'model',
+    label: 'Model',
+    entries: [...Linting()],
+    component: Group
+  };
+
+}
+
 // from BpmnPropertiesProvider.js
 
 function GeneralGroup(element) {
@@ -89,33 +103,17 @@ function GeneralGroup(element) {
     ...NameProps({ element }),
     ...IdProps({ element }),
     ...ProcessProps({ element }),
-    ...ExecutableProps({ element })
-//    ...ConsumableProperty({ element })
-  ];
-
-  return {
-    id: 'general',
-    label: 'General',
-    entries,
-    component: Group
-  };
-
-}
-
-function DocumentationGroup(element) {
-
-  const entries = [
+    ...ExecutableProps({ element }),
     ...DocumentationProps({ element })
   ];
 
   return {
-    id: 'documentation',
-    label: 'Documentation',
+    id: 'general',
+    label: 'Element',
     entries,
     component: Group
   };
 
 }
-
 
 

@@ -9,7 +9,7 @@ import {
   add as collectionAdd
 } from 'diagram-js/lib/util/Collections';
 
-import { TextFieldEntry, isTextFieldEntryEdited } from '@bpmn-io/properties-panel';
+import { TextAreaEntry, isTextAreaEntryEdited } from '@bpmn-io/properties-panel';
 
 /*
 import {
@@ -38,7 +38,7 @@ export function NameProps(props) {
     {
       id: 'name',
       component: Name,
-      isEdited: isTextFieldEntryEdited
+      isEdited: isTextAreaEntryEdited
     }
   ];
 }
@@ -67,7 +67,8 @@ function Name(props) {
     },
     getValue: (element) => {
       return element.businessObject.name;
-    }
+    },
+    autoResize: true
   };
 
   // (2) text annotations
@@ -114,7 +115,7 @@ function Name(props) {
   }
 
 
-  return TextFieldEntry(options);
+  return TextAreaEntry(options);
 }
 
 
@@ -142,3 +143,4 @@ function createCategoryValue(definitions, bpmnFactory) {
 
   return categoryValue;
 }
+
