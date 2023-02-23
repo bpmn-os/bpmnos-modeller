@@ -1,3 +1,4 @@
+const getProcess = require('./helper').getProcess;
 const getCustomElements = require('./helper').getCustomElements;
 const getStatus = require('./helper').getStatus;
 
@@ -38,14 +39,4 @@ module.exports = function() {
 
 };
 
-// helper
 
-function getProcess(node) {
-  do {
-    if ( is(node, 'bpmn:Process') ) {
-      return node;
-    }
-    node = node.$parent;
-  } while ( node );
-  return;
-}

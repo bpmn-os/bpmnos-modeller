@@ -23,6 +23,7 @@ import inclusiveGateway from "./engine/inclusive-gateway";
 import attributeRedeclared from "./execution/attribute-redeclared"; 
 import attributeUndeclared from "./execution/attribute-undeclared"; 
 import gatekeeperRestrictions from "./execution/gatekeeper-restrictions";
+import allocation from "./execution/allocation";
 
 export default function() {
   return createLintConfig({
@@ -47,7 +48,8 @@ export default function() {
         "engine/inclusive-gateway": "error",
         "execution/attribute-redeclared": "error",
         "execution/attribute-undeclared": "error",
-        "execution/gatekeeper-restrictions": "error"
+        "execution/gatekeeper-restrictions": "error",
+        "execution/allocation": "error"
       },
       plugins: [
         {
@@ -83,7 +85,8 @@ export default function() {
           rules: {
             "attribute-redeclared": attributeRedeclared,
             "attribute-undeclared": attributeUndeclared,
-            "gatekeeper-restrictions": gatekeeperRestrictions
+            "gatekeeper-restrictions": gatekeeperRestrictions,
+            "allocation": allocation
           }
         }
       ]
