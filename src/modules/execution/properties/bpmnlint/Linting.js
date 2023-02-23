@@ -59,6 +59,7 @@ function Issues() {
   const elementRegistry = useService('elementRegistry');
   const selectionService = useService('selection');
   const canvas = useService('canvas');
+  const contextPad = useService('contextPad');
 
   const error = '<span class="icon error"> <svg width="12" height="12" version="1.1" viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="margin: auto;text-align: center;"><path d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z" fill="currentColor"></path></svg></span>&nbsp;';
 
@@ -89,13 +90,13 @@ function Issues() {
         html += '</ul></div></div></div>';
       }
       issueList.innerHTML = html;
-      let buttons = document.querySelectorAll("#issueList > .bjsl-issues");
-      for (var i = 0; i < buttons.length; i++) {
-        buttons[i].addEventListener ("click", function() {
+      for (var i = 0; i < issueList.children.length; i++) {
+        issueList.children[i].addEventListener ("click", function() {
           const element = elementRegistry.get(this.getAttribute("data-id"));
           canvas.setRootElement(canvas.findRoot(element));
-          if (element.type != 'bpmn:Process') {
-            selectionService.select(element);
+          selectionService.select(element);
+          if (element.type == 'bpmn:Process') {
+            contextPad.close(element);
           }
         });
       }
