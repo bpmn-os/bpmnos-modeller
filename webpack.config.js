@@ -63,6 +63,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: 'src/index.html', to: '.' },
+        { from: 'src/BPMNOS.svg', to: '.' },
         { from: 'node_modules/bpmn-js/dist/assets', to: 'vendor/bpmn-js/' },
         { from: 'node_modules/bpmn-js-properties-panel/dist/assets', to: 'vendor/bpmn-js-properties-panel/' },
         { from: 'node_modules/bpmn-js-bpmnlint/dist/assets/css', to: 'vendor/bpmn-js-bpmnlint/' },

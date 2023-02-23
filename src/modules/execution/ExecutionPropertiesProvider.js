@@ -1,7 +1,5 @@
 import { Group, ListGroup } from '@bpmn-io/properties-panel';
 
-import { Linting } from './properties/bpmnlint/';
-
 import {
   ProcessProps,
   IdProps,
@@ -42,7 +40,6 @@ export default class ExecutionPropertiesProvider {
 
   getGroups(element) {
     return (groups) => {
-      groups.push(ModelGroup());
       groups.push(GeneralGroup(element));
 
       EXECUTION_GROUPS.forEach( group => addGroup( group, groups, element, this._injector ) );
@@ -83,18 +80,6 @@ function addGroup({ label, id, handler, component }, groups, element, injector) 
   }
 }
 
-
-
-function ModelGroup() {
-  return {
-    id: 'model',
-    label: 'Model',
-    entries: [...Linting()],
-    component: Group
-  };
-
-}
-
 // from BpmnPropertiesProvider.js
 
 function GeneralGroup(element) {
@@ -109,7 +94,7 @@ function GeneralGroup(element) {
 
   return {
     id: 'general',
-    label: 'Element',
+    label: 'General',
     entries,
     component: Group
   };

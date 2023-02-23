@@ -19,6 +19,7 @@ import ResourceExtensionModule from './modules/resource';
 
 import LintModule from 'bpmn-js-bpmnlint';
 import getLintConfig from './modules/linting';
+import createLintControls from './modules/linting/create-lint-controls';
 
 var modelName = 'diagram';
 
@@ -43,6 +44,8 @@ var modeler = new BpmnModeler({
     execution: ExecutionModdleDescriptor,
   }
 });
+
+createLintControls(modeler);
 
 modeler.importXML(sampleProcess);
 

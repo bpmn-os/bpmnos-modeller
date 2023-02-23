@@ -1,1 +1,0 @@
-export { Linting } from './Linting';
