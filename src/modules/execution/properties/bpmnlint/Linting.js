@@ -93,9 +93,10 @@ function Issues() {
       for (var i = 0; i < buttons.length; i++) {
         buttons[i].addEventListener ("click", function() {
           const element = elementRegistry.get(this.getAttribute("data-id"));
-//console.log(element,canvas.getRootElement(element));
           canvas.setRootElement(canvas.findRoot(element));
-          selectionService.select(element);
+          if (element.type != 'bpmn:Process') {
+            selectionService.select(element);
+          }
         });
       }
     }
