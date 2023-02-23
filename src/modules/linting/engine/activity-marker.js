@@ -1,3 +1,3 @@
 const unsupportedNode = require('./helper').unsupportedNode;
 
-module.exports = unsupportedNode('Loop and multi-instance markers not supported by execution engine','bpmn:Activity', 'loopCharacteristics');
+module.exports = unsupportedNode('Loop and multi-instance markers not supported by execution engine',['bpmn:SubProcess','bpmn:Activity'], 'loopCharacteristics');

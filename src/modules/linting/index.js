@@ -16,9 +16,13 @@ import boundaryEvent from "./engine/boundary-event";
 import eventType from "./engine/event-type";
 import multipleEventDefinitions from "./engine/multiple-event-definitions";
 import eventSubprocess from "./engine/event-subprocess";
+import compensationActivity from "./engine/compensation-activity";
+
 import callActivity from "./engine/call-activity";
+import transaction from "./engine/transaction";
 import complexGateway from "./engine/complex-gateway";
 import inclusiveGateway from "./engine/inclusive-gateway";
+import conditionalFlow from "./engine/conditional-flow";
 
 import attributeRedeclared from "./execution/attribute-redeclared"; 
 import attributeUndeclared from "./execution/attribute-undeclared"; 
@@ -43,9 +47,12 @@ export default function() {
         "engine/typed-task": "error",
         "engine/event-type": "error",
         "engine/multiple-event-definitions": "error",
+        "engine/compensation-activity": "error",
         "engine/call-activity": "error",
+        "engine/transaction": "error",
         "engine/complex-gateway": "error",
         "engine/inclusive-gateway": "error",
+        "engine/conditional-flow": "error",
         "execution/attribute-redeclared": "error",
         "execution/attribute-undeclared": "error",
         "execution/gatekeeper-restrictions": "error",
@@ -75,9 +82,12 @@ export default function() {
             "typed-task": typedTask,
             "event-type": eventType,
             "multiple-event-definitions": multipleEventDefinitions,
+            "compensation-activity": compensationActivity,
             "call-activity": callActivity,
+            "transaction": transaction,
             "complex-gateway": complexGateway,
-            "inclusive-gateway": inclusiveGateway
+            "inclusive-gateway": inclusiveGateway,
+            "conditional-flow": conditionalFlow
           }
         },
         {
