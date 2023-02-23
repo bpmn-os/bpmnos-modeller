@@ -82,10 +82,17 @@ function ParameterName(props) {
     }
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Name must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: parameter,
     id: idPrefix + '-name',
     label: translate('Name'),
+    validate,
     getValue,
     setValue,
     debounce

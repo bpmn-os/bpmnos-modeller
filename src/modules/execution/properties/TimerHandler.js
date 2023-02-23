@@ -70,10 +70,17 @@ function TimerParameterName(props) {
     }
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Parameter name must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element,
     id: 'name',
     label: translate('Parameter name'),
+    validate,
     getValue,
     setValue,
     debounce

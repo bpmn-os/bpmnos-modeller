@@ -158,10 +158,17 @@ function OperatorAttributeName(props) {
     }
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Attribute name must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: operator,
     id: idPrefix + '-attribute',
     label: translate('Attribute name'),
+    validate,
     getValue,
     setValue,
     debounce

@@ -105,10 +105,17 @@ function AttributeName(props) {
     return attribute.name;
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Name must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: attribute,
     id: idPrefix + '-name',
     label: translate('Name'),
+    validate,
     getValue,
     setValue,
     debounce

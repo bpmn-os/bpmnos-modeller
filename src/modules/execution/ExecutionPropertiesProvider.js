@@ -16,7 +16,6 @@ import { messageHandler } from './properties/MessageHandler';
 import { timerHandler } from './properties/TimerHandler';
 import { requestHandler } from './properties/RequestHandler';
 import { releaseHandler } from './properties/ReleaseHandler';
-import { ConsumableProperty } from './properties/ConsumableProperty';
 
 const LOW_PRIORITY = 500;
 

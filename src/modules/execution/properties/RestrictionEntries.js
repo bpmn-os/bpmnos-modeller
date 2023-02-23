@@ -116,10 +116,17 @@ function RestrictionAttributeName(props) {
     return restriction.attribute;
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Attribute name must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: restriction,
     id: idPrefix + '-attribute',
     label: translate('Attribute name'),
+    validate,
     getValue,
     setValue,
     debounce
@@ -405,10 +412,17 @@ function Enumeration(props) {
     return enumeration.value;
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Value must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: enumeration,
     id: idPrefix + '-value',
-    label: 'Value',//translate('Value'),
+    label: 'Value',
+    validate,
     getValue,
     setValue,
     debounce

@@ -116,10 +116,17 @@ function ReleaseRequest(props) {
     return release.request;
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Id must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: release,
     id: idPrefix + '-request',
     label: translate('Id of request to be released'),
+    validate,
     getValue,
     setValue,
     debounce

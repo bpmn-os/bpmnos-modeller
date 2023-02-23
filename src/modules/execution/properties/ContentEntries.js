@@ -120,10 +120,17 @@ function ContentKey(props) {
     return content.key;
   };
 
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Key must not be empty.';
+    }
+  }
+
   return TextFieldEntry({
     element: content,
     id: idPrefix + '-key',
     label: translate('Key'),
+    validate,
     getValue,
     setValue,
     debounce
