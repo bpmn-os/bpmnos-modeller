@@ -82,14 +82,14 @@ function Issues() {
     if ( issueList ) {
       let html = '';
       for (var id in event.issues) {
-        html += html = '<div class="bjsl-issues panel-issue" data-id="' + id + '"><div class="bjsl-current-element-issues"><div style="font-weight:bold;">' + id + '</div><ul>';
+        html += html = '<div class="bjsl-issues" data-id="' + id + '"><div class="bjsl-current-element-issues"><div style="font-weight:bold;">' + id + '</div><ul>';
         for (var i = 0; i < event.issues[id].length; i++) {
           html += '<li class="' + event.issues[id][i].category + '">' + (event.issues[id][i].category == 'error' ? error : warning) + event.issues[id][i].message + '</li>';
         }
         html += '</ul></div></div></div>';
       }
       issueList.innerHTML = html;
-      let buttons = document.querySelectorAll(".panel-issue");
+      let buttons = document.querySelectorAll("#issueList > .bjsl-issues");
       for (var i = 0; i < buttons.length; i++) {
         buttons[i].addEventListener ("click", function() {
           const element = elementRegistry.get(this.getAttribute("data-id"));
