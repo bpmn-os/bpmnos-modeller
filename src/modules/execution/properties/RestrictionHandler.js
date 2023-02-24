@@ -71,7 +71,7 @@ function addFactory({ bpmnFactory, commandStack, element }) {
     const restrictions = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Restrictions'); 
 
     // create 'execution:Restriction'
-    const restriction = createElement('execution:Restriction', { id: nextId('Restriction_'), type: '' }, restrictions, bpmnFactory);
+    const restriction = createElement('execution:Restriction', { id: nextId('Restriction_') }, restrictions, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
