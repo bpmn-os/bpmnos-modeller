@@ -110,12 +110,6 @@ function hasProcessRef(element) {
 }
 
 function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
-/*
-  let status = getCustomItem(element, 'execution:Status'); 
-  if (!status) {
-    status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
-  }
-*/
   const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
 
   let attributes = status.get('attribute') || [];

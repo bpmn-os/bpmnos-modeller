@@ -4,7 +4,7 @@ import {
   ProcessProps,
   IdProps,
   NameProps,
-  DocumentationProps,
+  DocumentationProps
 } from './properties/bpmn/';
 
 import { ExecutableProps } from './properties/ExecutableProps';

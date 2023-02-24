@@ -24,6 +24,8 @@ import complexGateway from "./engine/complex-gateway";
 import inclusiveGateway from "./engine/inclusive-gateway";
 import conditionalFlow from "./engine/conditional-flow";
 
+            
+import defaultattributes from"./execution/default-attributes";
 import attributeRedeclared from "./execution/attribute-redeclared"; 
 import attributeUndeclared from "./execution/attribute-undeclared"; 
 import gatekeeperRestrictions from "./execution/gatekeeper-restrictions";
@@ -53,6 +55,7 @@ export default function() {
         "engine/complex-gateway": "error",
         "engine/inclusive-gateway": "error",
         "engine/conditional-flow": "error",
+        "execution/default-attributes": "error",
         "execution/attribute-redeclared": "error",
         "execution/attribute-undeclared": "error",
         "execution/gatekeeper-restrictions": "error",
@@ -93,6 +96,7 @@ export default function() {
         {
           name: "execution",
           rules: {
+            "default-attributes": defaultattributes,
             "attribute-redeclared": attributeRedeclared,
             "attribute-undeclared": attributeUndeclared,
             "gatekeeper-restrictions": gatekeeperRestrictions,
