@@ -7,6 +7,8 @@ import { TextFieldEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
 
+import { getStatus } from '../utils/StatusUtil';
+
 import {
   getCustomItem,
   ensureCustomItem
@@ -117,10 +119,21 @@ function TimerParameterAttribute(props) {
     }
   };
 
+  const validate = (value) => {
+    if ( value ) {
+      let businessObject = getBusinessObject(element);
+      const status = getStatus(businessObject);    
+      if (status.filter(attribute => attribute.name == value).length == 0) {
+        return 'Attribute name does not exist.';
+      }
+    }
+  }
+
   return TextFieldEntry({
     element,
     id: 'attribute',
     label: translate('Attribute name'),
+    validate,
     getValue,
     setValue,
     debounce

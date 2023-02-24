@@ -2,6 +2,8 @@ import { CollapsibleEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
 
+import { getStatus, getBusinessObject } from '../utils/StatusUtil';
+
 export function Parameter(props) {
   const {
     element,
@@ -124,10 +126,21 @@ function ParameterAttribute(props) {
     return parameter.attribute;
   };
 
+  const validate = (value) => {
+    if ( value ) {
+      let businessObject = getBusinessObject(parameter);
+      const status = getStatus(businessObject);    
+      if (status.filter(attribute => attribute.name == value).length == 0) {
+        return 'Attribute name does not exist.';
+      }
+    }
+  }
+
   return TextFieldEntry({
     element: parameter,
     id: idPrefix + '-attribute',
     label: translate('Attribute name'),
+    validate,
     getValue,
     setValue,
     debounce

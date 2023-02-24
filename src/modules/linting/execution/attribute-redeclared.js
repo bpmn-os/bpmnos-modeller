@@ -1,5 +1,5 @@
-const getAttributes = require('./helper').getAttributes;
-const getStatus = require('./helper').getStatus;
+const getAttributes = require('../../execution/utils/StatusUtil').getAttributes;
+const getStatus = require('../../execution/utils/StatusUtil').getStatus;
 
 const {
   is

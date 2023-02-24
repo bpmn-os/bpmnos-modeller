@@ -1,5 +1,5 @@
-const getCustomElements = require('./helper').getCustomElements;
-const getStatus = require('./helper').getStatus;
+const getCustomElements = require('../../execution/utils/StatusUtil').getCustomElements;
+const getStatus = require('../../execution/utils/StatusUtil').getStatus;
 
 const {
   is
@@ -38,6 +38,7 @@ module.exports = function() {
           }
         }
       }
+      // content, parameter, timer
     }
   }
 

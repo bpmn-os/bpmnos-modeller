@@ -4,6 +4,8 @@ import { useService } from 'bpmn-js-properties-panel';
 
 import { Parameter, ParameterEntries } from './ParameterEntries';
 
+import { getStatus, getBusinessObject } from '../utils/StatusUtil';
+
 import {
   createElement
 } from '../utils/ElementUtil';
@@ -159,7 +161,14 @@ function OperatorAttributeName(props) {
   };
 
   const validate = (value) => {
-    if ( !value || value.trim() == "" ) {
+    if ( value ) {
+      let businessObject = getBusinessObject(operator);
+      const status = getStatus(businessObject);    
+      if (status.filter(attribute => attribute.name == value).length == 0) {
+        return 'Attribute name does not exist.';
+      }
+    }
+    else {
       return 'Attribute name must not be empty.';
     }
   }

@@ -64,5 +64,6 @@ function unsupportedNode(description, types, property, value) {
   };
 }
 
+module.exports.getProcess = getProcess;
 module.exports.requiresCheck = requiresCheck;
 module.exports.unsupportedNode = unsupportedNode;
