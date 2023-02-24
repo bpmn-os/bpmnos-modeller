@@ -36,9 +36,60 @@ module.exports = function() {
           else if ( status.filter(attribute => attribute.name == operators[j].attribute).length == 0) {
             reporter.report(node.id, "Operator on undeclared attribute '" + operators[j].attribute + "'");
           }
+
+          if ( !operators[j].parameter ) {
+            operators[j].parameter.forEach(function(parameter) {
+              if ( parameter.attribute && status.filter(attribute => attribute.name == parameter.attribute).length == 0) {
+                reporter.report(node.id, "Operator has parameter using undeclared attribute '" + parameter.attribute + "'");
+              }
+            });
+          }
         }
       }
-      // content, parameter, timer
+      if ( is(node,'bpmn:Event') ) {
+        // Timer parameter
+        const timerAttribute = customElements[i].attribute;
+        if ( timerAttribute && status.filter(attribute => attribute.name == timerAttribute).length == 0) {
+          reporter.report(node.id, "Parameter uses undeclared attribute '" + timerAttribute + "'");
+        }
+        // Message parameter
+        const parameters = customElements[i].parameter;
+        if ( parameters ) {
+          parameters.forEach(function(parameter) {
+            if ( parameter.attribute && status.filter(attribute => attribute.name == parameter.attribute).length == 0) {
+              reporter.report(node.id, "Parameter uses undeclared attribute '" + parameter.attribute + "'");
+            }
+          });
+        }
+        // Message content
+        const contents = customElements[i].content;
+        if ( contents ) {
+          contents.forEach(function(content) {
+            if ( content.attribute && status.filter(attribute => attribute.name == content.attribute).length == 0) {
+              reporter.report(node.id, "Message content uses undeclared attribute '" + content.attribute + "'");
+            }
+          });
+        }
+      }
+
+      if ( is(node, 'bpmn:SubProcess') && ( node.type == 'Request' || node.type == 'Release' ) ) {
+        const allocations = customElements[i].request || customElements[i].release;
+        if ( allocations ) {
+          allocations.forEach(function(allocation) {
+            if ( allocation.message ) {
+              allocation.message.forEach(function(message) {
+                if ( message.content ) {
+                  message.content.forEach(function(content) {
+                    if ( content.attribute && status.filter(attribute => attribute.name == content.attribute).length == 0) {
+                      reporter.report(node.id, "Message content uses undeclared attribute '" + content.attribute + "'");
+                    }
+                  });
+                }
+              });
+            }
+          });
+        }
+      }
     }
   }
 
