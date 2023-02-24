@@ -14,7 +14,7 @@ function getProcess(node) {
 
 function getCustomElements(node) {
   if ( node && node.extensionElements && node.extensionElements ) {
-    return node.extensionElements.values;
+    return node.extensionElements.values || [];
   }
   return [];
 }

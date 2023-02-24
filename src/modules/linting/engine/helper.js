@@ -19,14 +19,14 @@ function requiresCheck(node) {
     return false;
   }
   while ( node ) {
-    if ( is(node, 'bpmn:SubProcess') ) {
-      return !node.isExpanded;
-    } 
     node = node.$parent;
-    if ( node && is(node, 'bpmn:SubProcess') 
-         && (node.type == "Resource" || node.type == "Request" || node.type == "Release" ) 
-    ) {
-      return false;
+    if ( node && is(node, 'bpmn:SubProcess') ) {
+      if (node.type == "Resource" || node.type == "Request" || node.type == "Release" ) {
+        return false;
+      }
+      else if ( node.isExpanded == false ) {
+        return true;
+      }
     }
   }
   return true;
