@@ -178,7 +178,7 @@ function ContentAttribute(props) {
     element: content,
     id: idPrefix + '-attribute',
     label: translate('Attribute name'),
-    validate,
+//    validate,
     getValue,
     setValue,
     debounce

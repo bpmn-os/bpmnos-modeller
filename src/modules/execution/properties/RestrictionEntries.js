@@ -119,7 +119,7 @@ function RestrictionAttributeName(props) {
   };
 
   const validate = (value) => {
-    if ( value ) {
+/*    if ( value ) {
       let businessObject = getBusinessObject(restriction);
       const status = getStatus(businessObject);    
       if (status.filter(attribute => attribute.name == value).length == 0) {
@@ -127,6 +127,8 @@ function RestrictionAttributeName(props) {
       }
     }
     else {
+*/
+    if ( !value || !value.length ) {
       return 'Attribute name must not be empty.';
     }
   }

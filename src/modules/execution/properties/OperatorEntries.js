@@ -161,6 +161,7 @@ function OperatorAttributeName(props) {
   };
 
   const validate = (value) => {
+/*
     if ( value ) {
       let businessObject = getBusinessObject(operator);
       const status = getStatus(businessObject);    
@@ -169,6 +170,8 @@ function OperatorAttributeName(props) {
       }
     }
     else {
+*/
+    if ( !value || !value.length ) {
       return 'Attribute name must not be empty.';
     }
   }

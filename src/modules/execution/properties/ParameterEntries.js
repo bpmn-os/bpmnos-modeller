@@ -140,7 +140,7 @@ function ParameterAttribute(props) {
     element: parameter,
     id: idPrefix + '-attribute',
     label: translate('Attribute name'),
-    validate,
+//    validate,
     getValue,
     setValue,
     debounce

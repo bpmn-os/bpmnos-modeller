@@ -133,7 +133,7 @@ function TimerParameterAttribute(props) {
     element,
     id: 'attribute',
     label: translate('Attribute name'),
-    validate,
+//    validate,
     getValue,
     setValue,
     debounce
