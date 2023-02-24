@@ -110,18 +110,33 @@ function hasProcessRef(element) {
 }
 
 function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
+/*
   let status = getCustomItem(element, 'execution:Status'); 
   if (!status) {
-    const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
-    // create default attributes
-    const instanceAttribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'instance', type: 'xs:string' }, status, bpmnFactory);
-    const timestampAttribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'timestamp', type: 'xs:integer' }, status, bpmnFactory);
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: status,
-      properties: {
-        attribute: [ instanceAttribute, timestampAttribute ]
-      }
-    });
+    status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+  }
+*/
+  const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+
+  let attributes = status.get('attribute') || [];
+  if ( !attributes.find(attribute => attribute.name == "instance") ) {
+      const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'instance', type: 'xs:string' }, status, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: status,
+        properties: {
+          attribute: [ ...status.get('attribute'), attribute ]
+        }
+      });
+  }
+  if ( !attributes.find(attribute => attribute.name == "timestamp") ) {
+      const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'timestamp', type: 'xs:integer' }, status, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: status,
+        properties: {
+          attribute: [ ...status.get('attribute'), attribute ]
+        }
+      });
   }
 }
