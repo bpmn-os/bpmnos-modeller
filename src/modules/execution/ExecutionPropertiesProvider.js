@@ -4,11 +4,10 @@ import {
   ProcessProps,
   IdProps,
   NameProps,
-  ExecutableProps,
   DocumentationProps,
 } from './properties/bpmn/';
 
-
+import { ExecutableProps } from './properties/ExecutableProps';
 import { statusHandler } from './properties/StatusHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
 import { operatorHandler } from './properties/OperatorHandler';

@@ -6,6 +6,15 @@ import { CheckboxEntry, isCheckboxEntryEdited } from '@bpmn-io/properties-panel'
 
 import { useService } from 'bpmn-js-properties-panel';
 
+import {
+  createElement,
+  nextId
+} from '../utils/ElementUtil';
+
+import {
+  getCustomItem,
+  ensureCustomItem
+} from '../utils/CustomItemUtil';
 
 /**
  * @typedef { import('@bpmn-io/properties-panel').EntryDefinition } Entry
@@ -38,12 +47,16 @@ function Executable(props) {
   } = props;
 
   const modeling = useService('modeling');
+  const bpmnFactory = useService('bpmnFactory');
   const commandStack = useService('commandStack');
   const translate = useService('translate');
 
   let getValue, setValue;
 
   setValue = (value) => {
+    if ( value ) {
+      ensureDefaultAttributes(element,bpmnFactory,commandStack);
+    }
     modeling.updateProperties(element, {
       isExecutable: value
     });
@@ -59,6 +72,9 @@ function Executable(props) {
     const process = element.businessObject.get('processRef');
 
     setValue = (value) => {
+      if ( value ) {
+        ensureDefaultAttributes(element,bpmnFactory,commandStack);
+      }
       commandStack.execute(
         'element.updateModdleProperties',
         {
@@ -91,4 +107,21 @@ function Executable(props) {
 
 function hasProcessRef(element) {
   return is(element, 'bpmn:Participant') && element.businessObject.get('processRef');
+}
+
+function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
+  let status = getCustomItem(element, 'execution:Status'); 
+  if (!status) {
+    const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+    // create default attributes
+    const instanceAttribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'instance', type: 'xs:string' }, status, bpmnFactory);
+    const timestampAttribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'timestamp', type: 'xs:integer' }, status, bpmnFactory);
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: status,
+      properties: {
+        attribute: [ instanceAttribute, timestampAttribute ]
+      }
+    });
+  }
 }
