@@ -49,6 +49,22 @@ module.exports = function() {
         }
       }
     }
+
+    if ( is(node,'bpmn:CatchEvent') ) {
+      const customElements = getCustomElements(node);
+      for (var i=0; i < customElements.length; i++ ) {
+        if ( customElements[i].$type == "execution:Message" ) {
+          const contents = customElements[i].content;
+          if ( contents && contents.length > 0) {
+            for (var j=0; j < contents.length; j++ ) {
+              if ( contents[j].attribute == "instance" || contents[j].attribute == "timestamp" ) {
+                reporter.report(node.id, "Message changes '" + contents[j].attribute + "' attribute");
+              }
+            } 
+          }
+        }
+      }
+    }
   }
 
   return {

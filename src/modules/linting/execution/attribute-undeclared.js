@@ -46,12 +46,14 @@ module.exports = function() {
           }
         }
       }
-      if ( is(node,'bpmn:Event') ) {
+      if ( is(node,'bpmn:Event') && customElements[i].$type == "execution:Parameter" ) {
         // Timer parameter
         const timerAttribute = customElements[i].attribute;
         if ( timerAttribute && status.filter(attribute => attribute.name == timerAttribute).length == 0) {
           reporter.report(node.id, "Parameter uses undeclared attribute '" + timerAttribute + "'");
         }
+      }
+      if ( is(node,'bpmn:Event') && customElements[i].$type == "execution:Message" ) {
         // Message parameter
         const parameters = customElements[i].parameter;
         if ( parameters ) {
