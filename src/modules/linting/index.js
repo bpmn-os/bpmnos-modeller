@@ -30,8 +30,6 @@ import attributeRedeclared from "./execution/attribute-redeclared";
 import attributeUndeclared from "./execution/attribute-undeclared"; 
 import gatekeeperRestrictions from "./execution/gatekeeper-restrictions";
 import allocation from "./execution/allocation";
-import timestampChanged from "./execution/timestamp-changed";
-
 
 export default function() {
   return createLintConfig({
@@ -61,8 +59,7 @@ export default function() {
         "execution/attribute-redeclared": "error",
         "execution/attribute-undeclared": "error",
         "execution/gatekeeper-restrictions": "error",
-        "execution/allocation": "error",
-        "execution/timestamp-changed": "error"
+        "execution/allocation": "error"
       },
       plugins: [
         {
@@ -103,8 +100,7 @@ export default function() {
             "attribute-redeclared": attributeRedeclared,
             "attribute-undeclared": attributeUndeclared,
             "gatekeeper-restrictions": gatekeeperRestrictions,
-            "allocation": allocation,
-            "timestamp-changed": timestampChanged
+            "allocation": allocation
           }
         }
       ]

@@ -1,7 +1,9 @@
 const getStatus = require('../../execution/utils/StatusUtil').getStatus;
+const getCustomElements = require('../../execution/utils/StatusUtil').getCustomElements;
 
 const {
-  is
+  is,
+  isAny
 } = require('bpmnlint-utils');
 
 /**
@@ -17,6 +19,34 @@ module.exports = function() {
       }
       if ( !status.find(attribute => attribute.name == "timestamp") ) {
         reporter.report(node.id, "Attribute 'timestamp' is missing");
+      }
+    }
+
+    if ( isAny(node,['bpmn:Process','bpmn:SubProcess']) ) {
+      const customElements = getCustomElements(node);
+      for (var i=0; i < customElements.length; i++ ) {
+        const operators = customElements[i].operator;
+        if ( operators && operators.length > 0) {
+          for (var j=0; j < operators.length; j++ ) {
+            if ( operators[j].attribute == "timestamp" ) {
+              reporter.report(node.id, "Operator changes 'timestamp' attribute");
+            }
+          } 
+        }
+      }
+    }
+
+    if ( isAny(node,['bpmn:Process','bpmn:SubProcess','bpmn:Activity']) ) {
+      const customElements = getCustomElements(node);
+      for (var i=0; i < customElements.length; i++ ) {
+        const operators = customElements[i].operator;
+        if ( operators && operators.length > 0) {
+          for (var j=0; j < operators.length; j++ ) {
+            if ( operators[j].attribute == "instance" ) {
+              reporter.report(node.id, "Operator changes 'instance' attribute");
+            }
+          } 
+        }
       }
     }
   }
