@@ -5,9 +5,13 @@ import implicitEnd from "./bpmn/implicit-end";
 import noBlankEvent from "./bpmn/no-blank-event";
 import implicitSplit from "./bpmn/implicit-split";
 import implicitJoin from "./bpmn/implicit-join";
+import conditionalFlow from "./bpmn/conditional-flow";
+import structuralAnomaly from "./bpmn/structural-anomaly";
+import singleBlankStartEvent from "bpmnlint/rules/single-blank-start-event";
 import subProcessBlankStartEvent from "bpmnlint/rules/sub-process-blank-start-event";
 import noDuplicateSequenceFlows from "bpmnlint/rules/no-duplicate-sequence-flows";
 import superfluousGateway from "bpmnlint/rules/superfluous-gateway";
+
 
 import nonExecutableProcess from "./engine/non-executable-process";
 import activityMarker from "./engine/activity-marker";
@@ -22,7 +26,7 @@ import callActivity from "./engine/call-activity";
 import transaction from "./engine/transaction";
 import complexGateway from "./engine/complex-gateway";
 import inclusiveGateway from "./engine/inclusive-gateway";
-import conditionalFlow from "./engine/conditional-flow";
+//import conditionalFlow from "./engine/conditional-flow";
 
             
 import defaultattributes from"./execution/default-attributes";
@@ -39,6 +43,9 @@ export default function() {
         "essential/no-blank-event": "error",
         "essential/implicit-split": "error",
         "essential/implicit-join": "error",
+        "essential/conditional-flow": "error",
+        "essential/structural-anomaly": "error",
+        "essential/single-blank-start-event": "error",
         "essential/sub-process-blank-start-event": "error",
         "essential/no-duplicate-sequence-flows": "error",
         "essential/superfluous-gateway": "warn",
@@ -54,7 +61,7 @@ export default function() {
         "engine/transaction": "error",
         "engine/complex-gateway": "error",
         "engine/inclusive-gateway": "error",
-        "engine/conditional-flow": "error",
+//        "engine/conditional-flow": "error",
         "execution/default-attributes": "error",
         "execution/attribute-redeclared": "error",
         "execution/attribute-undeclared": "error",
@@ -70,6 +77,9 @@ export default function() {
             "no-blank-event": noBlankEvent,
             "implicit-split": implicitSplit,
             "implicit-join": implicitJoin,
+            "conditional-flow": conditionalFlow,
+            "structural-anomaly": structuralAnomaly,
+            "single-blank-start-event": singleBlankStartEvent,
             "sub-process-blank-start-event": subProcessBlankStartEvent,
             "no-duplicate-sequence-flows": noDuplicateSequenceFlows,
             "superfluous-gateway": superfluousGateway
