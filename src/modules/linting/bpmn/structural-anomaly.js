@@ -407,34 +407,34 @@ console.log("removePair",predecessorId, successorId);
     for (let id in graph) {
       const inflows = graph[id].predecessors.length;
       if ( inflows > 1 ) {
-console.log("removeEscapableSymmetricGateways",id);
+//console.log("removeEscapableSymmetricGateways",id);
         let escapableForks = {};
         for (var i = 0; i < graph[id].predecessors.length; i++) {
           let predecessorId = graph[id].predecessors[i]
           let optionalExit = isOptionalExit(graph, predecessorId);
-console.log("optionalExit",predecessorId,optionalExit);
+//console.log("optionalExit",predecessorId,optionalExit);
           if ( optionalExit 
                && graph[predecessorId].predecessors.length == 1 
           )  {
             let candidateId = graph[predecessorId].predecessors[0];
-console.log("Escapable forks",escapableForks,candidateId);
+//console.log("Escapable forks",escapableForks,candidateId);
             if ( getForkBehaviour( graph[candidateId].node ) ) {
               if ( escapableForks[candidateId] == undefined ) {
                 escapableForks[candidateId] = { id: candidateId, optionalExits: [ optionalExit ] };
-console.log("Create",escapableForks[candidateId].optionalExits);
+//console.log("Create",escapableForks[candidateId].optionalExits);
               }
               else {
                 escapableForks[candidateId].optionalExits.push(optionalExit);
-console.log("Push",escapableForks[candidateId].optionalExits);
+//console.log("Push",escapableForks[candidateId].optionalExits);
               }
             }  
           }
         }
         const nodeId = graph[id].node.id;
-console.log("Escapable forks",escapableForks,id);
+//console.log("Escapable forks",escapableForks,id);
         for ( var i in escapableForks ) {
           const fork = escapableForks[i];
-console.log("Fork",fork);
+//console.log("Fork",fork);
           if ( fork.optionalExits.length + graph[fork.id].successors.filter(e => e == id).length > 1 ) {
             const outflows = graph[fork.id].successors.length;
   
@@ -451,12 +451,6 @@ console.log("Fork",fork);
               reporter.report(fork.id, "Not symmetric with '" + nodeId + "'");
             }
 
-/*
-            if ( mergeBehaviour == PARALLEL ) {
-              reporter.report(nodeId, "Required inflow may be missing");
-            }
-*/
-
 console.log("removeEscapableSymmetricGateways",fork.id, id);
             // remove all but one optional exits
             for ( var j=0; j< fork.optionalExits.length; j++ ) {
@@ -467,11 +461,12 @@ console.log("removeEscapableSymmetricGateways",fork.id, id);
               if ( j > 0 ) {
                 removeNode( graph, fork.optionalExits[j].endId );
                 removeNode( graph, fork.optionalExits[j].id );
+                REMOVAL = true;
               }
             }
             // remove all direct links
-            graph[id].predecessors = graph[id].predecessors.filter(e => e != fork.id);
-            graph[fork.id].successors = graph[fork.id].successors.filter(e => e != id);
+            graph[id].predecessors = [ graph[id].predecessors.find(e => e != fork.id) ];
+            graph[fork.id].successors = [ graph[fork.id].successors.find(e => e != id) ];
             REMOVAL = true;
           }
         }
