@@ -3,10 +3,38 @@ const {
   isAny
 } = require('bpmnlint-utils');
 
-/* A rule that detects structural errors and asymmetries
- * - the rule does not process conditional flows
- * - the rule ignores duplicate sequence flows
- */
+/************************************************/
+/* A rule that detects unreachable nodes,       */
+/* infinite loops, asymmetries and other        */
+/* structural anomalies.                        */
+/************************************************/
+/*
+A model is considered free of structural anomalies, if it is a combination of simple structures including:
+
+- nodes with exactly one predecessor and one successor
+- subsequent node pairs that form a symmetric gateway
+- nodes that are their own sucessor (loop)
+- parallel forking gateways with a terminating path
+- non-parallel forking gateways having only disjunct terminating paths
+- subsequent non-parallel forking gateways each having a disjunct terminating path 
+- node pairs that form a symmetric gateway and have at least one non-parallel forking gateways with a terminating path in between
+- node pairs forming a loop where one node is a non-parallel forking gateway with a terminating path
+- alternative start nodes for which the paths do not join or join at an exclusive gateway
+- end nodes with a single predecessor
+- start nodes with a single successor
+
+The rule subsequently identifies such structures and removes them from the graph. Nodes that cannot be removed are considered to be forming a structural anomaly. Furthermore, the rule identifies:
+
+- infinite loops
+- paths originating at a non-interrutping boundary event which are joined
+- unreachable nodes
+- pairs of gateways that are not symmetric 
+- loops for which the first reached node is not a exclusive gateway
+- alternative starting nodes which join at a node which is not a exclusive gateway
+- symmetric parallel gateways for which a required token may be lost
+ 
+The rule ignores conditional flows and duplicate sequence flows. Subprocesses and activities are considered as exclusive gateway if they have one outgoing sequence flow and one or more interrupting boundary events, as parallel gateway if if they have multiple outgoing sequence flows and no interrupting boundary event, and as inclusive gateway if if they have multiple outgoing sequence flows and one or more interrupting boundary events.*/
+
 module.exports = function () {
 
   // Gateway types
@@ -30,10 +58,10 @@ module.exports = function () {
       let illegalJoins = {};
       for ( let i = 0; i < nonInterruptingBoundaryEvents.length; i++) {
         graph = buildAcyclicGraph( [ nonInterruptingBoundaryEvents[i] ], reporter );
-console.log("BBInitial",nonInterruptingBoundaryEvents[i],graph);
         // flows of non-interrupting boundary events must be disjunct
         for (let id in graph) {
           if ( graph[id].node.id != id ) {
+            // node had been cloned due to incoming flow from unknown node
             const node = graph[id].node;
             if ( graph[id].node.incoming.length > graph[node.id].predecessors.length + graph[id].predecessors.length ) {
               illegalJoins[node.id] = node.id;
@@ -41,7 +69,7 @@ console.log("BBInitial",nonInterruptingBoundaryEvents[i],graph);
           }
         }
         validate( graph, reporter );
-console.log("BB Final",graph);
+//console.log("BB Final",graph);
       }
       for (let id in illegalJoins) {
         reporter.report(id, 'Illegal join of flows');
@@ -65,6 +93,7 @@ console.log("BB Final",graph);
       validate( graph, reporter );
 console.log("Final",graph);
 
+      // report all unreachable nodes
       for (let i in flowNodes) {
         reporter.report(flowNodes[i].id, 'Node unreachable');
       }
@@ -79,13 +108,13 @@ console.log("Final",graph);
 /************************************************/
 
   function validate( graph, reporter ) {
-    // check loops and remove fake clones
+    // check loops
     for (let id in graph) {
       if ( graph[id].node.id != id ) {
         const node = graph[id].node;
         let behaviour = getMergeBehaviour( node ); 
         if ( graph[id].predecessors.length == 0 ) {
-          // remove fake clone without incoming flow from reachable nodes
+          // remove fake loop without incoming flow from already reached nodes
           delete graph[node.id].cloned;
           delete graph[id];
         }
@@ -148,8 +177,10 @@ console.log("Final",graph);
     const node = nodes[i || 0];
     update(graph, node);
     nodes.splice(i || 0, 1);
+    // remove node from set of unreached nodes
     flowNodes = flowNodes.filter( e => e.id != node.id);
 
+    // add subsequent nodes
     if ( node.outgoing ) {
       for (let j in node.outgoing ) {
         let successor = node.outgoing[j].targetRef;
@@ -158,8 +189,9 @@ console.log("Final",graph);
         }
       }
     }
+
+    // add all boundary event nodes
     const boundaryEvents = interruptingBoundaryEvents.filter( e => e.attachedToRef.id == node.id);
-console.log("BB",node.id,boundaryEvents);
     for (let j in boundaryEvents ) {
       let successor = boundaryEvents[j];
       nodes.push(successor);
@@ -167,6 +199,7 @@ console.log("BB",node.id,boundaryEvents);
   }
 
   function update(graph, node) {
+    // update predecessors and successors after insertion
     if ( node.incoming && node.incoming.length ) {
       for ( i in node.incoming) {
         let predecessorId = node.incoming[i].sourceRef.id;
@@ -580,7 +613,7 @@ console.log("removeInfiniteLoop",id);
     for (let id in graph) {
       if ( graph[id].predecessors.length <= 1 
            && graph[id].successors.length == 0
-           && graph[id].node.id == id
+           && graph[id].node.id == id // do not remove clone created for loop
       ) {
 console.log("removeEnd",id);
         removeNode( graph, id );
