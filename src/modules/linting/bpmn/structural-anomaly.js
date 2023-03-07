@@ -126,9 +126,12 @@ console.log("Final",graph);
 
     simplifyGraph( graph, reporter );
 
-    for (let id in graph) {
-      if ( id == graph[id].node.id ) {
-        reporter.report(id, 'Structural anomaly');
+    const urlParams = new URLSearchParams(window.location.search);
+    if ( urlParams.has('anomalies') ) {
+      for (let id in graph) {
+        if ( id == graph[id].node.id ) {
+          reporter.report(id, 'Structural anomaly');
+        }
       }
     }
   }
