@@ -13,12 +13,11 @@ A model is considered free of structural anomalies, if it is a combination of si
 
 - nodes with exactly one predecessor and one successor
 - subsequent node pairs that form a symmetric gateway
-- nodes that are their own sucessor (loop)
+- nodes that can only be reached by a path starting at themselves (simple loop)
 - parallel forking gateways with a terminating path
 - non-parallel forking gateways having only disjunct terminating paths
 - subsequent non-parallel forking gateways each having a disjunct terminating path 
 - node pairs that form a symmetric gateway and have at least one non-parallel forking gateways with a terminating path in between
-- node pairs forming a loop where one node is a non-parallel forking gateway with a terminating path
 - alternative start nodes for which the paths do not join or join at an exclusive gateway
 - end nodes with a single predecessor
 - start nodes with a single successor
@@ -26,10 +25,10 @@ A model is considered free of structural anomalies, if it is a combination of si
 The rule subsequently identifies such structures and removes them from the graph. Nodes that cannot be removed are considered to be forming a structural anomaly. Furthermore, the rule identifies:
 
 - infinite loops
+- repeated non-exclusive forking within a loop
 - paths originating at a non-interrutping boundary event which are joined
 - unreachable nodes
 - pairs of gateways that are not symmetric 
-- loops for which the first reached node is not a exclusive gateway
 - alternative starting nodes which join at a node which is not a exclusive gateway
 - symmetric parallel gateways for which a required token may be lost
  
@@ -54,7 +53,7 @@ module.exports = function () {
       const nonInterruptingBoundaryEvents = flowElements.filter(function(flowElement) {
         return is(flowElement, 'bpmn:BoundaryEvent') && flowElement.cancelActivity === false;
       });
-      console.log(nonInterruptingBoundaryEvents);
+//console.log(nonInterruptingBoundaryEvents);
       let illegalJoins = {};
       for ( let i = 0; i < nonInterruptingBoundaryEvents.length; i++) {
         graph = buildAcyclicGraph( [ nonInterruptingBoundaryEvents[i] ], reporter );
@@ -80,7 +79,7 @@ module.exports = function () {
         return is(flowElement, 'bpmn:BoundaryEvent') && flowElement.cancelActivity !== false;
       });
 
-      console.log(interruptingBoundaryEvents);
+//console.log(interruptingBoundaryEvents);
 
       // determine starting nodes
       const startingNodes = flowElements.filter(function(flowElement) {
@@ -88,7 +87,7 @@ module.exports = function () {
                && (!flowElement.incoming || flowElement.incoming.length == 0) 
                && !is(flowElement, 'bpmn:BoundaryEvent');
       });
-      console.log(startingNodes);
+//console.log(startingNodes);
       graph = buildAcyclicGraph( startingNodes, reporter );
       validate( graph, reporter );
 console.log("Final",graph);
@@ -240,13 +239,12 @@ console.log("Final",graph);
   function simplifyGraph( graph, reporter ) {
     while ( removeIntermediateNodes(graph, reporter)
             || removeSymmetricGateways(graph, reporter)
-            || removeInfiniteLoop(graph, reporter)
-            || removeEscapableLoop(graph, reporter)
+            || removeEscapableSymmetricGateways(graph, reporter)
+            || removeSimpleLoop(graph, reporter)
             || removeMultipleStarts(graph, reporter)
             || removeAlternativeEnds(graph, reporter)
             || removeSubsequentAlternativeEnd(graph, reporter)
             || removeParallelEnd(graph, reporter)
-            || removeEscapableSymmetricGateways(graph, reporter)
             || removeEnd(graph, reporter)
             || removeStart(graph, reporter)
     ) {
@@ -569,39 +567,42 @@ console.log("removeParallelEnd",id);
     }
     return REMOVAL;
   }
-  function removeEscapableLoop(graph, reporter) {
-//console.log("removeEscapableLoop");
-    let REMOVAL = false;
-    for (let id in graph) {
-      if ( id != graph[id].node.id && graph[id].predecessors.length == 1 ) {
-        const predecessorId = graph[id].predecessors[0];
-        const behaviour = getForkBehaviour(graph[predecessorId].node);
-        if ( behaviour && behaviour != PARALLEL ) {
-console.log("removeEscapableLoop",id);
-          delete graph[graph[id].node.id].cloned;
-          removeNode( graph, id );
-          REMOVAL = true;
-        }
-      }
-    }
-    return REMOVAL;
-  }
 
-  function removeInfiniteLoop(graph, reporter) {
-//console.log("removeInfiniteLoop");
+  function removeSimpleLoop(graph, reporter) {
+//console.log("removeLoop");
     let REMOVAL = false;
     for (let id in graph) {
-      if ( graph[id].cloned ) {
-        for ( var i=0; i < graph[id].successors.length; i++) {
-          const successorId = graph[id].successors[i];
-          if ( graph[successorId].node.id == id ) {
-console.log("removeInfiniteLoop",id);
-            reporter.report(id, 'Infinite loop');
-            removeNode( graph, successorId );
-            delete graph[id].cloned;
-            REMOVAL = true;
+      if ( id != graph[id].node.id ) {
+//console.log("removeSimpleLoop",id);
+        let nodeId = id;
+        let escapable = false;
+        let nonExclusive = [];
+        while ( nodeId != graph[id].node.id && graph[nodeId].predecessors.length == 1 ) {
+          nodeId = graph[nodeId].predecessors[0];
+          if ( nodeId != graph[id].node.id && graph[nodeId].cloned ) {
+            // inner loop has to be removed first
             break;
           }
+//console.log("nodeId",nodeId,graph[id].node.id,id);
+          const behaviour = getForkBehaviour(graph[nodeId].node);
+          if ( behaviour && behaviour != PARALLEL ) {
+            escapable = true;
+          }
+          if ( behaviour && behaviour != EXCLUSIVE ) {
+            nonExclusive.push(nodeId);
+          }
+        }
+        if ( nodeId == graph[id].node.id ) {
+console.log("removeSimpleLoop",nodeId);
+          if ( !escapable ) {
+            reporter.report(nodeId, 'Infinite loop');
+          }
+          for (let i in nonExclusive) {
+            reporter.report(nonExclusive[i], 'Repeated forking');
+          }
+          delete graph[nodeId].cloned;
+          removeNode( graph, id ); // remove clone
+          REMOVAL = true;
         }
       }
     }
@@ -629,6 +630,7 @@ console.log("removeEnd",id);
     for (let id in graph) {
       if ( graph[id].predecessors.length == 0 
            && graph[id].successors.length <= 1
+           && !graph[id].cloned
       ) {
 console.log("removeStart");
         removeNode( graph, id );
