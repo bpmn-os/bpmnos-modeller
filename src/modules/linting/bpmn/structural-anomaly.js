@@ -525,13 +525,13 @@ console.log("removeAlternativeEnd",alternativeEnds[i]);
   }
 
   function isOptionalExit(graph,id) {
-    const behaviour = getForkBehaviour( graph[id].node );
-    if ( behaviour && behaviour != PARALLEL 
-         && graph[id].successors.length >= 2
+    const forkBehaviour = getForkBehaviour( graph[id].node );
+    if ( forkBehaviour && forkBehaviour != PARALLEL 
+         && graph[id].successors.length == 2
     ) {
       const successorId = graph[id].successors.find(successorId => graph[successorId].successors.length > 0);
       const endId = graph[id].successors.find(successorId => graph[successorId].successors.length == 0 && graph[successorId].node.id == successorId);
-      if ( successorId && endId ) {
+      if ( successorId && endId && getMergeBehaviour( graph[endId].node ) == undefined ) {
 //console.log("isOptionalExit",id, successorId, endId);
         return { id, successorId, endId };
       } 
