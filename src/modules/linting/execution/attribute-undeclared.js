@@ -37,7 +37,7 @@ module.exports = function() {
             reporter.report(node.id, "Operator on undeclared attribute '" + operators[j].attribute + "'");
           }
 
-          if ( !operators[j].parameter ) {
+          if ( operators[j].parameter ) {
             operators[j].parameter.forEach(function(parameter) {
               if ( parameter.attribute && status.filter(attribute => attribute.name == parameter.attribute).length == 0) {
                 reporter.report(node.id, "Operator has parameter using undeclared attribute '" + parameter.attribute + "'");
