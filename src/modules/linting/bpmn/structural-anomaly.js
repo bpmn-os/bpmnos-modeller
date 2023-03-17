@@ -14,9 +14,10 @@ The rule uses reduction rules to iteratively simplify the model and detect anoma
 - removeParallelEnd(graph, reporter)
 - removeAlternativeEnds(graph, reporter)
 - removeMultipleFlowsBetweenGateways(graph, reporter)
-- removeLoop(graph, reporter)
 - removeFakeSubProcess(graph, reporter)
 - removeFakeSubProcess(graph, reporter, true)
+- removeLoop(graph, reporter)
+- removeLoop(graph, reporter, true)
 */
 
 module.exports = function () {
@@ -312,9 +313,10 @@ module.exports = function () {
             || removeParallelEnd(graph, reporter)
             || removeAlternativeEnds(graph, reporter)
             || removeMultipleFlowsBetweenGateways(graph, reporter)
-            || removeLoop(graph, reporter)
             || removeFakeSubProcess(graph, reporter)
             || removeFakeSubProcess(graph, reporter, true)
+            || removeLoop(graph, reporter)
+            || removeLoop(graph, reporter, true)
 //            || removeAnomalLoop(graph, reporter)
     ) {
       //console.log("Graph",structuredClone(graph));
@@ -498,102 +500,79 @@ module.exports = function () {
     return REMOVAL;
   }
 
-  function removeLoop(graph, reporter) {
+  function removeLoop(graph, reporter, force) {
     let REMOVAL = false;
     for (let id in graph) {
       if ( id != graph[id].node.id ) {
 ////console.log("removeSimpleLoop",id);
         let nodeId = graph[id].node.id;
 ////console.log("removeSimpleLoop",id,graph[id].predecessors,nodeId);
-        const loop = findUniqueCycle(nodeId, graph);
-        if ( loop ) {
-//console.log("removeLoop",loop);
-        graph[nodeId].successors = graph[nodeId].successors.filter(e => e != loop[1])
-        for ( let i = 1; i < loop.length - 1; i++ ) {
-          const prevId = loop[i-1];
-          const currentId = loop[i];
-          const nextId = loop[i+1];
-          mergeUnique( graph[nodeId].escapes, graph[currentId].escapes);
-//          graph[nodeId].escapes = graph[nodeId].escapes.concat( graph[currentId].escapes ); 
-          redirectPredecessors(currentId, nodeId, prevId);
-          redirectSuccessors(currentId, nodeId, nextId);
-/*
-          // redirect predecessors
-          const predecessors = graph[currentId].predecessors.filter(e => e != prevId);
-//console.log("Redirect predecessors",predecessors,"of", currentId, "to", nodeId,); 
-          for ( let j in predecessors ) {
-            const predecessorId = predecessors[j];
-            let index = graph[predecessorId].successors.indexOf(currentId);
-            graph[predecessorId].successors[index] = nodeId;
-            graph[nodeId].predecessors.push(predecessorId);
+        const cycleNodes = findAllCycles(nodeId, graph, reporter, force);
+        if ( cycleNodes ) {
+//console.log("Cycle nodes:", cycleNodes);
+          for ( let i=1; i < cycleNodes.length; i++ ) {
+            mergeUnique( graph[nodeId].escapes, graph[cycleNodes[i]].escapes);
+            redirectPredecessors(cycleNodes[i], nodeId);
+            redirectSuccessors(cycleNodes[i], nodeId);
+            // remove currentId from graph
+            delete graph[cycleNodes[i]]; 
+            REMOVAL = true;
           }
-          // redirect successors
-          const successors = graph[currentId].successors.filter(e => e != nextId);
-//console.log("Redirect successors",successors,"of", currentId, "to", nodeId,); 
-          for ( let j in successors ) {
-            const successorId = successors[j];
-            let index = graph[successorId].predecessors.indexOf(currentId);
-            graph[successorId].predecessors[index] = nodeId;
-            graph[nodeId].successors.push(successorId);
-          }
-*/
-          // remove currentId from graph
-          delete graph[currentId]; 
-        } 
-        // remove clone from graph
-        redirectPredecessors(loop.at(-1), nodeId, loop.at(-2));
-        delete graph[loop.at(-1)]; // remove clone
-
-        if ( !graph[nodeId].escapes.length && !graph[nodeId].successors.length ) {
-          reporter.report(nodeId, 'Infinite loop');
-        }        
-        delete graph[nodeId].cloned;
-        delete graph[id]; // remove clone
-        REMOVAL = true;
+          graph[nodeId].predecessors = graph[nodeId].predecessors.filter(e => e != nodeId);
+          graph[nodeId].successors = graph[nodeId].successors.filter(e => e != nodeId);
+          delete graph[nodeId].cloned;
 //console.log("Cycle removed",structuredClone(graph));
+          if ( !graph[nodeId].escapes.length )
+          if ( !graph[nodeId].escapes.length && !graph[nodeId].successors.length ) {
+            reporter.report(nodeId, 'Infinite loop');
+          }    
         }
       }
     }
     return REMOVAL;
   }
 
-  function redirectPredecessors(fromId, toId, excludedId) {
-    const predecessors = graph[fromId].predecessors.filter(e => e != excludedId);
+  function redirectPredecessors(fromId, toId) {
 //console.log("Redirect predecessors",predecessors,"of", fromId, "to", toId,); 
-    for ( let j in predecessors ) {
-      const predecessorId = predecessors[j];
-      let index = graph[predecessorId].successors.indexOf(fromId);
-      graph[predecessorId].successors[index] = toId;
-      graph[toId].predecessors.push(predecessorId);
+    for ( let j in graph[fromId].predecessors ) {
+      const predecessorId = graph[fromId].predecessors[j];
+      if ( graph[predecessorId].successors.includes(toId) ) {
+        graph[predecessorId].successors = graph[predecessorId].successors.filter(e => e != fromId);
+      }
+      else {
+        let index = graph[predecessorId].successors.indexOf(fromId);
+        graph[predecessorId].successors[index] = toId;
+        graph[toId].predecessors.push(predecessorId);
+      }
     }
   }
 
-  function redirectSuccessors(fromId, toId, excludedId) {
-    const successors = graph[fromId].successors.filter(e => e != excludedId);
+  function redirectSuccessors(fromId, toId) {
 //console.log("Redirect successors",successors,"of", fromId, "to", toId,); 
-    for ( let j in successors ) {
-      const successorId = successors[j];
-      let index = graph[successorId].predecessors.indexOf(fromId);
-      graph[successorId].predecessors[index] = toId;
-      graph[toId].successors.push(successorId);
+    for ( let j in graph[fromId].successors ) {
+      const successorId = graph[fromId].successors[j];
+      if ( graph[successorId].predecessors.includes(toId) ) {
+        graph[successorId].predecessors = graph[successorId].predecessors.filter(e => e != fromId);
+      }
+      else {
+        let index = graph[successorId].predecessors.indexOf(fromId);
+        graph[successorId].predecessors[index] = toId;
+        graph[toId].successors.push(successorId);
+      }
     }
   }
 
-  function findUniqueCycle(id, graph) {
-//console.log("findUniqueCycle",id);
-    var cycle = undefined;
+  function findAllCycles(id, graph, reporter, force) {
+//console.log("findAllCycles",id);
+    var cycleNodes = [];
     const stack = [ [ id ] ];
     while ( stack.length ) {
       const path = stack.shift();
       const nodeId = path.at(-1);
 //console.log("Path:",path,nodeId);
       if ( nodeId == id + '_clone' ) {
-////console.log("Cycle:",path);
-        if ( cycle ) {
-          // multiple cycles exist
-          return;
-        }
-        cycle = path;
+//console.log("Cycle:",path);
+        mergeUnique(cycleNodes, path);
       }
       else if ( graph[nodeId].node.id == nodeId ) {
         for ( let i in graph[nodeId].successors ) {
@@ -603,19 +582,36 @@ module.exports = function () {
       }
     }
 
-    if ( !cycle ) {
+    if ( !cycleNodes.length ) {
 //console.log("Cycle not found!",id);
       return;
     }
-    for ( let i = 1; i < cycle.length-1; i++ ) {
-      if  ( (graph[cycle[i]].fork && graph[cycle[i]].fork != EXCLUSIVE )
-            || (graph[cycle[i]].merge && graph[cycle[i]].merge != EXCLUSIVE ) 
-      ) {
-        // cycle passes through non-exclusive gateway
-        return;
+    for ( let i = 0; i < cycleNodes.length; i++ ) {
+      if ( graph[cycleNodes[i]].node.id != id ) {
+        if  ( graph[cycleNodes[i]].cloned ) {
+          // cycle passes through another loop
+//console.log("Cycle passes through another loop!",id,cycleNodes[i]);
+          return;
+        }
+
+        if ( force ) {
+          if ( graph[cycleNodes[i]].fork && graph[cycleNodes[i]].fork != EXCLUSIVE ) {
+            reporter.report(cycleNodes[i],"Loop may release multiple tokens");
+          }
+          if ( graph[cycleNodes[i]].merge && graph[cycleNodes[i]].merge != EXCLUSIVE ) {
+            reporter.report(cycleNodes[i],"Potential deadlock because of loop");
+          }
+        }
+        else if ( (graph[cycleNodes[i]].fork && graph[cycleNodes[i]].fork != EXCLUSIVE )
+              || (graph[cycleNodes[i]].merge && graph[cycleNodes[i]].merge != EXCLUSIVE ) 
+        ) {
+          // cycle passes through non-exclusive gateway
+//console.log("Cycle passes through non-exclusive gateway!",id);
+          return;
+        }
       }
     }
-    return cycle;
+    return cycleNodes;
   }
 
   function removeFakeSubProcess(graph, reporter, force) {
@@ -661,7 +657,7 @@ module.exports = function () {
           }
 //console.log("Reports:", reports);
           for ( let i in reports ) {
-              reporter.report(reports[i].id,reports[i].message);
+            reporter.report(reports[i].id,reports[i].message);
           }
 
           let escapes = [];
@@ -861,6 +857,9 @@ module.exports = function () {
   }
 
   function mergeUnique(array1,array2) {
+    if ( !array1 ) {
+      array1 = [];
+    }
     for (let i in array2) {
       if ( !array1.includes(array2[i]) ) {
         array1.push(array2[i]);
