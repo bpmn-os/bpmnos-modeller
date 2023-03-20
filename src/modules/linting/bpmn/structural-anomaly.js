@@ -8,6 +8,7 @@ const {
 /* infinite loops, asymmetries and other        */
 /* structural anomalies.                        */
 /************************************************/
+
 /*
 The rule uses reduction rules to iteratively simplify the model and detect anomalies:
 - removeIntermediateNodes(graph, reporter)
@@ -25,49 +26,16 @@ module.exports = function () {
   // Gateway types
   const EXCLUSIVE = 1, PARALLEL = 2, INCLUSIVE = 3, COMPLEX = 4;
   let graph = {};
-  let interruptingBoundaryEvents = [];
-  let flowNodes = [];
 
   function check(node, reporter) {
     if ( is(node,'bpmn:FlowElementsContainer') ) {
       const flowElements = node.flowElements || [];
-      flowNodes = flowElements.filter(function(flowElement) {
+      const flowNodes = flowElements.filter(function(flowElement) {
         return is(flowElement, 'bpmn:FlowNode') 
                && (!is(flowElement, 'bpmn:SubProcess') || !flowElement.triggeredByEvent) 
                && !flowElement.isForCompensation
       });
 
-      // determine non-interrupting boundary events
-      const nonInterruptingBoundaryEvents = flowElements.filter(function(flowElement) {
-        return is(flowElement, 'bpmn:BoundaryEvent') && flowElement.cancelActivity === false;
-      });
-////console.log(nonInterruptingBoundaryEvents);
-      let illegalJoins = {};
-      for ( let i = 0; i < nonInterruptingBoundaryEvents.length; i++) {
-        graph = buildAcyclicGraph( [ nonInterruptingBoundaryEvents[i] ], reporter );
-        // flows of non-interrupting boundary events must be disjunct
-        for (let id in graph) {
-          if ( graph[id].node.id != id ) {
-            // node had been cloned due to incoming flow from unknown node
-            const node = graph[id].node;
-            if ( graph[id].node.incoming && graph[id].node.incoming.length > graph[node.id].predecessors.length + graph[id].predecessors.length ) {
-              illegalJoins[node.id] = node.id;
-            }
-          }
-        }
-        validate( graph, reporter );
-////console.log("BB Final",graph);
-      }
-      for (let id in illegalJoins) {
-        reporter.report(id, 'Illegal join of flows');
-      }
-
-      // determine interrupting boundary events
-      interruptingBoundaryEvents = flowElements.filter(function(flowElement) {
-        return is(flowElement, 'bpmn:BoundaryEvent') && flowElement.cancelActivity !== false;
-      });
-
-////console.log(interruptingBoundaryEvents);
 
       // determine starting nodes
       const startingNodes = flowElements.filter(function(flowElement) {
@@ -77,24 +45,66 @@ module.exports = function () {
                && !flowElement.isForCompensation
                && !is(flowElement, 'bpmn:BoundaryEvent');
       });
-//console.log([...startingNodes]);
- 
-      if ( startingNodes.length == 1 ) {
-        graph = buildAcyclicGraph( startingNodes, reporter );
+
+      // determine all boundary events (including unreachable)
+      const allBoundaryEvents = flowElements.filter(e => is(e, 'bpmn:BoundaryEvent'));
+
+      // determine reachable and unreachable nodes
+      const reachableNodes = reachable(startingNodes,allBoundaryEvents);
+      const unreachableNodes = flowNodes.filter(e => !reachableNodes.includes(e));
+
+      // report all unreachable nodes
+      for (let i in unreachableNodes.filter(e => !is(e, 'bpmn:BoundaryEvent')) ) {
+        reporter.report(unreachableNodes[i].id, 'Node unreachable');
+      }
+
+      // determine reachable interrupting non-interrupting boundary events
+      const interruptingBoundaryEvents = allBoundaryEvents.filter(e => is(e,'bpmn:BoundaryEvent') && e.cancelActivity !== false);
+      const nonInterruptingBoundaryEvents = allBoundaryEvents.filter(e => is(e,'bpmn:BoundaryEvent') && e.cancelActivity === false);
+
+      // determine nodes that can be reached from start without passing through non-interrupting boundary events
+      const regularNodes = reachable(startingNodes,interruptingBoundaryEvents);
+/*
+console.log("startingNodes",[...startingNodes]);
+console.log("reachableNodes",[...reachableNodes]);
+console.log("regularNodes",[...regularNodes]);
+console.log("unreachableNodes",[...unreachableNodes);
+console.log("interruptingBoundaryEvents",[...interruptingBoundaryEvents]);
+console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
+*/
+
+
+      graph = buildAcyclicGraph( startingNodes, interruptingBoundaryEvents, regularNodes, reporter );
 //console.log("Initial",structuredClone(graph));
-        validate( graph, reporter );
+      validate( graph, reporter );
 //console.log("Final",structuredClone(graph));
 
-        // report all unreachable nodes
-        for (let i in flowNodes) {
-          reporter.report(flowNodes[i].id, 'Node unreachable');
+      // Check submodels starting at non-interrupting boundary events
+      const reachableFromBoundary = [];
+      for ( let i in nonInterruptingBoundaryEvents ) {
+        reachableFromBoundary.push(reachable([ nonInterruptingBoundaryEvents[i] ],allBoundaryEvents));
+      }
+      for ( let i in reachableFromBoundary ) {
+          var intersection = reachableFromBoundary[i].filter(a => regularNodes.some(b => a.id == b.id));  
+        if ( intersection.length ) {
+          reporter.report(nonInterruptingBoundaryEvents[i].id, 'Outgoing flow merges with regular flow');
+        }
+        for ( let j in reachableFromBoundary ) {
+          if ( i != j ) {
+            intersection = reachableFromBoundary[i].filter(a => reachableFromBoundary[j].some(b => a.id == b.id));
+            if ( intersection.length ) {
+              reporter.report(nonInterruptingBoundaryEvents[i].id, "Outgoing flow merges with flow from '" + nonInterruptingBoundaryEvents[j].id + "'");
+            }          }
         }
       }
-      else {
-        for (let i in startingNodes) {
-          reporter.report(startingNodes[i].id, 'Multiple start events');
-        }
+
+      for ( let i in nonInterruptingBoundaryEvents ) {
+        graph = buildAcyclicGraph( [ nonInterruptingBoundaryEvents[i] ], interruptingBoundaryEvents, reachableFromBoundary[i], reporter );
+        validate( graph, reporter );
       }
+/*
+*/
+
     }
   }
   return {
@@ -102,27 +112,45 @@ module.exports = function () {
   };
 
 /************************************************/
+/** Determine reachable nodes                  **/
+/************************************************/
+  function reachable(startEvents, boundaryEvents) {
+//console.log("reachable",startEvents)
+    const reachableNodes = [];
+    var visited = [...startEvents];
+    while ( visited.length ) {
+      const node = visited.shift();
+      if ( !reachableNodes.includes( node ) ) {
+        reachableNodes.push(node);
+        visited = visited.concat(getSuccessors(node,boundaryEvents));
+      } 
+    }
+    return reachableNodes;
+  }
+
+  function getSuccessors(node, boundaryEvents) {
+    const successors = [];
+    if ( node.outgoing ) {
+      for (j in node.outgoing ) {
+        successors.push( node.outgoing[j].targetRef );
+      }
+    }
+    // add all boundary event nodes
+    const attachedBoundaryEvents = boundaryEvents.filter( e => e.attachedToRef.id == node.id);
+    for (let j in attachedBoundaryEvents ) {
+      let successor = attachedBoundaryEvents[j];
+////console.log("Add",successor);
+      successors.push(successor);
+    }
+//console.log(node,"successors",successors);
+    return successors;
+  }
+
+/************************************************/
 /** Validate                                   **/
 /************************************************/
 
   function validate( graph, reporter ) {
-    // check loops
-    for (let id in graph) {
-      if ( graph[id].node.id != id ) {
-        const node = graph[id].node;
-        let behaviour = getMergeBehaviour( node ); 
-        if ( graph[id].predecessors.length == 0 ) {
-          // remove fake loop without incoming flow from already reached nodes
-          delete graph[node.id].cloned;
-          delete graph[id];
-        }
-        else if ( behaviour && behaviour != EXCLUSIVE ) {
-          reporter.report(node.id, 'Loop into non-exclusive gateway');
-        }
-      }
-    }
-
-
     simplifyGraph( graph, reporter );
 
     for (let id in graph) {
@@ -146,28 +174,61 @@ module.exports = function () {
 /** Build acyclic graph                        **/
 /************************************************/
 
-  function buildAcyclicGraph( nodes, reporter ) {
+  function buildAcyclicGraph( nodes, interruptingBoundaryEvents, reachables, reporter ) {
     let graph = {};
     while ( nodes.length ) {
-      let i = select(nodes, graph, reporter);
-      insert( nodes, i, graph );
+      let i = select(nodes, reachables, graph, reporter);
+      if ( i != undefined ) {
+        insert( nodes, i, interruptingBoundaryEvents, graph );
+      }
+      else {
+        i = selectLoopNode(nodes, graph, reporter);
+        if ( i == undefined ) {
+console.error("No loop found");
+        }
+        const id = nodes[i].id;
+        insert( nodes, i, interruptingBoundaryEvents, graph );
+        if ( graph[id].merge != EXCLUSIVE ) {
+          reporter.report(id, 'Loop into non-exclusive gateway');
+        }
+        // duplicate node
+        graph[id].cloned = true;
+        graph[id + '_clone'] = { 
+          node: graph[id].node, 
+          successors: [], 
+          predecessors: [], 
+          merge: getMergeBehaviour(graph[id].node,interruptingBoundaryEvents), 
+          fork: getForkBehaviour(graph[id].node,interruptingBoundaryEvents), 
+          escapes: []
+        };
+      }
     }
+
     return graph;
   }
 
-  function select(nodes, graph, reporter) {
-    // select node that doesn't have any incoming arc from nodes outside the graph
+
+  function select(nodes, reachables, graph, reporter) {
+    // select node that doesn't have any incoming arc from nodes yet to be included
     for (let i in nodes) {
       let selected = true;
       if ( nodes[i].incoming ) {
         for (j in nodes[i].incoming ) {
-          if ( graph[ nodes[i].incoming[j].sourceRef.id ] == undefined) {
+          const incomingId = nodes[i].incoming[j].sourceRef.id;
+          if ( incomingId != nodes[i].id 
+               && reachables.find(e => e.id == incomingId) 
+               && graph[ incomingId ] == undefined
+          ) {
             selected = false;
             break;
           }
         }
       }
-      if ( is(nodes[i],'bpmn:BoundaryEvent') && graph[ nodes[i].attachedToRef.id ]  == undefined ) {
+      if ( is(nodes[i],'bpmn:BoundaryEvent') 
+           && nodes[i].cancelActivity !== false 
+           && graph[ nodes[i].attachedToRef.id ]  == undefined 
+      ) {
+        // do not select interrupting boundary if respective activity is not yet included 
         selected = false;
       }
       if ( selected ) {
@@ -177,28 +238,51 @@ module.exports = function () {
     return;
   }
 
-  function insert( nodes, i, graph) {
-    const node = nodes[i || 0];
-//console.log("Insert",i,node,structuredClone(graph));
-    graph[node.id] = { node, successors: [], predecessors: [], merge: getMergeBehaviour(node), fork: getForkBehaviour(node), escapes: [] };
-    if ( i == undefined ) {
-      // duplicate node
-      graph[node.id].cloned = true;
-      graph[node.id + '_clone'] = { node: nodes[0], successors: [], predecessors: [], merge: getMergeBehaviour(node), fork: getForkBehaviour(node), escapes: [] };
+  function selectLoopNode(nodes, graph, reporter) {
+//console.log("selectLoopNode");
+    // find node that has a path to itself
+    for (let i in nodes) {
+      const id = nodes[i];
+      const stack = [ id ];
+      while ( stack.length ) {
+//console.log("stack:",stack);
+        const nodeId = stack.shift();
+//console.log("Path:",path,nodeId);
+        if ( nodeId == id ) {
+//console.log("Cycle:",id);
+          return i;
+        }
+        else if ( graph[nodeId].node.id == nodeId ) {
+          for ( let i in graph[nodeId].successors ) {
+            const successorId = graph[nodeId].successors[i];
+            stack.push( path.concat(successorId) );
+          }
+        }
+      }
     }
+  }
 
-//    const node = nodes[i || 0];
+  function insert( nodes, i, interruptingBoundaryEvents, graph) {
+    const node = nodes[i];
+//console.log("Insert",i,node,graph);
+    graph[node.id] = { 
+      node, 
+      successors: [], 
+      predecessors: [], 
+      merge: getMergeBehaviour(node,interruptingBoundaryEvents), 
+      fork: getForkBehaviour(node,interruptingBoundaryEvents), 
+      escapes: []
+    };
+
     update(graph, node);
-    nodes.splice(i || 0, 1);
-    // remove node from set of nodes that have not been reached yet
-    flowNodes = flowNodes.filter( e => e.id != node.id);
+    nodes.splice(i, 1);
 
     // add subsequent nodes
     if ( node.outgoing ) {
       for (let j in node.outgoing ) {
         let successor = node.outgoing[j].targetRef;
         if ( graph[successor.id] == undefined && !nodes.includes(successor) ) {
-////console.log("Add",successor);
+//console.log("Add",successor);
           nodes.push(successor);
         }
       }
@@ -206,6 +290,7 @@ module.exports = function () {
 
     // add all boundary event nodes
     const boundaryEvents = interruptingBoundaryEvents.filter( e => e.attachedToRef.id == node.id);
+//console.log("boundaryEvents",interruptingBoundaryEvents,boundaryEvents);
     for (let j in boundaryEvents ) {
       let successor = boundaryEvents[j];
 ////console.log("Add",successor);
@@ -236,7 +321,6 @@ module.exports = function () {
 
     if ( node.outgoing && node.outgoing.length ) {
       for ( let i in node.outgoing) {
-////console.log("NO",node,node.outgoing,node.outgoing[i]);
         let successorId = node.outgoing[i].targetRef.id + "_clone";
         if ( graph[successorId] ) {
           if ( graph[node.id].successors.indexOf(successorId) == -1 ) {
@@ -250,7 +334,7 @@ module.exports = function () {
     }
   }
 
-  function getMergeBehaviour( node ) {
+  function getMergeBehaviour( node, interruptingBoundaryEvents ) {
     let merge = undefined;
     if ( is(node,'bpmn:ExclusiveGateway') ) {
        if ( node.incoming && node.incoming.length > 1) merge = EXCLUSIVE;
@@ -272,7 +356,7 @@ module.exports = function () {
     return merge;
   } 
 
-  function getForkBehaviour( node ) {
+  function getForkBehaviour( node, interruptingBoundaryEvents ) {
     let fork = undefined;
     if ( isAny(node,['bpmn:ExclusiveGateway','bpmn:EventBasedGateway']) ) {
        if ( node.outgoing && node.outgoing.length > 1 ) return fork = EXCLUSIVE;
@@ -309,7 +393,6 @@ module.exports = function () {
 /************************************************/
   function simplifyGraph( graph, reporter ) {
     while ( removeIntermediateNodes(graph, reporter)
-//            || removeMultipleStarts(graph, reporter)
             || removeParallelEnd(graph, reporter)
             || removeAlternativeEnds(graph, reporter)
             || removeMultipleFlowsBetweenGateways(graph, reporter)
@@ -317,17 +400,14 @@ module.exports = function () {
             || removeFakeSubProcess(graph, reporter, true)
             || removeLoop(graph, reporter)
             || removeLoop(graph, reporter, true)
-//            || removeAnomalLoop(graph, reporter)
     ) {
-      //console.log("Graph",structuredClone(graph));
+//console.log("Graph",structuredClone(graph));
     }
     removeEnd(graph, reporter)
     removeStart(graph, reporter)
   }
 
-
-
-  function removeNode( graph, id ) {
+  function removeSequentialNode( graph, id ) {
 //console.log("REMOVE",id,graph[id]);
     let predecessorId = graph[id].predecessors.length == 1 ? graph[id].predecessors[0] : undefined;
     let successorId = graph[id].successors.length == 1 ? graph[id].successors[0] : undefined;
@@ -357,7 +437,7 @@ module.exports = function () {
 
 
   function removeIntermediateNodes(graph, reporter) {
-////console.log("removeIntermediateNodes");
+//console.log("removeIntermediateNodes");
     let REMOVAL = false;
     for (let id in graph) {
       if ( graph[id].predecessors.length == 1 
@@ -366,51 +446,22 @@ module.exports = function () {
       ) {
         if ( !graph[id].escapes.length  ) {
 //console.log("removeIntermediateNodes",id);
-          removeNode( graph, id );
+          removeSequentialNode( graph, id );
           REMOVAL = true;
         }
         else if ( !graph[ graph[id].predecessors[0] ].fork ) {
           const predecessorId = graph[id].predecessors[0];
           mergeUnique( graph[predecessorId].escapes, graph[id].escapes);
-//          graph[predecessorId].escapes = graph[predecessorId].escapes.concat(graph[id].escapes);
-//console.log("removeIntermediateNodes",id);
-          removeNode( graph, id );
+          removeSequentialNode( graph, id );
           REMOVAL = true;
         }
       }
     }
     return REMOVAL;
   }
-/*
-  function removeMultipleStarts(graph, reporter) {
-    let REMOVAL = false;
-    for (let id in graph) {
-      if ( graph[id].merge ) {
-////console.log("removeAlternativeStart for",id,graph);
-        let alternativeStarts = graph[id].predecessors.filter(predecessorId => 
-          !canLoop(predecessorId,graph)
-          && !graph[predecessorId].fork 
-          && graph[predecessorId].predecessors.length == 0
-        );
-        if ( alternativeStarts.length > 1 ) {
-          if ( graph[id].merge != EXCLUSIVE && alternativeStarts.length == 2 ) {
-            reporter.report(id, 'Alternative flows into non-exclusive gateway');
-          } 
-          // remove alternative start
-          for (var i = 1; i < alternativeStarts.length; i++) {
-//console.log("removeAlternativeStart",alternativeStarts[i]);
-            removeNode( graph, alternativeStarts[i] );
-            REMOVAL = true;
-          }
-        }
-      }
-    }
-    return REMOVAL;
-  }
-*/
 
   function removeParallelEnd(graph, reporter) {
-////console.log("removeParallelEnd");
+//console.log("removeParallelEnd");
     let REMOVAL = false;
     for (let id in graph) {
       if ( graph[id].successors.length == 0 
@@ -420,11 +471,11 @@ module.exports = function () {
         const predecessorId = graph[id].predecessors[0];
         if ( graph[predecessorId].fork == PARALLEL ) {
 //console.log("removeParallelEnd",id);
-          removeNode( graph, id );
+          removeSequentialNode( graph, id );
           if ( graph[predecessorId].predecessors.length <= 1 
                && graph[predecessorId].successors.length <= 1
           ) {
-            removeNode( graph, predecessorId );
+            removeSequentialNode( graph, predecessorId );
           }
           REMOVAL = true;
         }
@@ -446,7 +497,7 @@ module.exports = function () {
         // remove all alternative ends
         for (var i = 0; i < alternativeEnds.length; i++) {
 //console.log("removeAlternativeEnd",alternativeEnds[i]);
-          removeNode( graph, alternativeEnds[i] );
+          removeSequentialNode( graph, alternativeEnds[i] );
           REMOVAL = true;
         }
         if ( alternativeEnds.length > 0 ) {
@@ -462,7 +513,7 @@ module.exports = function () {
   }
 
   function removeMultipleFlowsBetweenGateways(graph, reporter) {
-////console.log("removeMultipleFlowsBetweenGateways");
+//console.log("removeMultipleFlowsBetweenGateways");
     let REMOVAL = false;
     for (let id in graph) {
       const nodeId = graph[id].node.id;
@@ -504,7 +555,7 @@ module.exports = function () {
     let REMOVAL = false;
     for (let id in graph) {
       if ( id != graph[id].node.id ) {
-////console.log("removeSimpleLoop",id);
+//console.log("removeLoop",id);
         let nodeId = graph[id].node.id;
 ////console.log("removeSimpleLoop",id,graph[id].predecessors,nodeId);
         const cycleNodes = findAllCycles(nodeId, graph, reporter, force);
@@ -567,6 +618,7 @@ module.exports = function () {
     var cycleNodes = [];
     const stack = [ [ id ] ];
     while ( stack.length ) {
+//console.log("stack:",stack);
       const path = stack.shift();
       const nodeId = path.at(-1);
 //console.log("Path:",path,nodeId);
@@ -581,6 +633,7 @@ module.exports = function () {
         }
       }
     }
+//console.log("Cycle nodes",cycleNodes);
 
     if ( !cycleNodes.length ) {
 //console.log("Cycle not found!",id);
@@ -664,7 +717,6 @@ module.exports = function () {
           for ( let i in graph[ structure.endId ].predecessors ) {
             const predecessorId = graph[ structure.endId ].predecessors[i];
             mergeUnique( escapes, structure.nodes[predecessorId].escapes );
-            //escapes = escapes.concat( structure.nodes[predecessorId].escapes );            
           }
 
           for ( let nodeId in structure.nodes ) {            
@@ -677,7 +729,6 @@ module.exports = function () {
           }
           if ( REMOVAL ) { 
             mergeUnique( graph[structure.startId].escapes, escapes );
-            //graph[structure.startId].escapes = graph[structure.startId].escapes.concat(escapes);
 
             // ensure there is a flow between start and end of structure
             if ( !graph[structure.startId].successors.includes(structure.endId) ) {
@@ -714,7 +765,7 @@ module.exports = function () {
   }
 
   function findAcyclicEmbeddedStructure(id, graph, force) {
-////console.log("findAcyclicEmbeddedStructure",id,force);
+//console.log("findAcyclicEmbeddedStructure",id,force);
     let visited = {};
     visited[id] = { escapes: [...graph[id].escapes] };
     let successors = [];
@@ -767,7 +818,6 @@ module.exports = function () {
           const predecessorId = graph[nodeId].predecessors[j];
 ////console.log(nodeId, " inherits ", visited[predecessorId].escapes);
           mergeUnique( visited[nodeId].escapes, visited[predecessorId].escapes );
-          //visited[nodeId].escapes = visited[nodeId].escapes.concat(visited[predecessorId].escapes);
         }
       }
       else if ( graph[nodeId].merge == INCLUSIVE ) {
@@ -777,7 +827,6 @@ module.exports = function () {
           const predecessorId = graph[nodeId].predecessors[j];
           if ( visited[predecessorId].escapes.length ) {
             mergeUnique( escapes, visited[predecessorId].escapes );
-//            escapes = escapes.concat(visited[predecessorId].escapes);
           }
           else {
             escapes = []; 
@@ -785,9 +834,7 @@ module.exports = function () {
           }
         }
         mergeUnique( visited[nodeId].escapes, escapes );
-//        visited[nodeId].escapes = visited[nodeId].escapes.concat(escapes);
       }
-////console.log("XXX",id,successors,visited,nodeId);
 
       if ( successors.length == 0 ) {
         endId = nodeId;
@@ -810,20 +857,6 @@ module.exports = function () {
     }
   }
 
-  function removeAnomalLoop(graph, reporter) {
-    let REMOVAL = false;
-    for (let id in graph) {
-      if ( graph[id].cloned ) {
-//console.log("removeAnomalLoop",id);
-        reporter.report(id, 'Anomal loop');
-        delete graph[id].cloned;
-        removeNode( graph, id + '_clone' ); // remove clone
-        REMOVAL = true;
-      }
-    }
-    return REMOVAL;
-  }
-
   function removeEnd(graph, reporter) {
     let REMOVAL = false;
     for (let id in graph) {
@@ -832,9 +865,34 @@ module.exports = function () {
            && graph[id].node.id == id // do not remove clone created for loop
       ) {
 //console.log("removeEnd",id);
-        removeNode( graph, id );
+        removeSequentialNode( graph, id );
         REMOVAL = true;
-        break;
+      }
+    }
+    return REMOVAL;
+  }
+
+  function removeMultipleStarts(graph, reporter) {
+    let REMOVAL = false;
+    for (let id in graph) {
+      if ( graph[id].merge ) {
+////console.log("removeAlternativeStart for",id,graph);
+        let alternativeStarts = graph[id].predecessors.filter(predecessorId => 
+          !canLoop(predecessorId,graph)
+          && !graph[predecessorId].fork 
+          && graph[predecessorId].predecessors.length == 0
+        );
+        if ( alternativeStarts.length > 1 ) {
+          if ( graph[id].merge != EXCLUSIVE && alternativeStarts.length == 2 ) {
+            reporter.report(id, 'Alternative flows into non-exclusive gateway');
+          } 
+          // remove alternative start
+          for (var i = 0; i < alternativeStarts.length; i++) {
+//console.log("removeAlternativeStart",alternativeStarts[i]);
+            removeSequentialNode( graph, alternativeStarts[i] );
+            REMOVAL = true;
+          }
+        }
       }
     }
     return REMOVAL;
@@ -842,15 +900,19 @@ module.exports = function () {
 
   function removeStart(graph, reporter) {
     let REMOVAL = false;
+      while ( removeMultipleStarts(graph, reporter) ) {
+//console.log("removeMultipleStarts");
+      REMOVAL = true;
+    }
+
     for (let id in graph) {
       if ( graph[id].predecessors.length == 0 
            && graph[id].successors.length <= 1
            && !graph[id].cloned
       ) {
 //console.log("removeStart");
-        removeNode( graph, id );
+        removeSequentialNode( graph, id );
         REMOVAL = true;
-        break;
       }
     }
     return REMOVAL;

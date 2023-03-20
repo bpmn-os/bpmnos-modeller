@@ -6,6 +6,7 @@ import noBlankEvent from "./bpmn/no-blank-event";
 import implicitSplit from "./bpmn/implicit-split";
 import implicitJoin from "./bpmn/implicit-join";
 import conditionalFlow from "./bpmn/conditional-flow";
+import loop from "./bpmn/loop";
 import structuralAnomaly from "./bpmn/structural-anomaly";
 import singleBlankStartEvent from "bpmnlint/rules/single-blank-start-event";
 import subProcessBlankStartEvent from "bpmnlint/rules/sub-process-blank-start-event";
@@ -44,6 +45,7 @@ export default function() {
         "essential/implicit-split": "error",
         "essential/implicit-join": "error",
         "essential/conditional-flow": "error",
+        "essential/loop": "error",
         "essential/structural-anomaly": "error",
         "essential/single-blank-start-event": "error",
         "essential/sub-process-blank-start-event": "error",
@@ -78,6 +80,7 @@ export default function() {
             "implicit-split": implicitSplit,
             "implicit-join": implicitJoin,
             "conditional-flow": conditionalFlow,
+            "loop": loop,
             "structural-anomaly": structuralAnomaly,
             "single-blank-start-event": singleBlankStartEvent,
             "sub-process-blank-start-event": subProcessBlankStartEvent,
