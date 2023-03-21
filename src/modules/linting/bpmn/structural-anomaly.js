@@ -10,15 +10,21 @@ const {
 /************************************************/
 
 /*
-The rule uses reduction rules to iteratively simplify the model and detect anomalies:
-- removeIntermediateNodes(graph, reporter)
-- removeParallelEnd(graph, reporter)
-- removeAlternativeEnds(graph, reporter)
-- removeMultipleFlowsBetweenGateways(graph, reporter)
-- removeFakeSubProcess(graph, reporter)
-- removeFakeSubProcess(graph, reporter, true)
-- removeLoop(graph, reporter)
-- removeLoop(graph, reporter, true)
+The rule uses reduction rules to iteratively simplify the model and detect anomalies.
+
+In a first step, unreachable nodes are detected. In a second step it is checked whether the flow going out of non-interrupting gateways merges with other flows. Then, the flow emerging at start nodes and the flows emerging from non-interrupting gateways are checked independently.
+
+A directed acyclic graph is created by conducting a topological sort. To eliminate cycles, the topological sort creates a copy of a node that forms the entry point into a loop and the inflows from all later nodes are redirected to the copy. After adding an empty set of `escapes` as well as the fork or merge behaviour (EXCLUSIVE, PARALLEL, INCLUSIVE, COMPLEX) for every applicable node, the following reduction rules are applied to the model to subsequently identify potential deadlocks, livelocks, races, and asymmetric gateways:
+
+- Intermediate nodes: nodes which are not the entry point of a loop and which have exactly on predecessor and one successor are removed if the predecessor is not a fork or if the node has an empty list of escapes.
+- Parallel ends: end nodes which are not the copy of an entry point to a loop and which have single predecessor which is a parallel gateway are removed
+- Alternative ends: end nodes which are not the copy of an entry point to a loop and which have single predecessor which is a non-parallel gateway are removed after adding the id of the non-parallel gateway to the set of escapes of the gateway. If the gateway is no longer forking, the fork behaviour is unset.
+- Multiple flows between gateways: if there are multiple flows between a forking and a merging gateway, all but one of these flows are removed and the fork and merge behaviour is unset if applicable. If the original fork and merge behaviour didn't match, an error is reported as this can be regarded as bad modelling style and in case of a parallel merge can lead to a deadlock. 
+- Blocks between a forking and a merging gateway without any loop node and iwthout any other inflow or outflow between initial fork and final merge, except of potential escapes, are replaced by a direct link. Within the block all escapes are propagated towards the inflows of the direct predecessors of the merging gateway. If the merging gateway is a parallel merge and any of the predecessors has a non-empty set of escapes, a potential deadlock is reported. Furthermore, the escapes of these predecessors are added to the escapes of the forking gateway. Within a block all gateways must be consistent. If no consistent block exists, also blocks with inconsistent gateways are replaced by a direct link and the inconsistencies are reported.
+- Loops: Nodes along any path in the directed acyclic graph from an entry point of a loop to its copy are merged, all inflows and outflows are redirected accordingly and all escapes are combined. Only loops that do not contain the entry point of another loop or any other of the aformentioned blocks are considered. Loops may only contain exclusive forks and merges. If no such loop and none of  the aformentioned blocks exists loops with different for or merge behaviour are also merged, however, an anomaly is reported because of potential deadlocks and races.  If the merged node doesn't have an escape or outflow, the loop is infinite and a respective anomaly is reported. 
+
+The above blocks are repeatedly identified in the order given above until no further block can be reduced.
+Thereafter, end and start nodes are removed and all remaining nodes are reported as anomaly. 
 */
 
 module.exports = function () {
@@ -56,6 +62,19 @@ module.exports = function () {
       // report all unreachable nodes
       for (let i in unreachableNodes.filter(e => !is(e, 'bpmn:BoundaryEvent')) ) {
         reporter.report(unreachableNodes[i].id, 'Node unreachable');
+      }
+
+      // report merges of flows from unreachable nodes
+      for (let i in reachableNodes ) {
+        const node = reachableNodes[i];
+        if ( node.incoming) {
+          for ( let j in node.incoming) {
+            let predecessorId = node.incoming[j].sourceRef.id;
+            if ( unreachableNodes.find(e => e.id == predecessorId) ) {
+              reporter.report(node.id, "Merge with flow from unreachable node '" + predecessorId + "'" );
+            }
+          }
+        }
       }
 
       // determine reachable interrupting non-interrupting boundary events
@@ -652,7 +671,7 @@ console.error("No loop found");
             reporter.report(cycleNodes[i],"Loop may release multiple tokens");
           }
           if ( graph[cycleNodes[i]].merge && graph[cycleNodes[i]].merge != EXCLUSIVE ) {
-            reporter.report(cycleNodes[i],"Potential deadlock because of loop");
+            reporter.report(cycleNodes[i],"Non-exclusive merge in loop");
           }
         }
         else if ( (graph[cycleNodes[i]].fork && graph[cycleNodes[i]].fork != EXCLUSIVE )
