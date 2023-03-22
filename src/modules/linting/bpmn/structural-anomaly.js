@@ -196,12 +196,13 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
   function buildAcyclicGraph( nodes, interruptingBoundaryEvents, reachables, reporter ) {
     let graph = {};
     while ( nodes.length ) {
+//console.log("Nodes",nodes);
       let i = select(nodes, reachables, graph, reporter);
       if ( i != undefined ) {
         insert( nodes, i, interruptingBoundaryEvents, graph );
       }
       else {
-        i = selectLoopNode(nodes, graph, reporter);
+        i = selectLoopNode(nodes, graph, interruptingBoundaryEvents, reporter);
         if ( i == undefined ) {
 console.error("No loop found");
         }
@@ -257,26 +258,22 @@ console.error("No loop found");
     return;
   }
 
-  function selectLoopNode(nodes, graph, reporter) {
+  function selectLoopNode(nodes, graph, boundaryEvents, reporter) {
 //console.log("selectLoopNode");
     // find node that has a path to itself
     for (let i in nodes) {
-      const id = nodes[i];
-      const stack = [ id ];
+      const id = nodes[i].id;
+//console.log("selectLoopNode",id);
+      const stack = [];
+      mergeUnique(stack,getSuccessors(nodes[i],boundaryEvents));
       while ( stack.length ) {
-//console.log("stack:",stack);
-        const nodeId = stack.shift();
-//console.log("Path:",path,nodeId);
-        if ( nodeId == id ) {
+        const node = stack.shift();
+        if ( node.id == id ) {
 //console.log("Cycle:",id);
           return i;
         }
-        else if ( graph[nodeId].node.id == nodeId ) {
-          for ( let i in graph[nodeId].successors ) {
-            const successorId = graph[nodeId].successors[i];
-            stack.push( path.concat(successorId) );
-          }
-        }
+        const successors = getSuccessors(node,boundaryEvents);
+        mergeUnique(stack,successors.filter(e => graph[e.id] == undefined)); 
       }
     }
   }
