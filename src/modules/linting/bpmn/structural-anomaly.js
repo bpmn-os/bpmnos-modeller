@@ -218,7 +218,7 @@ console.error("No loop found");
           successors: [], 
           predecessors: [], 
           merge: getMergeBehaviour(graph[id].node,interruptingBoundaryEvents), 
-          fork: getForkBehaviour(graph[id].node,interruptingBoundaryEvents), 
+          fork: undefined, //getForkBehaviour(graph[id].node,interruptingBoundaryEvents), 
           escapes: []
         };
       }
