@@ -20,7 +20,7 @@ A directed acyclic graph is created by conducting a topological sort. To elimina
 - Parallel ends: end nodes which are not the copy of an entry point to a loop and which have single predecessor which is a parallel gateway are removed
 - Alternative ends: end nodes which are not the copy of an entry point to a loop and which have single predecessor which is a non-parallel gateway are removed after adding the id of the non-parallel gateway to the set of escapes of the gateway. If the gateway is no longer forking, the fork behaviour is unset.
 - Multiple flows between gateways: if there are multiple flows between a forking and a merging gateway, all but one of these flows are removed and the fork and merge behaviour is unset if applicable. If the original fork and merge behaviour didn't match, an error is reported as this can be regarded as bad modelling style and in case of a parallel merge can lead to a deadlock. 
-- Blocks between a forking and a merging gateway without any loop node and iwthout any other inflow or outflow between initial fork and final merge, except of potential escapes, are replaced by a direct link. Within the block all escapes are propagated towards the inflows of the direct predecessors of the merging gateway. If the merging gateway is a parallel merge and any of the predecessors has a non-empty set of escapes, a potential deadlock is reported. Furthermore, the escapes of these predecessors are added to the escapes of the forking gateway. Within a block all gateways must be consistent. If no consistent block exists, also blocks with inconsistent gateways are replaced by a direct link and the inconsistencies are reported.
+- Blocks between a forking and a merging gateway without any loop node and without any other inflow or outflow between initial fork and final merge, except of potential escapes, are replaced by a direct link. Within the block all escapes are propagated towards the inflows of the direct predecessors of the merging gateway. If the merging gateway is a parallel merge and any of the predecessors has a non-empty set of escapes, a potential deadlock is reported. Furthermore, the escapes of these predecessors are added to the escapes of the forking gateway. Within a block all gateways must be consistent. If no consistent block exists, also blocks with inconsistent gateways are replaced by a direct link and the inconsistencies are reported.
 - Loops: Nodes along any path in the directed acyclic graph from an entry point of a loop to its copy are merged, all inflows and outflows are redirected accordingly and all escapes are combined. Only loops that do not contain the entry point of another loop or any other of the aformentioned blocks are considered. Loops may only contain exclusive forks and merges. If no such loop and none of  the aformentioned blocks exists loops with different for or merge behaviour are also merged, however, an anomaly is reported because of potential deadlocks and races.  If the merged node doesn't have an escape or outflow, the loop is infinite and a respective anomaly is reported. 
 
 The above blocks are repeatedly identified in the order given above until no further block can be reduced.
@@ -412,8 +412,8 @@ console.error("No loop found");
             || removeParallelEnd(graph, reporter)
             || removeAlternativeEnds(graph, reporter)
             || removeMultipleFlowsBetweenGateways(graph, reporter)
-            || removeFakeSubProcess(graph, reporter)
-            || removeFakeSubProcess(graph, reporter, true)
+            || removeAcyclicConnectedBlock(graph, reporter)
+            || removeAcyclicConnectedBlock(graph, reporter, true)   
             || removeLoop(graph, reporter)
             || removeLoop(graph, reporter, true)
     ) {
@@ -683,194 +683,209 @@ console.error("No loop found");
     return cycleNodes;
   }
 
-  function removeFakeSubProcess(graph, reporter, force) {
+
+  function removeAcyclicConnectedBlock(graph, reporter, force) {
     let REMOVAL = false;
-    for (let id in graph) {
-      if ( graph[id].fork ) {
-        let structure = findAcyclicEmbeddedStructure(id, graph, force);
-        if ( structure ) {
-          // remove all visited nodes between graph[id] and graph[successors[0]]
-//console.log( "Remove structure", structure, graph[structure.startId].fork, graph[structure.endId].merge );
-          // detect non-matching gateways
-          let reports = []
-          for ( let id in structure.nodes ) {
-            if ( graph[id].fork && graph[id].fork != graph[structure.startId].fork ) {
-              reports.push({ id, message: "Fork inconsistent with fork at '" + structure.startId + "'" });
-              reports.push({ id: structure.startId, message: "Fork inconsistent with fork at '" + id + "'" });
-            } 
-            if ( id != structure.startId 
-                 && graph[id].merge 
-                 && graph[id].merge != graph[structure.startId].fork
-                 && graph[id].merge != requiredMerge(id,graph,structure.nodes,graph[structure.startId].fork)
-            ) {
-              reports.push({ id, message: "Merge inconsistent with fork at '" + structure.startId + "'" });
-              reports.push({ id: structure.startId, message: "Fork inconsistent with merge at '" + id + "'" });
-            } 
-          }        
+    for (let startId in graph) {
+      if ( graph[startId].fork ) {
+        for (let endId in graph) {
+          if ( graph[endId].merge &&
+               ( force 
+                 || graph[endId].merge == graph[startId].fork
+                 || ( graph[startId].fork == PARALLEL && graph[endId].merge == INCLUSIVE )
+               ) 
+          ) {
+            let block = findAcyclicConnectedBlock(startId, endId, graph, force);
+            if ( block ) {
+              // detect non-matching gateways
+              let reports = []
+              for ( let id in block ) {
+                if ( graph[id].fork && graph[id].fork != graph[startId].fork ) {
+                  reports.push({ id, message: "Fork inconsistent with fork at '" + startId + "'" });
+                  reports.push({ id: startId, message: "Fork inconsistent with fork at '" + id + "'" });
+                } 
+                if ( id != startId 
+                     && graph[id].merge 
+                     && graph[id].merge != graph[startId].fork
+                     && graph[id].merge != requiredMerge(id,graph,block,graph[startId].fork)
+                ) {
+                  reports.push({ id, message: "Merge inconsistent with fork at '" + startId + "'" });
+                  reports.push({ id: startId, message: "Fork inconsistent with merge at '" + id + "'" });
+                } 
+              }        
 /*
-          if ( reports.length > 0 ) {
-            reports.push({ id: structure.endId, message: "Inconsistent gateway(s) starting with '" + structure.startId + "'" });
-            reports.push({ id: structure.startId, message: "Inconsistent gateway(s) ending with '" + structure.endId + "'" });
-          }
-*/
-          for ( let id in structure.nodes ) {
-            if ( id != structure.startId 
-                 && graph[structure.startId].fork == PARALLEL
-                 && graph[id].merge == PARALLEL
-            ) {
-              for ( let i in structure.nodes[id].escapes ) {
-                reports.push({ id, message: "Required token may be lost at '" + structure.nodes[id].escapes[i] + "'" });
-                reports.push({ id: structure.nodes[id].escapes[i], message: "May lose token required by  '" + id + "'" });
+              if ( reports.length > 0 ) {
+                reports.push({ id: endId, message: "Inconsistent gateway(s) starting with '" + startId + "'" });
+                reports.push({ id: startId, message: "Inconsistent gateway(s) ending with '" + endId + "'" });
               }
-            }
-          }
+*/
+              for ( let id in block ) {
+                if ( id != startId 
+                     && graph[startId].fork == PARALLEL
+                     && graph[id].merge == PARALLEL
+                ) {
+                  for ( let i in block[id].escapes ) {
+                    reports.push({ id, message: "Required token may be lost at '" + block[id].escapes[i] + "'" });
+                    reports.push({ id: block[id].escapes[i], message: "May lose token required by  '" + id + "'" });
+                  }
+                }
+              }
 //console.log("Reports:", reports);
-          for ( let i in reports ) {
-            reporter.report(reports[i].id,reports[i].message);
-          }
+              for ( let i in reports ) {
+                reporter.report(reports[i].id,reports[i].message);
+              }
 
-          let escapes = [];
-          for ( let i in graph[ structure.endId ].predecessors ) {
-            const predecessorId = graph[ structure.endId ].predecessors[i];
-            mergeUnique( escapes, structure.nodes[predecessorId].escapes );
-          }
+              // remove all nodes between startId and endId
+//console.log( "Remove block", block, graph[startId].fork, graph[endId].merge );
+              for ( let nodeId in block ) {            
+                if ( nodeId != startId && nodeId != endId ) {
+                  graph[startId].successors = graph[startId].successors.filter(e => e != nodeId);
+                  graph[endId].predecessors = graph[endId].predecessors.filter(e => e != nodeId);
+                  delete graph[nodeId];
+                  REMOVAL = true;
+                }
+              }
 
-          for ( let nodeId in structure.nodes ) {            
-            if ( nodeId != structure.startId && nodeId != structure.endId ) {
-              graph[structure.startId].successors = graph[structure.startId].successors.filter(e => e != nodeId);
-              graph[structure.endId].predecessors = graph[structure.endId].predecessors.filter(e => e != nodeId);
-              delete graph[nodeId];
-              REMOVAL = true;
-            }
-          }
-          if ( REMOVAL ) { 
-            mergeUnique( graph[structure.startId].escapes, escapes );
+              if ( REMOVAL ) { 
 
-            // ensure there is a flow between start and end of structure
-            if ( !graph[structure.startId].successors.includes(structure.endId) ) {
-              graph[structure.startId].successors.push(structure.endId);
-            }
-            if ( !graph[structure.endId].predecessors.includes(structure.startId) ) {
-              graph[structure.endId].predecessors.push(structure.startId);
-            }
-            if ( graph[structure.startId].successors.length <= 1 ) {
-              graph[structure.startId].fork = undefined;
-            }
-            if ( graph[structure.endId].predecessors.length <= 1 ) {
-              graph[structure.endId].merge = undefined;
+                mergeUnique( graph[startId].escapes, block[endId].escapes );
+
+                // ensure there is a flow between start and end of structure
+                if ( !graph[startId].successors.includes(endId) ) {
+                  graph[startId].successors.push(endId);
+                }
+                if ( !graph[endId].predecessors.includes(startId) ) {
+                  graph[endId].predecessors.push(startId);
+                }
+                if ( graph[startId].successors.length <= 1 ) {
+                  graph[startId].fork = undefined;
+                }
+                if ( graph[endId].predecessors.length <= 1 ) {
+                  graph[endId].merge = undefined;
+                }
+                return REMOVAL;
+              }
             }
           }
         }
       }
     }
-    return REMOVAL;
+    return false;
   }
 
-  function requiredMerge(id,graph,visited,fork) {
-    if ( fork != PARALLEL ) {
-      return fork;
-    }
-    for ( let j in graph[id].predecessors ) {
-////console.log("RM",id,graph,visited,graph[id].predecessors[j]);
-      const predecessorId = graph[id].predecessors[j];
-      if ( visited[predecessorId].escapes.length ) {
-        return INCLUSIVE;
-      }
-    }
-    return PARALLEL;
-  }
-
-  function findAcyclicEmbeddedStructure(id, graph, force) {
-//console.log("findAcyclicEmbeddedStructure",id,force);
+  function findAcyclicConnectedBlock(startId, endId, graph, force) {
+//console.log("findAcyclicEmbeddedStructure",startId, endId,structuredClone(graph),force);
     let visited = {};
-    visited[id] = { escapes: [...graph[id].escapes] };
+    visited[startId] = { escapes: [] };
     let successors = [];
-    for ( let j in graph[id].successors ) {
-      const successorId = graph[id].successors[j];
-////console.log(successors,successorId,successors.includes(successorId));
+    for ( let j in graph[startId].successors ) {
+      const successorId = graph[startId].successors[j];
       if ( !successors.includes(successorId) ) { 
         successors.push(successorId);
       }
     } 
 
-    if ( successors.length <= 1 ) {
-      return;
-    } 
-    
-    let endId = undefined;
     while ( successors.length > 0 ) {
-////console.log(id,successors,visited);
-      const nodeId = successors.find( i => graph[i].predecessors.every(el => visited[el] != undefined) );
+      let nodeId;
+      if ( successors.length > 1 || successors[0] != endId ) {
+        nodeId = successors.find( i => i != endId && graph[i].predecessors.every(el => visited[el] != undefined) ); 
 
-////console.log("X",id,successors,visited,nodeId);
-      if ( nodeId == undefined ) {
-        return;
-      }
-
-      if ( canLoop(nodeId,graph) ) {
+        if ( nodeId == undefined ) {
+          return;
+        }
+        if ( canLoop(nodeId,graph) ) {
 ////console.log("loop");
-        return;
+          return;
+        }
       }
+      else {
+        nodeId = endId;
+      } 
+      visited[nodeId] = { escapes: [] };
+
+//console.log("Node",nodeId,graph[nodeId],endId,successors[0]);
+
         
-      if ( !force && graph[nodeId].fork && graph[nodeId].fork != graph[id].fork ) {
-        // gateway types do not match
+      if ( !force 
+           && nodeId != endId
+           && graph[nodeId].fork 
+           && graph[nodeId].fork != graph[startId].fork 
+      ) {
+        // block is inconsistent
+//console.log("INCONSISTENT");
         return;
       }
 
       if ( !force && graph[nodeId].merge 
-           && graph[nodeId].merge != graph[id].fork                
-           && !(graph[nodeId].merge == INCLUSIVE && graph[id].fork == PARALLEL) 
+           && graph[nodeId].merge != graph[startId].fork                
+           && !(graph[nodeId].merge == INCLUSIVE && graph[startId].fork == PARALLEL) 
       ) {
-        // gateway types do not match
+        // block is inconsistent
+//console.log("INCONSISTENT");
         return;
       }
-
-      visited[nodeId] = { escapes: [...graph[nodeId].escapes] };
       successors = successors.filter(item => item !== nodeId);
 
       if ( !graph[nodeId].merge || graph[nodeId].merge != INCLUSIVE ) {
         // a node that is not an inclusive merge inherits escapes of predecessors 
         for ( let j in graph[nodeId].predecessors ) {
           const predecessorId = graph[nodeId].predecessors[j];
-////console.log(nodeId, " inherits ", visited[predecessorId].escapes);
+//console.log("NONINCLUSIVE", nodeId, " inherits ", visited[predecessorId].escapes,graph[predecessorId].escapes);
           mergeUnique( visited[nodeId].escapes, visited[predecessorId].escapes );
+          mergeUnique( visited[nodeId].escapes, graph[predecessorId].escapes );
         }
       }
       else if ( graph[nodeId].merge == INCLUSIVE ) {
         // an inclusive merge inherits escapes of predecessors only if all predecessors can escape
-        let escapes = []; 
+        let escapes = graph[nodeId].escapes; 
         for ( let j in graph[nodeId].predecessors ) {
           const predecessorId = graph[nodeId].predecessors[j];
-          if ( visited[predecessorId].escapes.length ) {
+          if ( predecessorId != startId && visited[predecessorId].escapes.length ) {
+//console.log("INCLUSIVE", nodeId, " inherits ", visited[predecessorId].escapes,graph[predecessorId].escapes);
             mergeUnique( escapes, visited[predecessorId].escapes );
+            mergeUnique( escapes, graph[predecessorId].escapes );
           }
           else {
+//console.log("INCLUSIVE", nodeId, " does not inherit from ",visited[predecessorId].escapes,graph[predecessorId].escapes);
             escapes = []; 
-            break
+            break;
           }
         }
         mergeUnique( visited[nodeId].escapes, escapes );
       }
 
-      if ( successors.length == 0 ) {
-        endId = nodeId;
-////console.log("End",endId)
-        break;
+      // add successors of visited node
+      if ( nodeId != endId ) {
+        for ( let j in graph[nodeId].successors ) {
+          const successorId = graph[nodeId].successors[j];
+          if ( !successors.includes(successorId) ) { 
+            successors.push(successorId);
+          }
+        } 
       }
-
-      // add successor of visited node
-      for ( let j in graph[nodeId].successors ) {
-        const successorId = graph[nodeId].successors[j];
-        if ( !successors.includes(successorId) ) { 
-          successors.push(successorId);
-        }
-      } 
     }
 ////console.log("F",id,successors,visited);
 
-    if ( endId ) {
-      return { startId: id, endId, nodes: visited };
+    return visited;
+  }
+
+
+  function requiredMerge(id,graph,visited,fork) {
+    if ( fork != PARALLEL ) {
+      return fork;
     }
+
+    for ( let j in graph[id].predecessors ) {
+////console.log("RM",id,graph,visited,graph[id].predecessors[j]);
+      const predecessorId = graph[id].predecessors[j];
+      if ( visited[predecessorId].escapes.length || graph[predecessorId].escapes.length ) {
+//console.log("Merge",id,"must be inclusive");
+        return INCLUSIVE;
+      }
+    }
+
+//console.log("Merge",id,"must be parallel");
+    return PARALLEL;
   }
 
   function removeEnd(graph, reporter) {
