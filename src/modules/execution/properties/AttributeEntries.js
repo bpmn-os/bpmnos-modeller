@@ -213,13 +213,25 @@ function AttributeObjective(props) {
 //  const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: attribute,
-      properties: {
-        objective: value
-      }
-    });
+    if ( value ) {
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: attribute,
+        properties: {
+          objective: value
+        }
+      });
+    }
+    else {
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: attribute,
+        properties: {
+          objective: null,
+          weight: null
+        }
+      });
+    }
   };
 
   const getValue = () => {
