@@ -536,6 +536,7 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
           REMOVAL = true;
         }
         else if ( !graph[ graph[id].predecessors[0] ].fork ) {
+//console.log("removeIntermediateNodes",id);
           const predecessorId = graph[id].predecessors[0];
           mergeUnique( graph[predecessorId].escapes, graph[id].escapes);
           removeSequentialNode( graph, id );
@@ -551,9 +552,9 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
     for (let id in graph) {
       if ( !graph[id].merge 
            && graph[id].successors.length == 0
-           && graph[id].node.id == id // do not remove clone created for loop
+           && !canLoop(id,graph)
       ) {
-//console.log("removeEnd",id);
+//console.log("removeTrailingEnd",id);
         if ( graph[id].predecessors.length == 1 ) {
           let predecessorId = graph[id].predecessors[0];
           if ( graph[predecessorId].fork ) {
@@ -579,11 +580,14 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
         if ( graph[predecessorId].fork == PARALLEL ) {
 //console.log("removeParallelEnd",id);
           removeSequentialNode( graph, id );
+/*
           if ( graph[predecessorId].predecessors.length <= 1 
                && graph[predecessorId].successors.length <= 1
           ) {
+console.log("removeParallelEnd",predecessorId);
             removeSequentialNode( graph, predecessorId );
           }
+*/
           REMOVAL = true;
         }
       }
@@ -813,6 +817,7 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
 
 
   function removeAcyclicConnectedBlock(graph, reporter, mode) {
+//console.log("removeAcyclicConnectedBlock",mode);
     let REMOVAL = false;
     for (let startId in graph) {
       if ( graph[startId].fork ) {
@@ -879,7 +884,7 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
                   REMOVAL = true;
                 }
               }
-
+//console.log(block,REMOVAL);
               if ( REMOVAL ) { 
                 // ensure there is a flow between start and end of structure
                 if ( !graph[startId].successors.includes(endId) ) {
@@ -905,7 +910,7 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
   }
 
   function findAcyclicConnectedBlock(startId, endId, graph, mode) {
-//console.log("findAcyclicConnectedBlock",startId, endId,structuredClone(graph),mode);
+//console.log("findAcyclicConnectedBlock",startId, endId,mode);
     switch(mode) {
       case Mode.HOMOGENEOUS:
         if ( graph[endId].merge != graph[startId].fork) return;
@@ -988,6 +993,8 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
       }
     }
 //console.log("Found block",block,mode);
+    // each block must contain at least start and end node
+    if ( block.length <= 2 ) return;
 
     return block;
   }
@@ -1002,8 +1009,8 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
       ) {
         for ( let j in graph[nodeId].successors ) {
           let successorId = graph[nodeId].successors[j];
-//console.log(successorId,graph[nodeId]);
-          if ( successorId != block[i-1] ) {
+          if ( successorId != endId ) {
+//console.log("Merge escapes",successorId,graph[nodeId]);
             mergeUnique( graph[nodeId].escapes, graph[successorId].escapes )
           }
         }
@@ -1013,12 +1020,13 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
 
   function validateParallelBlock(block,graph,reporter) {
     // block = [ startId, ..., endId] and sorted in order suitable to be traversed without further checks
+//console.log("Block",block);
     let startId = block[0];
     let escapes = {};
     escapes[ block[0] ] = [];
     for (let i = 1; i < block.length; i++) {
       let nodeId = block[i];
-      if ( graph[nodeId].predecessors.every(el => escapes[el].length == 0) ) {
+      if ( graph[nodeId].predecessors.every(el => !block.includes(el) || escapes[el].length == 0) ) {
         if ( graph[nodeId].merge && graph[nodeId].merge != PARALLEL ) {
           if ( reporter ) {
             reporter.report(graph[nodeId].node.id,"Inconsistent merge, use parallel merge instead");
