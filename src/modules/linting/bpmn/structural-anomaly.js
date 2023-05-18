@@ -113,10 +113,10 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
       graph = buildAcyclicGraph( startingNodes, interruptingBoundaryEvents, regularNodes, reporter );
       if ( DEBUG ) {
         if (typeof window !== 'undefined') {
-          console.log("Initial",structuredClone(graph));
+          console.log("Initial",startingNodes,structuredClone(graph));
         }
         else {
-          console.log("Initial",graph);
+          console.log("Initial",startingNodes,graph);
         }
       }
 
@@ -150,7 +150,25 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
 
       for ( let i in nonInterruptingBoundaryEvents ) {
         graph = buildAcyclicGraph( [ nonInterruptingBoundaryEvents[i] ], interruptingBoundaryEvents, reachableFromBoundary[i], reporter );
+        if ( DEBUG ) {
+          if (typeof window !== 'undefined') {
+            console.log("Initial",nonInterruptingBoundaryEvents[i],structuredClone(graph));
+          }
+          else {
+            console.log("Initial",nonInterruptingBoundaryEvents[i],graph);
+          }
+        }
+
         validate( graph, reporter );
+        if ( DEBUG ) {
+          if (typeof window !== 'undefined') {
+            console.log("Final",structuredClone(graph));
+          }
+          else {
+            console.log("Final",graph);
+          }
+        }
+
       }
     }
   }
@@ -205,16 +223,6 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
         reporter.report(id, 'Structural anomaly');
       }
     }
-/*
-    const urlParams = new URLSearchParams(window.location.search);
-    if ( urlParams.has('debug') ) {
-      for (let id in graph) {
-        if ( id == graph[id].node.id ) {
-          reporter.report(id, 'Structural anomaly');
-        }
-      }
-    }
-*/
   }
 
 /************************************************/
@@ -550,7 +558,7 @@ console.log("nonInterruptingBoundaryEvents",[...nonInterruptingBoundaryEvents]);
   function removeTrailingEnd(graph, reporter) {
     let REMOVAL = false;
     for (let id in graph) {
-      if ( !graph[id].merge 
+      if ( graph[id].predecessors.length <= 1 
            && graph[id].successors.length == 0
            && !canLoop(id,graph)
       ) {
@@ -706,6 +714,7 @@ console.log("removeParallelEnd",predecessorId);
             delete graph[cycleNodes[i]]; 
             REMOVAL = true;
           }
+					// remove arcs to itself
           graph[nodeId].predecessors = graph[nodeId].predecessors.filter(e => e != nodeId);
 					if ( !graph[nodeId].merge && graph[nodeId].predecessors.length > 1 ) {
             graph[nodeId].merge = EXCLUSIVE;
@@ -735,14 +744,14 @@ console.log("removeParallelEnd",predecessorId);
 //console.log("Redirect predecessors",predecessors,"of", fromId, "to", toId,); 
     for ( let j in graph[fromId].predecessors ) {
       const predecessorId = graph[fromId].predecessors[j];
-      if ( graph[predecessorId].successors.includes(toId) ) {
-        graph[predecessorId].successors = graph[predecessorId].successors.filter(e => e != fromId);
-      }
-      else {
+//      if ( graph[predecessorId].successors.includes(toId) ) {
+//        graph[predecessorId].successors = graph[predecessorId].successors.filter(e => e != fromId);
+//      }
+//      else {
         let index = graph[predecessorId].successors.indexOf(fromId);
         graph[predecessorId].successors[index] = toId;
         graph[toId].predecessors.push(predecessorId);
-      }
+//      }
     }
   }
 
@@ -750,14 +759,14 @@ console.log("removeParallelEnd",predecessorId);
 //console.log("Redirect successors",successors,"of", fromId, "to", toId,); 
     for ( let j in graph[fromId].successors ) {
       const successorId = graph[fromId].successors[j];
-      if ( graph[successorId].predecessors.includes(toId) ) {
-        graph[successorId].predecessors = graph[successorId].predecessors.filter(e => e != fromId);
-      }
-      else {
+//      if ( graph[successorId].predecessors.includes(toId) ) {
+//        graph[successorId].predecessors = graph[successorId].predecessors.filter(e => e != fromId);
+//      }
+//      else {
         let index = graph[successorId].predecessors.indexOf(fromId);
         graph[successorId].predecessors[index] = toId;
         graph[toId].successors.push(successorId);
-      }
+//      }
     }
   }
 
@@ -993,8 +1002,10 @@ console.log("removeParallelEnd",predecessorId);
       }
     }
 //console.log("Found block",block,mode);
-    // each block must contain at least start and end node
+    // each block must contain at least start and end node 
     if ( block.length <= 2 ) return;
+    // each block must merge flows at end node
+    if ( graph[endId].predecessors.filter(el => block.includes(el)).length < 2 ) return;
 
     return block;
   }
