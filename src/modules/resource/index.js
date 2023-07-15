@@ -2,16 +2,18 @@ import ResourceRenderer from './ResourceRenderer';
 import ResourceLabelProvider from './ResourceLabelProvider';
 import ResourceContextPad from './ResourceContextPad';
 import ResourcePalette from './ResourcePalette';
+import ResourceElementsPopupMenu from './ResourceElementsPopupMenu';
 import ResourceUpdater from './ResourceUpdater';
 import JobDecorator from './JobDecorator';
 import JobPopupMenu from './JobPopupMenu';
 
 export default {
-  __init__: [ 'resourceRenderer', 'resourceLabelProvider', 'resourceContextPad', 'resourcePalette', 'resourceUpdater', 'jobDecorator', 'jobPopupMenu' ],
+  __init__: [ 'resourceRenderer', 'resourceLabelProvider', 'resourceContextPad', 'resourcePalette', 'resourceElementsPopupMenu', 'resourceUpdater', 'jobDecorator', 'jobPopupMenu' ],
   resourceRenderer: [ 'type', ResourceRenderer ],
   resourceLabelProvider: [ 'type', ResourceLabelProvider ],
   resourceContextPad: [ 'type', ResourceContextPad ],
   resourcePalette: [ 'type', ResourcePalette ],
+  resourceElementsPopupMenu: [ 'type', ResourceElementsPopupMenu ],
   resourceUpdater: [ 'type', ResourceUpdater ],
   jobDecorator: [ 'type', JobDecorator ],
   jobPopupMenu: [ 'type', JobPopupMenu ]

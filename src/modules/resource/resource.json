@@ -8,7 +8,7 @@
   "types": [
     {
       "name": "ResourceExtension",
-      "extends": [ "bpmn:Activity" ],
+      "extends": [ "bpmn:SubProcess" ],
       "properties": [
         {
           "name": "type",

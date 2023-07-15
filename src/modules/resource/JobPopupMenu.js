@@ -11,8 +11,14 @@ export default class JobPopupMenu {
 
   getPopupMenuHeaderEntries(element) {
     return function (entries) {
-      // Remove all header entries (i.e. multi-instance and loop)
-      return {};
+      if ( element.type == 'bpmn:Task' || element.type == 'bpmn:SubProcess' ) {
+        var businessObject = getBusinessObject(element);
+        if ( businessObject.$parent && businessObject.$parent.type == "JobShop") {
+        // Remove all header entries (i.e. multi-instance and loop)
+          return {};
+        }
+      }
+      return entries;
     };
   }
 
