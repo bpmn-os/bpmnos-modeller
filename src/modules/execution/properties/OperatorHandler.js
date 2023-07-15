@@ -70,7 +70,7 @@ function addFactory({ bpmnFactory, commandStack, element }) {
     let operators = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Operators'); 
 
     // create 'execution:Operator'
-    let operator = createElement('execution:Operator', { id: nextId('Operator_') , type: 'choice' }, operators, bpmnFactory);
+    let operator = createElement('execution:Operator', { id: nextId('Operator_') , type: 'set' }, operators, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
