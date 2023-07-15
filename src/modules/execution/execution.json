@@ -27,12 +27,17 @@
           "type": "Decision",
           "isMany": true
         }
-       ]
+      ]
     },
     {
-      "name": "Decision",
+      "name": "Decision", 
       "superClass": [ "Element" ],
       "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
         {
           "name": "attribute",
           "type": "String",

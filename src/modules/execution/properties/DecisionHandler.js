@@ -41,13 +41,13 @@ export function decisionHandler({ element, injector }) {
 
     return {
       id,
-      label: decision.get('name') || decision.get('id'),
+      label: decision.get('attribute') || decision.get('id'),
       entries: DecisionEntries({
         idPrefix: id,
         element,
         decision
       }),
-      autoFocusEntry: id + '-name',
+      autoFocusEntry: id + '-attribute',
       remove: removeFactory({ commandStack, element, decision })
     };
   });
@@ -63,10 +63,10 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const decisions = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Decisions'); 
+    let decisions = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Decisions');
 
     // create 'execution:Decision'
-    const decision = createElement('execution:Decision', { id: nextId('Decision_') }, decisions, bpmnFactory);
+    let decision = createElement('execution:Decision', { id: nextId('Decision_') }, decisions, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -75,7 +75,6 @@ function addFactory({ bpmnFactory, commandStack, element }) {
         decision: [ ...decisions.get('decision'), decision ]
       }
     });
-
   };
 }
 
