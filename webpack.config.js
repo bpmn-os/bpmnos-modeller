@@ -69,6 +69,7 @@ module.exports = {
         { from: 'node_modules/bpmn-js-bpmnlint/dist/assets/css', to: 'vendor/bpmn-js-bpmnlint/' },
         { from: 'node_modules/bpmn-js-token-simulation/assets/css', to: 'vendor/bpmn-js-token-simulation/' },
         { from: 'src/modules/resource/css', to: 'modules/resource/' },
+        { from: 'src/modules/execution/css', to: 'modules/execution/' },
       ]
     })
   ]

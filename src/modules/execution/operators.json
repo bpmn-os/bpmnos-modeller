@@ -1,6 +1,6 @@
 [
-   { "label": "expression", "value": "expression", "title": "Calculates the value of a specified attribute using a specified expression", "parameters": [ { "name": "expression" } ] },
-   { "label": "lookup", "value": "lookup", "title": "Looks up the value from a data storage", "parameters": [ { "name": "source", "value": "file" }, { "name": "filename" }, { "name": "key" } ] },
-   { "label": "random", "value": "random", "title": "Sets the value of a specified attribute using a specified probability distribution", "parameters": [ { "name": "distribution" } ] },
-   { "label": "choice", "value": "choice", "title": "Determines the value of a specified attribute according to a specified logic" }
+   { "label": "set", "value": "set", "title": "Sets the attribute value", "parameters": [ { "name": "set" } ]},
+   { "label": "unset", "value": "unset", "title": "Unsets the attribute value"},
+   { "label": "expression", "value": "expression", "title": "Calculates the attribute value using an expression", "parameters": [ { "name": "expression" } ] },
+   { "label": "lookup", "value": "lookup", "title": "Obtains the attribute value from a lookup table", "parameters": [ { "name": "source", "value": "file" }, { "name": "filename" }, { "name": "key" } ] }
 ]

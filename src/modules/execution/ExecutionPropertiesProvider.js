@@ -9,6 +9,7 @@ import {
 
 import { ExecutableProps } from './properties/ExecutableProps';
 import { statusHandler } from './properties/StatusHandler';
+import { decisionHandler } from './properties/DecisionHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
 import { operatorHandler } from './properties/OperatorHandler';
 import { messageHandler } from './properties/MessageHandler';
@@ -20,6 +21,7 @@ const LOW_PRIORITY = 500;
 
 const EXECUTION_GROUPS = [
 { label: 'Status', id: 'status', component: ListGroup, handler: statusHandler},
+{ label: 'Decisions', id: 'decisions', component: ListGroup, handler: decisionHandler},
 { label: 'Restrictions', id: 'restrictions', component: ListGroup, handler: restrictionHandler},
 { label: 'Operators', id: 'operators', component: ListGroup, handler: operatorHandler},
 { label: 'Message', id: 'message', handler: messageHandler},

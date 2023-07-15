@@ -8,6 +8,39 @@
   "associations": [],
   "types": [
     {
+      "name": "ExecutionExtension",
+      "extends": [ "bpmn:Task" ],
+      "properties": [
+        {
+          "name": "type",
+          "isAttr": true,
+          "type": "String"
+        }
+      ]
+    },
+    {
+      "name": "Decisions", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "decision",
+          "type": "Decision",
+          "isMany": true
+        }
+       ]
+    },
+    {
+      "name": "Decision",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "attribute",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
+    },
+    {
       "name": "Status", 
       "superClass": [ "Element" ],
       "properties": [
