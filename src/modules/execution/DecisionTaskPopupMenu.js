@@ -19,28 +19,33 @@ export default class DecisionTaskPopupMenu {
   getPopupMenuEntries(element) {
     const self = this;
     return function (entries) {
-      if ( is(element, "bpmn:Activity") 
-           && !(is(element, "bpmn:SubProcess") && element.collapsed == false ) 
+      if ( element.type == "bpmn:Task"
            && element.businessObject.type != 'Decision' 
       ) {
-        entries = {
-          "replace-with-decision-task": {
-            label: "Decision Task",
-            className: "bpmn-icon-decision-task",
-            action: function () {
-              var businessObject = element.businessObject;
-              businessObject.type = 'Decision';
-              var replaceElement = self.replaceElement(element, {
-                type: "bpmn:Task",
-                businessObject
-              });
-              return replaceElement;
-            }
-          },
-          ...entries
-        };
+        if ( element.businessObject.$parent.type != 'JobShop' ) {
+          // add decision task as option for task
+          entries = {
+            "replace-with-decision-task": {
+              label: "Decision Task",
+              className: "bpmn-icon-decision-task",
+              action: function () {
+                var businessObject = element.businessObject;
+                businessObject.type = 'Decision';
+                var replaceElement = self.replaceElement(element, {
+                  type: "bpmn:Task",
+                  businessObject
+                });
+                return replaceElement;
+              }
+            },
+            ...entries
+          };
+        }
       }
-      else if ( is(element, "bpmn:Task") && element.businessObject.type == 'Decision' ) {
+      else if ( element.type == "bpmn:Task" 
+           && element.businessObject.type == 'Decision' 
+      ) {
+        // provide task as option for decision task
         entries = {
           "replace-with-task": {
             label: "Task",
@@ -57,6 +62,50 @@ export default class DecisionTaskPopupMenu {
           }
         };
       }
+      else if ( is(element, "bpmn:Task") 
+           && !is(element, "bpmn:CallActivity")
+      ) {
+        // only allow tasks as option for typed task
+        let forbidden = ["replace-with-call-activity","replace-with-collapsed-subprocess","replace-with-expanded-subprocess"];
+        for (var key in entries) {
+          if ( forbidden.includes(key) ) {
+            delete entries[key];
+          }
+        }
+
+        let taskEntry = entries["replace-with-task"];
+        delete entries["replace-with-task"];
+
+        entries = {
+          taskEntry,
+          "replace-with-decision-task": {
+            label: "Decision Task",
+            className: "bpmn-icon-decision-task",
+            action: function () {
+              var businessObject = element.businessObject;
+              businessObject.type = 'Decision';
+              var replaceElement = self.replaceElement(element, {
+                type: "bpmn:Task",
+                businessObject
+              });
+              return replaceElement;
+            }
+          },
+          ...entries
+        };
+      }
+      else if ( is(element, "bpmn:CallActivity") ||
+                ( is(element, "bpmn:SubProcess") && element.collapsed != false )
+      ) {
+        // do not allow typed tasks as option for subprocess
+        let allowed = ["replace-with-task","replace-with-call-activity","replace-with-collapsed-subprocess","replace-with-expanded-subprocess"];
+        for (var key in entries) {
+          if ( !allowed.includes(key) ) {
+            delete entries[key];
+          }
+        }
+      }
+
       return entries;
     };
   }

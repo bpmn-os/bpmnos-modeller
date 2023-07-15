@@ -32,7 +32,7 @@ export default class JobPopupMenu {
           var allowed = [ "replace-with-collapsed-subprocess", "replace-with-expanded-subprocess", "replace-with-task" ];
           for (var key in entries) {
             if ( !allowed.includes(key) ) {
-              delete entries[key]
+              delete entries[key];
             }
           }
         }
