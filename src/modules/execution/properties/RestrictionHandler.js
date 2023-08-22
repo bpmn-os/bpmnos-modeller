@@ -36,10 +36,15 @@ export function restrictionHandler({ element, injector }) {
 
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
-
-  const parent = getCustomItem( element, 'execution:Status' ) || {};
-  const restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
-
+  let parent = undefined;
+  let restrictions = undefined;
+  if ( is(businessObject, 'bpmn:SequenceFlow') ) {
+    restrictions = getCustomItem( element, 'execution:Restrictions' ) || {};
+  }
+  else {
+    parent = getCustomItem( element, 'execution:Status' ) || {};
+    restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
+  }
 
   const items = ( restrictions.restriction || []).map((restriction, index) => {
     const id = element.id + '-restriction-' + index;
@@ -69,20 +74,29 @@ export function restrictionHandler({ element, injector }) {
 function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
+console.log(element);
+    const businessObject = element.businessObject;
 
-    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
-
-    let restrictions = parent.restrictions ? parent.get('restrictions')[0] : undefined;
-    if ( !restrictions ) {
-      // create 'execution:Restrictions'
-      restrictions = createElement('execution:Restrictions', {}, parent, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
-          element,
-          moddleElement: parent,
-          properties: {
-            restrictions: [ ...parent.get('restrictions'), restrictions ]
-          }
-      });
+    let parent = undefined;
+    let restrictions = undefined;
+    if ( element.type == 'bpmn:SequenceFlow' ) {
+      restrictions = ensureCustomItem( bpmnFactory, commandStack, element, 'execution:Restrictions' );
+console.log(businessObject, element, restrictions);
+    }
+    else {
+      parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+      restrictions = parent.restrictions ? parent.get('restrictions')[0] : undefined;
+      if ( !restrictions ) {
+        // create 'execution:Restrictions'
+        restrictions = createElement('execution:Restrictions', {}, parent, bpmnFactory);
+        commandStack.execute('element.updateModdleProperties', {
+            element,
+            moddleElement: parent,
+            properties: {
+              restrictions: [ ...parent.get('restrictions'), restrictions ]
+            }
+        });
+      }
     }
 
     // create 'execution:Restriction'
@@ -107,8 +121,15 @@ function removeFactory({ commandStack, element, restriction }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    const parent = getCustomItem( element, 'execution:Status' ) || {};
-    let restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
+    let parent = undefined;
+    let restrictions = undefined;
+    if ( is(businessObject, 'bpmn:SequenceFlow') ) {
+      restrictions = getCustomItem( element, 'execution:Restrictions' ) || {};
+    }
+    else {
+      parent = getCustomItem( element, 'execution:Status' ) || {};
+      restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
+    }
 
     if (!restrictions) {
       return;
@@ -127,18 +148,33 @@ function removeFactory({ commandStack, element, restriction }) {
       }
     });
 
-    // remove 'execution:Restrictions' if there are no restrictions anymore
     if (!restrictionList.length) {
-      commands.push({
-        cmd: 'element.updateModdleProperties',
-        context: {
-          element,
-          moddleElement: parent,
-          properties: {
-            restrictions: undefined
+      if ( is(businessObject, 'bpmn:SequenceFlow') ) {
+        const extensionElements = businessObject.get('extensionElements');
+        commands.push({
+          cmd: 'element.updateModdleProperties',
+          context: {
+            element,
+            moddleElement: extensionElements,
+            properties: {
+              values: without(extensionElements.values, restrictions)
+            }
           }
-        }
-      });
+        });
+      }
+      else {
+      // remove 'execution:Restrictions' from parent if there are no restrictions anymore
+        commands.push({
+          cmd: 'element.updateModdleProperties',
+          context: {
+            element,
+            moddleElement: parent,
+            properties: {
+              restrictions: undefined
+            }
+          }
+        });
+      }
     }
 
     commandStack.execute('properties-panel.multi-command-executor', commands);
