@@ -81,7 +81,7 @@ export function getEventDefinition(element, eventType) {
 }
 
 export function isMessageSupported(element) {
-  return is(element, 'bpmn:ReceiveTask') || (
+  return (
     isAny(element, [
       'bpmn:StartEvent',
       'bpmn:EndEvent',
@@ -93,10 +93,6 @@ export function isMessageSupported(element) {
 }
 
 export function getMessageEventDefinition(element) {
-  if (is(element, 'bpmn:ReceiveTask')) {
-    return getBusinessObject(element);
-  }
-
   return getEventDefinition(element, 'bpmn:MessageEventDefinition');
 }
 
