@@ -37,7 +37,9 @@ export function restrictionHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const restrictions = getCustomItem( element, 'execution:Restrictions' ) || {};
+  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
+
 
   const items = ( restrictions.restriction || []).map((restriction, index) => {
     const id = element.id + '-restriction-' + index;
@@ -68,7 +70,20 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const restrictions = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Restrictions'); 
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+
+    let restrictions = parent.restrictions ? parent.get('restrictions')[0] : undefined;
+    if ( !restrictions ) {
+      // create 'execution:Restrictions'
+      restrictions = createElement('execution:Restrictions', {}, parent, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: parent,
+          properties: {
+            restrictions: [ ...parent.get('restrictions'), restrictions ]
+          }
+      });
+    }
 
     // create 'execution:Restriction'
     const restriction = createElement('execution:Restriction', { id: nextId('Restriction_') }, restrictions, bpmnFactory);
@@ -92,7 +107,8 @@ function removeFactory({ commandStack, element, restriction }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    let restrictions = getCustomItem(element,'execution:Restrictions');
+    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    let restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
 
     if (!restrictions) {
       return;
@@ -113,16 +129,13 @@ function removeFactory({ commandStack, element, restriction }) {
 
     // remove 'execution:Restrictions' if there are no restrictions anymore
     if (!restrictionList.length) {
-      const businessObject = getRelevantBusinessObject(element),
-            extensionElements = businessObject.get('extensionElements');
-
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
-          moddleElement: extensionElements,
+          moddleElement: parent,
           properties: {
-            values: without(extensionElements.values, restrictions)
+            restrictions: undefined
           }
         }
       });

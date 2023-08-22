@@ -111,25 +111,37 @@ function hasProcessRef(element) {
 
 function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
   const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
-
-  let attributes = status.get('attribute') || [];
-  if ( !attributes.find(attribute => attribute.name == "instance") ) {
-      const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'instance', type: 'xs:string' }, status, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
+  let attributes = status.get('attributes') ? status.attributes[0] : undefined;
+  if ( !attributes ) {
+    // create 'execution:Attributes'
+    attributes = createElement('execution:Attributes', {}, parent, bpmnFactory);
+    commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: status,
         properties: {
-          attribute: [ ...status.get('attribute'), attribute ]
+        attributes: [ attributes ]
+      }
+    });
+  }
+
+  let attributeList = attributes.get('attribute') || [];
+  if ( !attributeList.find(attribute => attribute.name == "instance") ) {
+      const attribute = createElement('execution:Attribute', { id: 'Instance' , name: 'instance', type: 'xs:string' }, attributes, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+        element,
+        moddleElement: attributes,
+        properties: {
+          attribute: [ ...attributes.get('attribute'), attribute ]
         }
       });
   }
-  if ( !attributes.find(attribute => attribute.name == "timestamp") ) {
-      const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , name: 'timestamp', type: 'xs:integer', value: '0' }, status, bpmnFactory);
+  if ( !attributeList.find(attribute => attribute.name == "timestamp") ) {
+      const attribute = createElement('execution:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'xs:integer', value: '0' }, attributes, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
         element,
-        moddleElement: status,
+        moddleElement: attributes,
         properties: {
-          attribute: [ ...status.get('attribute'), attribute ]
+          attribute: [ ...attributes.get('attribute'), attribute ]
         }
       });
   }

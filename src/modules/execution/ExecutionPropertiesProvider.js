@@ -8,7 +8,7 @@ import {
 } from './properties/bpmn/';
 
 import { ExecutableProps } from './properties/ExecutableProps';
-import { statusHandler } from './properties/StatusHandler';
+import { attributeHandler } from './properties/AttributeHandler';
 import { decisionHandler } from './properties/DecisionHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
 import { operatorHandler } from './properties/OperatorHandler';
@@ -20,7 +20,7 @@ import { releaseHandler } from './properties/ReleaseHandler';
 const LOW_PRIORITY = 500;
 
 const EXECUTION_GROUPS = [
-{ label: 'Status', id: 'status', component: ListGroup, handler: statusHandler},
+{ label: 'Attributes', id: 'attributes', component: ListGroup, handler: attributeHandler},
 { label: 'Decisions', id: 'decisions', component: ListGroup, handler: decisionHandler},
 { label: 'Restrictions', id: 'restrictions', component: ListGroup, handler: restrictionHandler},
 { label: 'Operators', id: 'operators', component: ListGroup, handler: operatorHandler},
@@ -100,5 +100,3 @@ function GeneralGroup(element) {
   };
 
 }
-
-

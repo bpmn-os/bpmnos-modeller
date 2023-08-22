@@ -50,6 +50,32 @@
       "superClass": [ "Element" ],
       "properties": [
         {
+          "name": "attributes",
+          "type": "Attributes",
+          "isMany": true
+        },
+        {
+          "name": "restrictions",
+          "type": "Restrictions",
+          "isMany": true
+        },
+        {
+          "name": "operators",
+          "type": "Operators",
+          "isMany": true
+        },
+        {
+          "name": "decisions",
+          "type": "Decisions",
+          "isMany": true
+        }
+       ]
+    },
+    {
+      "name": "Attributes", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
           "name": "attribute",
           "type": "Attribute",
           "isMany": true
@@ -237,6 +263,17 @@
           "name": "value",
           "type": "String",
           "isAttr": true
+        }
+      ]
+    },
+    {
+      "name": "Timer", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "parameter",
+          "type": "Parameter",
+          "isMany": true
         }
       ]
     },

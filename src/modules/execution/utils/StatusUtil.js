@@ -15,13 +15,25 @@ function getCustomElements(businessObject) {
   return [];
 }
 
-/**
- * A function that returns the full attributes declared for a businessObject
- */
-function getAttributes(businessObject) {
+function getStatusElement(businessObject) {
   const customElements = getCustomElements(businessObject);
   for (var i=0; i < customElements.length; i++ ) {
-    const attributes = customElements[i].attribute;
+    if ( customElements[i].$type == "execution:Status" ) {
+      return customElements[i];
+    }
+  }
+  return {};
+}
+
+/**
+ * A function that returns the attributes declared for a businessObject
+ */
+function getAttributes(businessObject) {
+  const statusElement = getStatusElement(businessObject);
+  if ( !statusElement.attributes ) return [];
+
+  for (var i=0; i < statusElement.attributes.length; i++ ) {
+    const attributes = statusElement.attributes[i].attribute;
     if ( attributes && Array.isArray(attributes) ) {
       return  attributes;
     }

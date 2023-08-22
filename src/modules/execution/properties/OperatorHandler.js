@@ -36,7 +36,9 @@ export function operatorHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const operators = getCustomItem( element, 'execution:Operators' ) || {};
+  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const operators = parent.operators ? parent.get('operators')[0] : {};
+
 
   const items = ( operators.operator || []).map((operator, index) => {
     const id = element.id + '-operator-' + index;
@@ -67,7 +69,20 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    let operators = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Operators'); 
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+
+    let operators = parent.operators ? parent.get('operators')[0] : undefined;
+    if ( !operators ) {
+      // create 'execution:Operators'
+      operators = createElement('execution:Operators', {}, parent, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: parent,
+          properties: {
+            operators: [ ...parent.get('operators'), operators ]
+          }
+      });
+    }
 
     // create 'execution:Operator'
     let operator = createElement('execution:Operator', { id: nextId('Operator_') , type: 'unset' }, operators, bpmnFactory);
@@ -91,7 +106,8 @@ function removeFactory({ commandStack, element, operator }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    let operators = getCustomItem(element,'execution:Operators');
+    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    let operators = parent.operators ? parent.get('operators')[0] : {};
 
     if (!operators) {
       return;
@@ -112,16 +128,13 @@ function removeFactory({ commandStack, element, operator }) {
 
     // remove 'execution:Operators' if there are no operators anymore
     if (!operatorList.length) {
-      const businessObject = getRelevantBusinessObject(element),
-            extensionElements = businessObject.get('extensionElements');
-
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
-          moddleElement: extensionElements,
+          moddleElement: parent,
           properties: {
-            values: without(extensionElements.values, operators)
+            operators: undefined
           }
         }
       });

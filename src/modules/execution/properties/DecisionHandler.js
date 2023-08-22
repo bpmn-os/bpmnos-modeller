@@ -34,7 +34,8 @@ export function decisionHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const decisions = getCustomItem( element, 'execution:Decisions' ) || {};
+  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const decisions = parent.decisions ? parent.get('decisions')[0] : {};
 
   const items = ( decisions.decision || []).map((decision, index) => {
     const id = element.id + '-decision-' + index;
@@ -63,7 +64,20 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    let decisions = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Decisions');
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+
+    let decisions = parent.decisions ? parent.get('decisions')[0] : undefined;
+    if ( !decisions ) {
+      // create 'execution:Decisions'
+      decisions = createElement('execution:Decisions', {}, parent, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: parent,
+          properties: {
+            decisions: [ ...parent.get('decisions'), decisions ]
+          }
+      });
+    }
 
     // create 'execution:Decision'
     let decision = createElement('execution:Decision', { id: nextId('Decision_') }, decisions, bpmnFactory);
@@ -87,7 +101,8 @@ function removeFactory({ commandStack, element, decision }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    let decisions = getCustomItem(element,'execution:Decisions');
+    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    let decisions = parent.decisions ? parent.get('decisions')[0] : {};
 
     if (!decisions) {
       return;
@@ -108,16 +123,13 @@ function removeFactory({ commandStack, element, decision }) {
 
     // remove 'execution:Decisions' if there are no decisions anymore
     if (!decisionList.length) {
-      const businessObject = getRelevantBusinessObject(element),
-            extensionElements = businessObject.get('extensionElements');
-
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
-          moddleElement: extensionElements,
+          moddleElement: parent,
           properties: {
-            values: without(extensionElements.values, decisions)
+            decisions: undefined
           }
         }
       });

@@ -18,8 +18,8 @@ import {
 import { without } from 'min-dash';
 
 
-// Creates status entry and returns { items, add }
-export function statusHandler({ element, injector }) {
+// Creates attributes entry and returns { items, add }
+export function attributeHandler({ element, injector }) {
   let businessObject = getRelevantBusinessObject(element);
 
   // do not offer for empty pools
@@ -37,9 +37,10 @@ export function statusHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const status = getCustomItem( element, 'execution:Status' ) || {};
+  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const attributes = parent.attributes ? parent.get('attributes')[0] : {};
 
-  const items = ( status.attribute || []).map((attribute, index) => {
+  const items = ( attributes.attribute || []).map((attribute, index) => {
     const id = element.id + '-attribute-' + index;
 
     return {
@@ -66,16 +67,29 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+
+    let attributes = parent.attributes ? parent.get('attributes')[0] : undefined;
+    if ( !attributes ) {
+      // create 'execution:Attributes'
+      attributes = createElement('execution:Attributes', {}, parent, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: parent,
+          properties: {
+            attributes: [ ...parent.get('attributes'), attributes ]
+          }
+      });
+    }
 
     // create 'execution:Attribute'
-    const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , type: 'xs:decimal' }, status, bpmnFactory);
+    const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , type: 'xs:decimal' }, attributes, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: status,
+      moddleElement: attributes,
       properties: {
-        attribute: [ ...status.get('attribute'), attribute ]
+        attribute: [ ...attributes.get('attribute'), attribute ]
       }
     });
 
@@ -91,37 +105,35 @@ function removeFactory({ commandStack, element, attribute }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    let status = getCustomItem(element,'execution:Status');
+    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    let attributes = parent.attributes ? parent.get('attributes')[0] : {};
 
-    if (!status) {
+    if (!attributes) {
       return;
     }
 
-    const attributeList = without(status.get('attribute'), attribute);
+    const attributeList = without(attributes.get('attribute'), attribute);
 
     commands.push({
       cmd: 'element.updateModdleProperties',
       context: {
         element,
-        moddleElement: status,
+        moddleElement: attributes,
         properties: {
           attribute: attributeList
         }
       }
     });
 
-    // remove 'execution:Status' if there are no attributes anymore
+    // remove 'execution:Attributes' if there are no attributes anymore
     if (!attributeList.length) {
-      const businessObject = getRelevantBusinessObject(element),
-            extensionElements = businessObject.get('extensionElements');
-
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
-          moddleElement: extensionElements,
+          moddleElement: parent,
           properties: {
-            values: without(extensionElements.values, status)
+            attributes: undefined
           }
         }
       });

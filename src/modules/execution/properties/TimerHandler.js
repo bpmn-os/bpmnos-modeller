@@ -10,6 +10,11 @@ import { useService } from 'bpmn-js-properties-panel';
 import { getStatus } from '../utils/StatusUtil';
 
 import {
+  createElement,
+  nextId
+} from '../utils/ElementUtil';
+
+import {
   getCustomItem,
   ensureCustomItem
 } from '../utils/CustomItemUtil';
@@ -53,23 +58,38 @@ function TimerParameterName(props) {
   const bpmnFactory = useService('bpmnFactory');
 
   const setValue = (value) => {
-    // ensure 'extensionElements'
-    let parameter = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Parameter'); 
+    const timer = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Timer'); 
+
+    let parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
+    if ( !parameter ) {
+      // create 'execution:Parameter'
+      parameter = createElement('execution:Parameter', { name: 'trigger' }, timer, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: timer,
+          properties: {
+            parameter: [ parameter ]
+          }
+      });
+    }
 
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: parameter,
       properties: {
-        name: value
+        name: 'trigger'
       }
     });
   };
 
   const getValue = (element) => {
+    return 'trigger';
+/*
     const parameter = getCustomItem( element, 'execution:Parameter' );
     if ( parameter ) {
       return parameter.get('name');
     }
+*/
   };
 
   const validate = (value) => {
@@ -84,8 +104,9 @@ function TimerParameterName(props) {
     label: translate('Parameter name'),
     validate,
     getValue,
-    setValue,
-    debounce
+    setValue, 
+    debounce,
+    disabled: function() { return true; }
   });
 }
 
@@ -101,19 +122,35 @@ function TimerParameterAttribute(props) {
   const bpmnFactory = useService('bpmnFactory');
 
   const setValue = (value) => {
-    let parameter = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Parameter' ); 
+    const timer = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Timer'); 
+
+    let parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
+    if ( !parameter ) {
+      // create 'execution:Parameter'
+      parameter = createElement('execution:Parameter', { name: 'trigger' }, timer, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: timer,
+          properties: {
+            parameter: [ parameter ]
+          }
+      });
+    }
 
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: parameter,
       properties: {
+        name: 'trigger',
         attribute: value
       }
     });
   };
 
   const getValue = (element) => {
-    const parameter = getCustomItem( element, 'execution:Parameter' );
+    const timer = getCustomItem( element, 'execution:Timer' ) || {};
+    const parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
+
     if ( parameter ) {
       return parameter.get('attribute');
     }
@@ -151,19 +188,35 @@ function TimerParameterValue(props) {
   const bpmnFactory = useService('bpmnFactory');
 
   const setValue = (value) => {
-    let parameter = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Parameter' ); 
+    const timer = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Timer'); 
+
+    let parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
+    if ( !parameter ) {
+      // create 'execution:Parameter'
+      parameter = createElement('execution:Parameter', { name: 'trigger' }, timer, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: timer,
+          properties: {
+            parameter: [ parameter ]
+          }
+      });
+    }
 
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: parameter,
       properties: {
+        name: 'trigger',
         value: value
       }
     });
   };
 
   const getValue = (element) => {
-    const parameter = getCustomItem( element, 'execution:Parameter' );
+    const timer = getCustomItem( element, 'execution:Timer' ) || {};
+    const parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
+
     if ( parameter ) {
       return parameter.get('value');
     }
