@@ -136,7 +136,7 @@ function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
       });
   }
   if ( !attributeList.find(attribute => attribute.name == "timestamp") ) {
-      const attribute = createElement('execution:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'xs:integer', value: '0' }, attributes, bpmnFactory);
+      const attribute = createElement('execution:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'xs:decimal', value: '0' }, attributes, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: attributes,
