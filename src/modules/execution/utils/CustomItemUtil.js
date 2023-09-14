@@ -6,6 +6,11 @@ import {
   createElement,
 } from '../utils/ElementUtil';
 
+export function getCustomItems(element, type = undefined) {
+  var businessObject = getRelevantBusinessObject(element);
+  return getExtensionElementsList(businessObject, type) || [];
+}
+
 export function getCustomItem(element, type = undefined, index = 0) {
   var businessObject = getRelevantBusinessObject(element);
   var customItems = getExtensionElementsList(businessObject, type);
@@ -16,48 +21,53 @@ export function getCustomItem(element, type = undefined, index = 0) {
 
 export function ensureCustomItem(bpmnFactory, commandStack, element, type = undefined) {
   let item = getCustomItem(element,type);
+
   if ( !item ) {
-    let commands = [];
+    item = createCustomItem(bpmnFactory, commandStack, element, type);
+  }
+  return item;
+}
 
-    const businessObject = getRelevantBusinessObject(element);
+export function createCustomItem(bpmnFactory, commandStack, element, type = undefined) {
+  let commands = [];
+  const businessObject = getRelevantBusinessObject(element);
+  let extensionElements = businessObject.get('extensionElements');
 
-    let extensionElements = businessObject.get('extensionElements');
-
-    // (1) ensure 'bpmn:ExtensionElements'
-    if (!extensionElements) {
-      extensionElements = createElement(
-        'bpmn:ExtensionElements',
-        { values: [] },
-        businessObject,
-        bpmnFactory
-      );
-
-      commands.push({
-        cmd: 'element.updateModdleProperties',
-        context: {
-          element,
-          moddleElement: businessObject,
-          properties: { extensionElements }
-        }
-      });
-    }
-
-    // (2) create item of type
-    item = createElement(type, {}, extensionElements, bpmnFactory);
+  // (1) ensure 'bpmn:ExtensionElements'
+  if (!extensionElements) {
+    extensionElements = createElement(
+      'bpmn:ExtensionElements',
+      { values: [] },
+      businessObject,
+      bpmnFactory
+    );
 
     commands.push({
       cmd: 'element.updateModdleProperties',
       context: {
         element,
-        moddleElement: extensionElements,
-        properties: {
-          values: [ ...extensionElements.values, item ]
-        }
+        moddleElement: businessObject,
+        properties: { extensionElements }
       }
     });
-
-    commandStack.execute('properties-panel.multi-command-executor', commands);
   }
+
+  // (2) create item of type
+  let item = createElement(type, {}, extensionElements, bpmnFactory);
+
+  commands.push({
+    cmd: 'element.updateModdleProperties',
+    context: {
+      element,
+      moddleElement: extensionElements,
+      properties: {
+        values: [ ...extensionElements.values, item ]
+      }
+    }
+  });
+
+  commandStack.execute('properties-panel.multi-command-executor', commands);
+
   return item;
 }
 

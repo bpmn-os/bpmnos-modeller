@@ -7,6 +7,7 @@ import {
   DocumentationProps
 } from './properties/bpmn/';
 
+
 import { ExecutableProps } from './properties/ExecutableProps';
 import { attributeHandler } from './properties/AttributeHandler';
 import { decisionHandler } from './properties/DecisionHandler';
@@ -16,6 +17,7 @@ import { messageHandler } from './properties/MessageHandler';
 import { timerHandler } from './properties/TimerHandler';
 import { requestHandler } from './properties/RequestHandler';
 import { releaseHandler } from './properties/ReleaseHandler';
+import { guidanceHandler } from './properties/GuidanceHandler';
 
 const LOW_PRIORITY = 500;
 
@@ -27,7 +29,8 @@ const EXECUTION_GROUPS = [
 { label: 'Message', id: 'message', handler: messageHandler},
 { label: 'Timer', id: 'attribute', component: Group, handler: timerHandler},
 { label: 'Requests', id: 'requests', component: ListGroup, handler: requestHandler},
-{ label: 'Releases', id: 'releases', component: ListGroup, handler: releaseHandler}
+{ label: 'Releases', id: 'releases', component: ListGroup, handler: releaseHandler},
+{ label: 'Guidance', id: 'guidance', component: ListGroup, handler: guidanceHandler}
 ];
 
 export default class ExecutionPropertiesProvider {

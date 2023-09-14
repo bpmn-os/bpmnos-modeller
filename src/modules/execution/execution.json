@@ -72,6 +72,32 @@
        ]
     },
     {
+      "name": "Guidance",
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "type",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "attributes",
+          "type": "Attributes",
+          "isMany": true
+        },
+        {
+          "name": "restrictions",
+          "type": "Restrictions",
+          "isMany": true
+        },
+        {
+          "name": "operators",
+          "type": "Operators",
+          "isMany": true
+        }
+       ]
+    },
+    {
       "name": "Attributes", 
       "superClass": [ "Element" ],
       "properties": [
