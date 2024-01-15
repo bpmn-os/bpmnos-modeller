@@ -33,11 +33,13 @@ export default class ResourceContextPad {
 
 
     return {
-      'append.dummy': {
+      'append.resource': {
         group: 'model',
+        className: 'bpmn-icon-resource',
+        title: translate('Append Resource'),
         action: {
-          click: function() {},
-          dragstart: function() {}
+          click: appendResource,
+          dragstart: appendResource
         }
       },
       'append.request': {
@@ -56,15 +58,6 @@ export default class ResourceContextPad {
         action: {
           click: appendRelease,
           dragstart: appendRelease
-        }
-      },
-      'append.resource': {
-        group: 'model',
-        className: 'bpmn-icon-resource',
-        title: translate('Append Resource'),
-        action: {
-          click: appendResource,
-          dragstart: appendResource
         }
       }
     };

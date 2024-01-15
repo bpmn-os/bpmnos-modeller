@@ -6,6 +6,8 @@ import {
   createElement,
 } from '../utils/ElementUtil';
 
+import Ids from 'ids';
+
 export function getCustomItems(element, type = undefined) {
   var businessObject = getRelevantBusinessObject(element);
   return getExtensionElementsList(businessObject, type) || [];
@@ -80,4 +82,19 @@ export function getRelevantBusinessObject(element) {
 
   return businessObject;
 }
+
+export function replaceIds(obj) {
+  for (var key in obj) {
+    if (obj[key] !== null && typeof obj[key] === "object") {
+      // Recurse into children
+      replaceIds(obj[key]);
+    }
+    else if ( key == "id" && obj[key].includes("_") ) {
+      // Replace id of all elements including an underscore within the id
+      const ids = new Ids([ 32,32,1 ]);
+      obj[key] =  ids.nextPrefixed( obj[key].substring(0, obj[key].lastIndexOf('_') + 1) ); 
+    }
+  }
+}
+
 

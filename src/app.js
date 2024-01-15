@@ -13,6 +13,8 @@ import ExecutionModdleDescriptor from './modules/execution/execution.json';
 
 import sampleProcess from './newDiagram.bpmn';
 
+import SubProcessImporterModule from 'bpmn-js-subprocess-importer';
+
 import ResourceModdleDescriptor from './modules/resource/resource.json';
 
 import ResourceExtensionModule from './modules/resource';
@@ -22,6 +24,11 @@ import getLintConfig from './modules/linting';
 import createLintControls from './modules/linting/create-lint-controls';
 
 var modelName = 'diagram';
+
+var moddleExtensions = {
+  resource: ResourceModdleDescriptor,
+    execution: ExecutionModdleDescriptor,
+};
 
 var modeler = new BpmnModeler({
   container: '#canvas',
@@ -33,11 +40,12 @@ var modeler = new BpmnModeler({
   },
   keyboard: { bindTo: document },
   additionalModules: [
-   ResourceExtensionModule,
-   BpmnPropertiesPanelModule,
-   ExecutionPropertiesProviderModule,
-   LintModule,
-   TokenSimulationModule
+    ResourceExtensionModule,
+    BpmnPropertiesPanelModule,
+    ExecutionPropertiesProviderModule,
+    LintModule,
+    TokenSimulationModule,
+    SubProcessImporterModule
   ],
   moddleExtensions: {
     resource: ResourceModdleDescriptor,
