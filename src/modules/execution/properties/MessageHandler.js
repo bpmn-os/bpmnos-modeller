@@ -23,19 +23,10 @@ import {
  */
 export function messageHandler({ element }) {
 
-  if (!isMessageSupported(element)) {
+  if (!isMessageSupported(element) && !isAny(element, ['bpmn:ReceiveTask', 'bpmn:SendTask'] ) ) {
     return [];
   }
 
-/*
-  if ( !isAny(element, ['bpmn:CatchEvent', 'bpmn:ThrowEvent', 'bpmn:ReceiveTask', 'bpmn:SendTask'] ) ) {
-    return [];
-  }
-
-  if ( isAny(element, ['bpmn:CatchEvent', 'bpmn:ThrowEvent'] ) && getBusinessObject(element).eventDefinitions[0].$type != "bpmn:MessageEventDefinition" ) {
-    return [];
-  }
-*/
   const id = element.id + '-message';
   let message = getCustomItem( element, 'execution:Message' );
   return MessageEntries({
