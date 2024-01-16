@@ -2,15 +2,6 @@ import inherits from 'inherits';
 
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
-import {
-  createElement,
-  nextId
-} from '../execution/utils/ElementUtil';
-
-import {
-  replaceIds
-} from '../execution/utils/CustomItemUtil';
-
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
@@ -32,7 +23,6 @@ function ifNewResourceActivity(fn) {
     }
   };
 }
-
 
 /**
  * A handler responsible for creating children of a resource activity when this is created
@@ -73,18 +63,6 @@ export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, model
   this.postExecute([
     'shape.create'
   ], ifNewResourceActivity(populateSubProcess));
-
-  eventBus.on('moddleCopy.canCopyProperty', function(context) {
-    var property = context.property;
-    if (is(property, 'bpmn:ExtensionElements')) {
-      // create a copy of the extension elements in which all ids are replaced
-      let copiedProperty = bpmnjs.get('moddle').create('bpmn:ExtensionElements');
-      copiedProperty.values = [...property.values];
-      replaceIds(copiedProperty.values);
-
-      return copiedProperty;
-    }
-  });
 }
 
 inherits(ResourceFactory, CommandInterceptor);
