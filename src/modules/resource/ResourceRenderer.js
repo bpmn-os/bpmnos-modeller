@@ -20,43 +20,6 @@ import {
 
 export default function ResourceRenderer(eventBus) {
   BaseRenderer.call(this, eventBus, 2000);
-/*
-  function renderLabel(parentGfx, label, options) {
-    options = assign({
-      size: {
-        width: 100
-      }
-    }, options);
-
-    var text = textRenderer.createText(label || '', options);
-
-    svgClasses(text).add('djs-label');
-
-    svgAppend(parentGfx, text);
-console.log(text);
-    return text;
-  }
-
-  function renderExternalLabel(parentGfx, element) {
-    var box = {
-      width: 90,
-      height: 10,
-      x: element.width / 2 + element.x,
-      y: element.height /2 + element.y
-    };
-    return renderLabel(parentGfx, getLabel(element), {
-      box: box,
-      fitBox: true,
-      style: assign(
-          {},
-          textRenderer.getExternalStyle(),
-          {
-            fill: element.color
-          }
-      )
-    });
-  }
-*/
 }
 
 inherits(ResourceRenderer, BaseRenderer);
@@ -75,11 +38,6 @@ ResourceRenderer.prototype.canRender = function(element) {
 };
 
 ResourceRenderer.prototype.drawShape = function(parentNode, element) {
-/*
-  if ( element.type == 'label' ) {
-      return renderExternalLabel(parentNode, element);
-  }
-*/
   var businessObject = element.businessObject,
       type = businessObject.type;
 
@@ -95,6 +53,10 @@ ResourceRenderer.prototype.drawShape = function(parentNode, element) {
     svgAppend(parentNode, halfcircle);
     halfcircle = drawShape('path', { d: "M" + (width-0.45*height - offset) + ",0  a1,1 0 0,1 0," + height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
     svgAppend(parentNode, halfcircle);
+
+    var rect = drawRect(0.45*height, width-2*0.45*height, height, 0);
+    svgAppend(parentNode, rect);
+
     var line =  drawShape('line', { x1: 0.45*height, y1: 0, x2: width-0.45*height, y2: 0, stroke: 'black', strokeWidth: 2, fill: 'white' } );
     svgAppend(parentNode, line);
     line =  drawShape('line', { x1: 0.45*height, y1: height, x2: width-0.45*height, y2: height, stroke: 'black', strokeWidth: 2, fill: 'white' } );
