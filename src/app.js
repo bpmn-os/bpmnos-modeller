@@ -172,9 +172,9 @@ if (downloadBPMN) {
 }
 if (downloadSVG) {
   downloadSVG.addEventListener('click', function() {
-    modeler.saveSVG({}, function(err, svg) {
-      downloadXML(modelName + '.svg', svg);
-      console.log(svg);
+    modeler.saveSVG({ format: true }).then( function(model) {
+      downloadXML(modelName + '.svg', model.svg);
+      console.log(model.svg);
     });
     return false;
   });
