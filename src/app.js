@@ -14,6 +14,7 @@ import ExecutionModdleDescriptor from './modules/execution/execution.json';
 import sampleProcess from './newDiagram.bpmn';
 
 import SubProcessImporterModule from 'bpmn-js-subprocess-importer';
+import CollapseEventSubProcessModule from 'bpmn-js-collapse-event-subprocess';
 
 import ResourceModdleDescriptor from './modules/resource/resource.json';
 
@@ -45,13 +46,17 @@ var modeler = new BpmnModeler({
     ExecutionPropertiesProviderModule,
     LintModule,
     TokenSimulationModule,
-    SubProcessImporterModule
+    SubProcessImporterModule,
+    CollapseEventSubProcessModule
   ],
   moddleExtensions: {
     resource: ResourceModdleDescriptor,
     execution: ExecutionModdleDescriptor,
   }
 });
+
+modeler.get('subProcessImporter').setModdleExtensions(moddleExtensions);
+
 
 createLintControls(modeler);
 

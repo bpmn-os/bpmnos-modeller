@@ -2,11 +2,11 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 
 import Ids from 'ids';
 
-function replaceIds(obj) {
+function replaceExtensionElementIds(obj) {
   for (var key in obj) {
     if (obj[key] !== null && typeof obj[key] === "object") {
       // Recurse into children
-      replaceIds(obj[key]);
+      replaceExtensionElementIds(obj[key]);
     }
     else if ( key == "id" ) {
       if ( !obj[key].includes("_") ) {
@@ -30,7 +30,7 @@ export default function ReplaceIds(bpmnjs, eventBus) {
       // create a copy of the extension elements in which all ids are replaced
       let copiedProperty = bpmnjs.get('moddle').create('bpmn:ExtensionElements');
       copiedProperty.values = [...property.values];
-      replaceIds(copiedProperty.values);
+      replaceExtensionElementIds(copiedProperty.values);
 
       return copiedProperty;
     }

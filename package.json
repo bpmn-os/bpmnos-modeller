@@ -33,7 +33,8 @@
     "bpmn-moddle": "^8.1.0",
     "diagram-js": "^13.4.0",
     "tiny-svg": "^3.0.0",
-    "bpmn-js-subprocess-importer": "^0.1.0"
+    "bpmn-js-subprocess-importer": "^0.2.1",
+    "bpmn-js-collapse-event-subprocess": "^0.2.1"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",

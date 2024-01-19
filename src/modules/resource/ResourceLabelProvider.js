@@ -94,7 +94,7 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
   eventBus.on('commandStack.shape.delete.postExecute', function(event) {
     var context = event.context,
         element = context.shape;
-    if ( is(element, 'bpmn:Activity') && 
+    if ( is(element, 'bpmn:Activity') && element.businessObject &&
          ( element.businessObject.type == 'Resource' 
            || element.businessObject.type == 'Request' 
            || element.businessObject.type == 'Release' 
@@ -112,7 +112,7 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
 
   eventBus.on('element.changed', 99999, function(event) {
     var element = event.element;
-    if ( is(element, 'bpmn:Activity') && 
+    if ( is(element, 'bpmn:Activity') && element.businessObject &&
          ( element.businessObject.type == 'Resource' 
            || element.businessObject.type == 'Request' 
            || element.businessObject.type == 'Release' 
@@ -144,7 +144,7 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
   ********************************************************/
   eventBus.on('element.dblclick', 99999, function(event) {
     var element = event.element;
-    if ( is(element, 'bpmn:Activity') && 
+    if ( is(element, 'bpmn:Activity') && element.businessObject &&
          ( element.businessObject.type == 'Resource' 
            || element.businessObject.type == 'Request' 
            || element.businessObject.type == 'Release' 
@@ -176,7 +176,7 @@ export default function ResourceLabelProvider(eventBus, modeling, textRenderer, 
   ********************************************************/
   eventBus.on('shape.added', function(event) {
     var element = event.element;
-    if ( is(element, 'bpmn:Activity') && 
+    if ( is(element, 'bpmn:Activity') && element.businessObject &&
          ( element.businessObject.type == 'Resource' 
            || element.businessObject.type == 'Request' 
            || element.businessObject.type == 'Release' 
