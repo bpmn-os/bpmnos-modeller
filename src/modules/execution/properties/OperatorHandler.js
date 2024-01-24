@@ -29,7 +29,10 @@ export function operatorHandler({ element, injector }) {
   if ( !is(businessObject, 'bpmn:Process') && !is(businessObject, 'bpmn:Activity') ) {
     return;
   }
-  if ( is(element, 'bpmn:Activity') && ( getRelevantBusinessObject(element).type == "Request" || getRelevantBusinessObject(element).type == "Release") ) {
+  if ( is(element, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
+    return;
+  }
+  if ( is(element, 'bpmn:Activity')  && businessObject.loopCharacteristics ) {
     return;
   }
 

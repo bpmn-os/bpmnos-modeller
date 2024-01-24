@@ -34,10 +34,22 @@ export function guidanceHandler({ element, injector }) {
   if ( !is(businessObject, 'bpmn:Activity') && !is(element, 'bpmn:CatchEvent') ) {
     return;
   }
-  if ( is(element, 'bpmn:Activity') && ( getRelevantBusinessObject(element).type == "Request" || getRelevantBusinessObject(element).type == "Release") ) {
+  if ( is(businessObject, 'bpmn:SubProcess') && businessObject.triggeredByEvent ) {
     return;
   }
-  if ( is(element, 'bpmn:CatchEvent') && !isMessageSupported(element) ) {
+  if ( is(businessObject, 'bpmn:SendTask') ) {
+    return;
+  }
+  if ( is(businessObject, 'bpmn:Activity')  && businessObject.loopCharacteristics ) {
+    return;
+  }
+  if ( is(businessObject, 'bpmn:Activity') && businessObject.isForCompensation ) {
+    return;
+  }
+  if ( is(businessObject, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
+    return;
+  }
+  if ( is(businessObject, 'bpmn:CatchEvent') && !isMessageSupported(element) ) {
     return;
   }
 

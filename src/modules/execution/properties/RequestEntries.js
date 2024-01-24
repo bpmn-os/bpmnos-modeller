@@ -43,6 +43,13 @@ export default function RequestEntries(props) {
     component: MessageContent,
     idPrefix,
     request
+   },
+   {
+    id: idPrefix + '-revoke-message',
+    name: "Revoke message",
+    component: MessageContent,
+    idPrefix,
+    request
    }
   ];
 

@@ -50,6 +50,13 @@ export default function releaseEntries(props) {
     component: MessageContent,
     idPrefix,
     release
+   },
+   {
+    id: idPrefix + '-abort-message',
+    name: "Abort message",
+    component: MessageContent,
+    idPrefix,
+    release
    }
   ];
 

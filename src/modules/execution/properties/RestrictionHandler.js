@@ -33,6 +33,9 @@ export function restrictionHandler({ element, injector }) {
   if ( is(businessObject, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
     return;
   }
+  if ( is(businessObject, 'bpmn:Activity')  && businessObject.loopCharacteristics ) {
+    return;
+  }
 
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
