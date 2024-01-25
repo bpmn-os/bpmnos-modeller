@@ -1,3 +1,7 @@
+import {
+  is
+} from 'bpmn-js/lib/util/ModelUtil';
+
 import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
@@ -23,6 +27,11 @@ export default function AttributeEntries(props) {
   },{
     id: idPrefix + '-type',
     component: AttributeType,
+    idPrefix,
+    attribute
+  },{
+    id: idPrefix + '-instantiates',
+    component: AttributeInstantiates,
     idPrefix,
     attribute
   },{
@@ -163,6 +172,45 @@ function AttributeType(props) {
     getValue,
     setValue,
     getOptions
+  });
+}
+
+function AttributeInstantiates(props) {
+  const {
+    idPrefix,
+    element,
+    attribute
+  } = props;
+
+  if ( !is(element, 'bpmn:Activity') || !element.businessObject.loopCharacteristics ) {
+    return;
+  }
+
+  const commandStack = useService('commandStack');
+  const translate = useService('translate');
+  const debounce = useService('debounceInput');
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: attribute,
+      properties: {
+        instantiates: value
+      }
+    });
+  };
+
+  const getValue = () => {
+    return attribute.instantiates;
+  };
+
+  return TextFieldEntry({
+    element: attribute,
+    id: idPrefix + '-instantiates',
+    label: translate('Name of instantiated attribute'),
+    getValue,
+    setValue,
+    debounce
   });
 }
 

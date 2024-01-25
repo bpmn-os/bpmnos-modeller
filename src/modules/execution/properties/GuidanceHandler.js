@@ -40,9 +40,6 @@ export function guidanceHandler({ element, injector }) {
   if ( is(businessObject, 'bpmn:SendTask') ) {
     return;
   }
-  if ( is(businessObject, 'bpmn:Activity')  && businessObject.loopCharacteristics ) {
-    return;
-  }
   if ( is(businessObject, 'bpmn:Activity') && businessObject.isForCompensation ) {
     return;
   }

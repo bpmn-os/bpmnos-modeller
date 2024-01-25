@@ -32,9 +32,6 @@ export function operatorHandler({ element, injector }) {
   if ( is(element, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
     return;
   }
-  if ( is(element, 'bpmn:Activity')  && businessObject.loopCharacteristics ) {
-    return;
-  }
 
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
