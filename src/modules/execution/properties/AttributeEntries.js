@@ -2,9 +2,17 @@ import {
   is
 } from 'bpmn-js/lib/util/ModelUtil';
 
-import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
+import { TextFieldEntry, SelectEntry, ListEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
+
+import { Parameter, ParameterEntries } from './ParameterEntries';
+
+import {
+  createElement
+} from '../utils/ElementUtil';
+
+import { without } from 'min-dash';
 
 export default function AttributeEntries(props) {
 
@@ -30,8 +38,8 @@ export default function AttributeEntries(props) {
     idPrefix,
     attribute
   },{
-    id: idPrefix + '-instantiates',
-    component: AttributeInstantiates,
+    id: idPrefix + '-multi-instance-parameter',
+    component: MultiInstanceParameter,
     idPrefix,
     attribute
   },{
@@ -175,45 +183,6 @@ function AttributeType(props) {
   });
 }
 
-function AttributeInstantiates(props) {
-  const {
-    idPrefix,
-    element,
-    attribute
-  } = props;
-
-  if ( !is(element, 'bpmn:Activity') || !element.businessObject.loopCharacteristics ) {
-    return;
-  }
-
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: attribute,
-      properties: {
-        instantiates: value
-      }
-    });
-  };
-
-  const getValue = () => {
-    return attribute.instantiates;
-  };
-
-  return TextFieldEntry({
-    element: attribute,
-    id: idPrefix + '-instantiates',
-    label: translate('Name of instantiated attribute'),
-    getValue,
-    setValue,
-    debounce
-  });
-}
-
 function AttributeValue(props) {
   const {
     idPrefix,
@@ -255,6 +224,10 @@ function AttributeObjective(props) {
     element,
     attribute
   } = props;
+
+  if ( !attribute || attribute.get('type') == 'xs:string' ) {
+    return;
+  }
 
   const commandStack = useService('commandStack');
   const translate = useService('translate');
@@ -341,4 +314,80 @@ function AttributeWeight(props) {
     debounce
   });
 }
+
+function MultiInstanceParameter(props) {
+  const {
+    id,
+    element,
+    attribute
+  } = props;
+
+  if ( !is(element, 'bpmn:Activity') || 
+    !element.businessObject.loopCharacteristics ||
+    element.businessObject.loopCharacteristics.$type == 'bpmn:StandardLoopCharacteristics'
+  ) {
+    return;
+  }
+
+
+  const bpmnFactory = useService('bpmnFactory');
+  const commandStack = useService('commandStack');
+  const translate = useService('translate');
+
+  let parameter = attribute.get('parameter') || [];
+
+  function addParameter() {
+    let commands = [];
+    if ( (attribute.get('parameter') || []).length ) {
+      return;
+    }
+
+    // create parameter
+    const parameter = createElement('execution:Parameter', { name: 'collection' }, attribute, bpmnFactory);
+
+    commands.push({
+      cmd:'element.updateModdleProperties', 
+      context: {
+        element,
+        moddleElement: attribute,
+        properties: {
+          parameter: [ ...attribute.get('parameter'), parameter ]
+        }
+      }
+    });
+
+    // commit all updates
+    commandStack.execute('properties-panel.multi-command-executor', commands);
+
+  }
+
+  function removeParameter(parameter) {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: attribute,
+      properties: {
+        parameter: without(attribute.get('parameter'), parameter)
+      }
+    });
+  }
+
+  function compareName(parameter, anotherParameter) {
+    const [ name = '', anotherName = '' ] = [ parameter.name, anotherParameter.name ];
+
+    return name === anotherName ? 0 : name > anotherName ? 1 : -1;
+  }
+
+  return <ListEntry
+    id={ id }
+    element={ element }
+    label={ translate('Multi-instance values') }
+    items={ parameter }
+    component={ Parameter }
+    onAdd={ addParameter }
+    onRemove={ removeParameter }
+    compareFn={ compareName }
+    autoFocusEntry
+  />;
+}
+
 

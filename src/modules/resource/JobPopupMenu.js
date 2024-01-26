@@ -14,8 +14,15 @@ export default class JobPopupMenu {
       if ( element.type == 'bpmn:Task' || element.type == 'bpmn:SubProcess' ) {
         var businessObject = getBusinessObject(element);
         if ( businessObject.$parent && businessObject.$parent.type == "JobShop") {
-        // Remove all header entries (i.e. multi-instance and loop)
-          return {};
+/*
+          // Remove parallel multi-instance marker ("toggle-parallel-mi")
+          var allowed = [ "toggle-sequential-mi", "toggle-loop" ];
+          for (var key in entries) {
+            if ( !allowed.includes(key) ) {
+              delete entries[key];
+            }
+          }
+*/
         }
       }
       return entries;

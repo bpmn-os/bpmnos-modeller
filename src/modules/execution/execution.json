@@ -128,9 +128,9 @@
           "isAttr": true
         },
         {
-          "name": "instantiates",
-          "type": "String",
-          "isAttr": true
+          "name": "parameter",
+          "type": "Parameter",
+          "isMany": true
         },
         {
           "name": "value",
