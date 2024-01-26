@@ -190,6 +190,11 @@ function AttributeValue(props) {
     attribute
   } = props;
 
+  let parameter = attribute.get('parameter') || [];
+  if ( parameter.length ) {
+    return;
+  }
+
   const commandStack = useService('commandStack');
   const translate = useService('translate');
   const debounce = useService('debounceInput');
