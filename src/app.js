@@ -15,6 +15,7 @@ import sampleProcess from './newDiagram.bpmn';
 
 import SubProcessImporterModule from 'bpmn-js-subprocess-importer';
 import CollapseEventSubProcessModule from 'bpmn-js-collapse-event-subprocess';
+import SequentialAdHocSubProcessModule from 'bpmn-js-sequential-adhoc-subprocesses';
 
 import ResourceModdleDescriptor from './modules/resource/resource.json';
 
@@ -46,6 +47,7 @@ var modeler = new BpmnModeler({
     ExecutionPropertiesProviderModule,
     LintModule,
     TokenSimulationModule,
+    SequentialAdHocSubProcessModule,
     SubProcessImporterModule,
     CollapseEventSubProcessModule
   ],
