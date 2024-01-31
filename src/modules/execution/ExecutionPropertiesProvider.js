@@ -9,6 +9,7 @@ import {
 
 
 import { ExecutableProps } from './properties/ExecutableProps';
+import { SequencerProps } from './properties/SequencerProps';
 import { attributeHandler } from './properties/AttributeHandler';
 import { decisionHandler } from './properties/DecisionHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
@@ -92,6 +93,7 @@ function GeneralGroup(element) {
     ...IdProps({ element }),
     ...ProcessProps({ element }),
     ...ExecutableProps({ element }),
+    ...SequencerProps({ element }),
     ...DocumentationProps({ element })
   ];
 
