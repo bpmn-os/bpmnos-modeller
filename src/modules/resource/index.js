@@ -7,11 +7,12 @@ import RequestFactory from './RequestFactory';
 import ReleaseFactory from './ReleaseFactory';
 import ResourceFactory from './ResourceFactory';
 import PreventEditing from './PreventEditing';
+import SequencerDecorator from './SequencerDecorator';
 import JobDecorator from './JobDecorator';
 import JobPopupMenu from './JobPopupMenu';
 
 export default {
-  __init__: [ 'resourceRenderer', 'resourceLabelProvider', 'resourceContextPad', 'resourcePalette', 'resourceElementsPopupMenu', 'requestFactory', 'releaseFactory', 'resourceFactory', 'preventEditing', 'jobDecorator', 'jobPopupMenu' ],
+  __init__: [ 'resourceRenderer', 'resourceLabelProvider', 'resourceContextPad', 'resourcePalette', 'resourceElementsPopupMenu', 'requestFactory', 'releaseFactory', 'resourceFactory', 'preventEditing', 'sequencerDecorator', 'jobDecorator', 'jobPopupMenu' ],
   resourceRenderer: [ 'type', ResourceRenderer ],
   resourceLabelProvider: [ 'type', ResourceLabelProvider ],
   resourceContextPad: [ 'type', ResourceContextPad ],
@@ -21,6 +22,7 @@ export default {
   releaseFactory: [ 'type', ReleaseFactory ],
   resourceFactory: [ 'type', ResourceFactory ],
   preventEditing: [ 'type', PreventEditing ],
+  sequencerDecorator: [ 'type', SequencerDecorator ],
   jobDecorator: [ 'type', JobDecorator ],
   jobPopupMenu: [ 'type', JobPopupMenu ]
 };

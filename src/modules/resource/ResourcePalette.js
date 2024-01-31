@@ -30,7 +30,7 @@ export default class ResourcePalette {
       'create.resource': {
         group: 'activity',
         className: 'bpmn-icon-resource',
-        title: translate('Create Resource'),
+        title: translate('Create resource activity'),
         action: {
           dragstart: createResource,
           click: createResource
@@ -39,7 +39,7 @@ export default class ResourcePalette {
       'create.request': {
         group: 'activity',
         className: 'bpmn-icon-request',
-        title: translate('Create Request'),
+        title: translate('Create request activity'),
         action: {
           dragstart: createRequest,
           click: createRequest
@@ -48,7 +48,7 @@ export default class ResourcePalette {
       'create.release': {
         group: 'activity',
         className: 'bpmn-icon-release',
-        title: translate('Create Release'),
+        title: translate('Create release activity'),
         action: {
           dragstart: createRelease,
           click: createRelease

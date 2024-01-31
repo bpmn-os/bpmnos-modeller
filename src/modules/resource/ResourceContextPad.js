@@ -53,7 +53,7 @@ export default class ResourceContextPad {
       'append.resource': {
         group: 'model',
         className: 'bpmn-icon-resource',
-        title: translate('Append Resource'),
+        title: translate('Append resource activity'),
         action: {
           click: appendResource,
           dragstart: appendResource
@@ -62,7 +62,7 @@ export default class ResourceContextPad {
       'append.request': {
         group: 'model',
         className: 'bpmn-icon-request',
-        title: translate('Append Request'),
+        title: translate('Append request activity'),
         action: {
           click: appendRequest,
           dragstart: appendRequest
@@ -71,7 +71,7 @@ export default class ResourceContextPad {
       'append.release': {
         group: 'model',
         className: 'bpmn-icon-release',
-        title: translate('Append Release'),
+        title: translate('Append release activity'),
         action: {
           click: appendRelease,
           dragstart: appendRelease
