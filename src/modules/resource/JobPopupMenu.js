@@ -13,7 +13,7 @@ export default class JobPopupMenu {
     return function (entries) {
       if ( element.type == 'bpmn:Task' || element.type == 'bpmn:SubProcess' ) {
         var businessObject = getBusinessObject(element);
-        if ( businessObject.$parent && businessObject.$parent.type == "JobShop") {
+        if ( businessObject.$parent && businessObject.$parent.type == "Sequencer") {
 /*
           // Remove parallel multi-instance marker ("toggle-parallel-mi")
           var allowed = [ "toggle-sequential-mi", "toggle-loop" ];
@@ -34,7 +34,7 @@ export default class JobPopupMenu {
     return function (entries) {
       if ( element.type == 'bpmn:Task' || element.type == 'bpmn:SubProcess' ) {
         var businessObject = getBusinessObject(element);
-        if ( businessObject.$parent && businessObject.$parent.type == "JobShop") {
+        if ( businessObject.$parent && businessObject.$parent.type == "Sequencer") {
           // Remove typed tasks, transaction, call activity
           var allowed = [ "replace-with-collapsed-subprocess", "replace-with-expanded-subprocess", "replace-with-task" ];
           for (var key in entries) {

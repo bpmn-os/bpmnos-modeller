@@ -26,15 +26,18 @@ export default function JobDecorator(
   );
 
   this.canRender = function(element) {
-    if ( element.type != 'bpmn:Task' && element.type != 'bpmn:SubProcess'  ) {
+    if ( element.type != 'bpmn:Task' && element.type != 'bpmn:SubProcess' ) {
       return;
     }
     var businessObject = getBusinessObject(element);
     if ( !businessObject.$parent ) {
       return;
     }
+    if ( businessObject.triggeredByEvent ) {
+      return;
+    }
 
-    return ( businessObject.$parent.type == "JobShop" );
+    return ( businessObject.$parent.type == "Sequencer" );
   };
 
   this.drawShape = function(parentNode, shape) {

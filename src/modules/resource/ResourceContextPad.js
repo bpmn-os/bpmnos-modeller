@@ -33,6 +33,13 @@ export default class ResourceContextPad {
       return;
     }
 
+    if ( is(element,"bpmn:SubProcess") &&
+      element.businessObject &&
+      element.businessObject.triggeredByEvent
+    ) {
+      return;
+    }
+
     const {
       autoPlace,
       create,
