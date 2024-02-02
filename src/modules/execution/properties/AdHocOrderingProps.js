@@ -46,7 +46,7 @@ function AdHocOrdering(props) {
   const translate = useService('translate');
 
   const setValue = (value) => {
-    modeling.updateProperties(getBusinessObject(element), {
+    modeling.updateProperties(element, {
       ordering: value
     });
   };
