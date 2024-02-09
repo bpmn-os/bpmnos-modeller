@@ -334,7 +334,6 @@ function MultiInstanceParameter(props) {
     return;
   }
 
-
   const bpmnFactory = useService('bpmnFactory');
   const commandStack = useService('commandStack');
   const translate = useService('translate');

@@ -46,6 +46,17 @@
       ]
     },
     {
+      "name": "LoopCharacteristics", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "parameter",
+          "type": "Parameter",
+          "isMany": true
+        }
+      ]
+    },
+    {
       "name": "Status", 
       "superClass": [ "Element" ],
       "properties": [
@@ -67,6 +78,11 @@
         {
           "name": "decisions",
           "type": "Decisions",
+          "isMany": true
+        },
+        {
+          "name": "messages",
+          "type": "Messages",
           "isMany": true
         }
        ]
@@ -309,9 +325,25 @@
       ]
     },
     {
+      "name": "Messages", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "message",
+          "type": "Message",
+          "isMany": true
+        }
+      ]
+    },
+    {
       "name": "Message", 
       "superClass": [ "Element" ],
       "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
         {
           "name": "name",
           "type": "Name",
@@ -360,58 +392,22 @@
       "superClass": [ "Element" ],
       "properties": [
          {
-          "name": "request",
-          "type": "Request",
-          "isMany": true
-        },
-         {
-          "name": "release",
-          "type": "Release",
+          "name": "allocation",
+          "type": "Allocation",
           "isMany": true
         }
       ]
     },
     {
-      "name": "Request", 
+      "name": "Allocation", 
       "superClass": [ "Element" ],
       "properties": [
         {
           "name": "id",
           "type": "String",
           "isAttr": true
-        },
-        {
-          "name": "message",
-          "type": "Message",
-          "isMany": true
         }
        ]
-    },
-    {
-      "name": "Release", 
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "id",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "request",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "message",
-          "type": "Message",
-          "isMany": true
-        }
-       ]
-    },
-    {
-      "name": "Resource", 
-      "superClass": [ "Element" ],
-      "properties": []
     }
   ]
 }

@@ -23,10 +23,7 @@ import {
  */
 export function messageHandler({ element }) {
 
-  if (!isMessageSupported(element) && !isAny(element, ['bpmn:ReceiveTask', 'bpmn:SendTask'] ) ) {
-    return [];
-  }
-  if ( isAny(element, ['bpmn:ReceiveTask', 'bpmn:SendTask'] ) && element.businessObject.loopCharacteristics ) {
+  if (!isMessageSupported(element) ) {
     return [];
   }
 

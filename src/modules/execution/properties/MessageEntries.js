@@ -19,6 +19,7 @@ import { without } from 'min-dash';
 
 export default function MessageEntries(props) {
   const {
+    element,
     idPrefix,
     message
   } = props;
@@ -48,7 +49,7 @@ export default function MessageEntries(props) {
 }
 
 function MessageName(props) {
-  const {
+  let {
     idPrefix,
     element,
     message
@@ -61,8 +62,10 @@ function MessageName(props) {
 
   const setValue = (value) => {
 
-    // ensure 'execution:Message'
-    let message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+    if ( !message ) {
+      // ensure 'execution:Message'
+      message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+    }
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -97,7 +100,7 @@ function MessageName(props) {
 }
 
 function MessageParameters(props) {
-  const {
+  let {
     id,
     element,
     message
@@ -112,8 +115,10 @@ function MessageParameters(props) {
   function addParameter() {
     let commands = [];
 
-    let message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
-    
+    if ( !message ) {
+      message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+    }
+
     // create parameter
     const parameter = createElement('execution:Parameter', {}, message, bpmnFactory);
 
@@ -163,7 +168,7 @@ function MessageParameters(props) {
 }
 
 function MessageContent(props) {
-  const {
+  let {
     id,
     element,
     message
@@ -178,9 +183,10 @@ function MessageContent(props) {
   function addContent() {
     let commands = [];
 
-    // ensure 'execution:Message'
-    let message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
-
+    if ( !message ) {
+      // ensure 'execution:Message'
+      message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+    }
     // create 'execution:Content'
     const content = createElement('execution:Content', { id: nextId('Content_') }, message, bpmnFactory);
 

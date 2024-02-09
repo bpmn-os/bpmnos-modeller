@@ -10,27 +10,29 @@ import {
 
 import { ExecutableProps } from './properties/ExecutableProps';
 import { AdHocOrderingProps } from './properties/AdHocOrderingProps';
+import { loopHandler } from './properties/LoopHandler';
 import { attributeHandler } from './properties/AttributeHandler';
 import { decisionHandler } from './properties/DecisionHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
 import { operatorHandler } from './properties/OperatorHandler';
+import { multiMessageHandler } from './properties/MultiMessageHandler';
 import { messageHandler } from './properties/MessageHandler';
 import { timerHandler } from './properties/TimerHandler';
-import { requestHandler } from './properties/RequestHandler';
-import { releaseHandler } from './properties/ReleaseHandler';
+import { allocationHandler } from './properties/AllocationHandler';
 import { guidanceHandler } from './properties/GuidanceHandler';
 
 const LOW_PRIORITY = 500;
 
 const EXECUTION_GROUPS = [
+{ label: 'Loop parameters', id: 'loop', component: ListGroup, handler: loopHandler},
 { label: 'Attributes', id: 'attributes', component: ListGroup, handler: attributeHandler},
 { label: 'Decisions', id: 'decisions', component: ListGroup, handler: decisionHandler},
 { label: 'Restrictions', id: 'restrictions', component: ListGroup, handler: restrictionHandler},
 { label: 'Operators', id: 'operators', component: ListGroup, handler: operatorHandler},
+{ label: 'Messages', id: 'message', component: ListGroup, handler: multiMessageHandler},
 { label: 'Message', id: 'message', handler: messageHandler},
 { label: 'Timer', id: 'attribute', component: Group, handler: timerHandler},
-{ label: 'Requests', id: 'requests', component: ListGroup, handler: requestHandler},
-{ label: 'Releases', id: 'releases', component: ListGroup, handler: releaseHandler},
+{ label: 'Allocations', id: 'allocations', component: ListGroup, handler: allocationHandler},
 { label: 'Guidance', id: 'guidance', component: ListGroup, handler: guidanceHandler}
 ];
 
