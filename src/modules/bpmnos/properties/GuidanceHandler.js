@@ -53,7 +53,7 @@ export function guidanceHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const guidances = getCustomItems( element, 'execution:Guidance' );
+  const guidances = getCustomItems( element, 'bpmnos:Guidance' );
 
   const items = guidances.map((guidance, index) => {
     const id = element.id + '-guidance-' + index;
@@ -82,7 +82,7 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const guidance = createCustomItem(bpmnFactory, commandStack, element, 'execution:Guidance'); 
+    const guidance = createCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Guidance'); 
   };
 }
 

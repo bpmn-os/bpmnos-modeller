@@ -28,7 +28,7 @@ export function loopHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const loopCharacteristics = getCustomItem( element, 'execution:LoopCharacteristics' ) || {};
+  const loopCharacteristics = getCustomItem( element, 'bpmnos:LoopCharacteristics' ) || {};
 
   const items = ( loopCharacteristics.parameter || []).map((parameter, index) => {
     const id = element.id + '-parameter-' + index;
@@ -59,10 +59,10 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    let loopCharacteristics = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:LoopCharacteristics'); 
+    let loopCharacteristics = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:LoopCharacteristics'); 
 
-    // create 'execution:Parameter'
-    let parameter = createElement('execution:Parameter', { }, loopCharacteristics, bpmnFactory);
+    // create 'bpmnos:Parameter'
+    let parameter = createElement('bpmnos:Parameter', { }, loopCharacteristics, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -83,7 +83,7 @@ function removeFactory({ commandStack, element, parameter }) {
 
     const businessObject = getBusinessObject(element);
 
-    let loopCharacteristics = getCustomItem( element, 'execution:LoopCharacteristics' );
+    let loopCharacteristics = getCustomItem( element, 'bpmnos:LoopCharacteristics' );
 
     if (!loopCharacteristics) {
       return;
@@ -103,7 +103,7 @@ function removeFactory({ commandStack, element, parameter }) {
     });
 
 
-    // remove 'execution:LoopCharacteristics' if there are no loop characteristics anymore
+    // remove 'bpmnos:LoopCharacteristics' if there are no loop characteristics anymore
     if (!parameters.length) {
       const extensionElements = businessObject.get('extensionElements');
 

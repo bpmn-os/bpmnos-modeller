@@ -166,10 +166,10 @@ function AttributeType(props) {
 
   const getOptions = (element) => {
     return [
-      { value: 'xs:integer', label: translate('integer') },
-      { value: 'xs:decimal', label: translate('decimal') },
-      { value: 'xs:boolean', label: translate('boolean') },
-      { value: 'xs:string', label: translate('string') }
+      { value: 'integer', label: translate('Integer') },
+      { value: 'decimal', label: translate('Decimal') },
+      { value: 'boolean', label: translate('Boolean') },
+      { value: 'string', label: translate('String') }
     ];
   };
 
@@ -230,7 +230,7 @@ function AttributeObjective(props) {
     attribute
   } = props;
 
-  if ( !attribute || attribute.get('type') == 'xs:string' ) {
+  if ( !attribute || attribute.get('type') == 'string' ) {
     return;
   }
 
@@ -347,7 +347,7 @@ function MultiInstanceParameter(props) {
     }
 
     // create parameter
-    const parameter = createElement('execution:Parameter', { name: 'collection' }, attribute, bpmnFactory);
+    const parameter = createElement('bpmnos:Parameter', { name: 'collection' }, attribute, bpmnFactory);
 
     commands.push({
       cmd:'element.updateModdleProperties', 

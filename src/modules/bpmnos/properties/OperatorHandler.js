@@ -36,7 +36,7 @@ export function operatorHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
   const operators = parent.operators ? parent.get('operators')[0] : {};
 
 
@@ -69,12 +69,12 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
 
     let operators = parent.operators ? parent.get('operators')[0] : undefined;
     if ( !operators ) {
-      // create 'execution:Operators'
-      operators = createElement('execution:Operators', {}, parent, bpmnFactory);
+      // create 'bpmnos:Operators'
+      operators = createElement('bpmnos:Operators', {}, parent, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: parent,
@@ -84,8 +84,8 @@ function addFactory({ bpmnFactory, commandStack, element }) {
       });
     }
 
-    // create 'execution:Operator'
-    let operator = createElement('execution:Operator', { id: nextId('Operator_') , type: 'unset' }, operators, bpmnFactory);
+    // create 'bpmnos:Operator'
+    let operator = createElement('bpmnos:Operator', { id: nextId('Operator_') , type: 'unset' }, operators, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -106,7 +106,7 @@ function removeFactory({ commandStack, element, operator }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
     let operators = parent.operators ? parent.get('operators')[0] : {};
 
     if (!operators) {
@@ -126,7 +126,7 @@ function removeFactory({ commandStack, element, operator }) {
       }
     });
 
-    // remove 'execution:Operators' if there are no operators anymore
+    // remove 'bpmnos:Operators' if there are no operators anymore
     if (!operatorList.length) {
       commands.push({
         cmd: 'element.updateModdleProperties',

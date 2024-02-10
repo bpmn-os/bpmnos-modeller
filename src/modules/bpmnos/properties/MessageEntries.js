@@ -63,8 +63,8 @@ function MessageName(props) {
   const setValue = (value) => {
 
     if ( !message ) {
-      // ensure 'execution:Message'
-      message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+      // ensure 'bpmnos:Message'
+      message = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Message'); 
     }
 
     commandStack.execute('element.updateModdleProperties', {
@@ -116,11 +116,11 @@ function MessageParameters(props) {
     let commands = [];
 
     if ( !message ) {
-      message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+      message = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Message'); 
     }
 
     // create parameter
-    const parameter = createElement('execution:Parameter', {}, message, bpmnFactory);
+    const parameter = createElement('bpmnos:Parameter', {}, message, bpmnFactory);
 
     commands.push({
       cmd:'element.updateModdleProperties', 
@@ -184,11 +184,11 @@ function MessageContent(props) {
     let commands = [];
 
     if ( !message ) {
-      // ensure 'execution:Message'
-      message = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Message'); 
+      // ensure 'bpmnos:Message'
+      message = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Message'); 
     }
-    // create 'execution:Content'
-    const content = createElement('execution:Content', { id: nextId('Content_') }, message, bpmnFactory);
+    // create 'bpmnos:Content'
+    const content = createElement('bpmnos:Content', { id: nextId('Content_') }, message, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,

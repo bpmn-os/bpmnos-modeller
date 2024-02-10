@@ -38,7 +38,7 @@ export function allocationHandler({ element, injector }) {
         bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const allocations = getCustomItem( element, 'execution:Allocations' ) || {};
+  const allocations = getCustomItem( element, 'bpmnos:Allocations' ) || {};
 
   const items = ( allocations.allocation || []).map((allocation, index) => {
     const id = element.id + '-allocation-' + index;
@@ -68,10 +68,10 @@ function addFactory({ elementRegistry, bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    let allocations = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Allocations'); 
+    let allocations = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Allocations'); 
 
-    // create 'execution:Allocation'
-    let allocation = createElement('execution:Allocation', { id: nextId('Allocation_') }, allocations, bpmnFactory);
+    // create 'bpmnos:Allocation'
+    let allocation = createElement('bpmnos:Allocation', { id: nextId('Allocation_') }, allocations, bpmnFactory);
 
     let commands = [];
 
@@ -89,14 +89,14 @@ function addFactory({ elementRegistry, bpmnFactory, commandStack, element }) {
     const messageTasks = element.businessObject.flowElements.filter( child => isAny(child, [ 'bpmn:SendTask', 'bpmn:ReceiveTask'] ) );
     for ( let messageTask of messageTasks ) {
       let messageTaskElement = elementRegistry.get(messageTask.id);
-      let messages = ensureCustomItem(bpmnFactory, commandStack, messageTaskElement, 'execution:Messages');
+      let messages = ensureCustomItem(bpmnFactory, commandStack, messageTaskElement, 'bpmnos:Messages');
 
       // Remove 'Send ' or 'Receive ' from task name and capitalize first letter of message name 
       let name = messageTask.name.split(' ').slice(1).join(' ');
       name = name[0].toUpperCase() + name.slice(1);
 
-      // create 'execution:Message'
-      let message = createElement('execution:Message', { name }, messages, bpmnFactory);
+      // create 'bpmnos:Message'
+      let message = createElement('bpmnos:Message', { name }, messages, bpmnFactory);
 
       commandStack.execute('element.updateModdleProperties', {
         element: messageTaskElement,
@@ -106,8 +106,8 @@ function addFactory({ elementRegistry, bpmnFactory, commandStack, element }) {
         }
       });
 
-      // create 'execution:Parameter'
-      let parameter = createElement('execution:Parameter', { name: 'allocation', value: allocation.id }, message, bpmnFactory);
+      // create 'bpmnos:Parameter'
+      let parameter = createElement('bpmnos:Parameter', { name: 'allocation', value: allocation.id }, message, bpmnFactory);
 
       commandStack.execute('element.updateModdleProperties', {
         element: messageTaskElement,
@@ -118,9 +118,9 @@ function addFactory({ elementRegistry, bpmnFactory, commandStack, element }) {
       });
 
       if ( name == 'Request message' ) {
-        // create 'execution:Content'
-        let clientContent = createElement('execution:Content', { id: nextId('Content_'), key: 'ClientID', attribute: 'instance' }, message, bpmnFactory);
-        let allocationContent = createElement('execution:Content', { id: nextId('Content_'), key: 'AllocationID', value: allocation.id }, message, bpmnFactory);
+        // create 'bpmnos:Content'
+        let clientContent = createElement('bpmnos:Content', { id: nextId('Content_'), key: 'ClientID', attribute: 'instance' }, message, bpmnFactory);
+        let allocationContent = createElement('bpmnos:Content', { id: nextId('Content_'), key: 'AllocationID', value: allocation.id }, message, bpmnFactory);
 
         commandStack.execute('element.updateModdleProperties', {
           element: messageTaskElement,
@@ -146,7 +146,7 @@ function removeFactory({ elementRegistry, commandStack, element, allocation }) {
 
     const businessObject = getBusinessObject(element);
 
-    let allocations = getCustomItem(element,'execution:Allocations');
+    let allocations = getCustomItem(element,'bpmnos:Allocations');
 
     if (!allocations) {
       return;
@@ -158,7 +158,7 @@ function removeFactory({ elementRegistry, commandStack, element, allocation }) {
 
     for ( let messageTask of messageTasks ) {
       let messageTaskElement = elementRegistry.get(messageTask.id);
-      let messages = getCustomItem(messageTaskElement, 'execution:Messages'); 
+      let messages = getCustomItem(messageTaskElement, 'bpmnos:Messages'); 
       if ( messages.get('message').length > index ) {
         // TODO: identify message by allocation id not by index
         commandStack.execute('element.updateModdleProperties', {
@@ -184,7 +184,7 @@ function removeFactory({ elementRegistry, commandStack, element, allocation }) {
       }
     });
 
-    // remove 'execution:Allocations' if there are no allocations anymore
+    // remove 'bpmnos:Allocations' if there are no allocations anymore
     if (!allocationList.length) {
       const extensionElements = businessObject.get('extensionElements');
 

@@ -37,7 +37,7 @@ export function attributeHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
   const attributes = parent.attributes ? parent.get('attributes')[0] : {};
 
   const items = ( attributes.attribute || []).map((attribute, index) => {
@@ -67,12 +67,12 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
 
     let attributes = parent.attributes ? parent.get('attributes')[0] : undefined;
     if ( !attributes ) {
-      // create 'execution:Attributes'
-      attributes = createElement('execution:Attributes', {}, parent, bpmnFactory);
+      // create 'bpmnos:Attributes'
+      attributes = createElement('bpmnos:Attributes', {}, parent, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: parent,
@@ -82,8 +82,8 @@ function addFactory({ bpmnFactory, commandStack, element }) {
       });
     }
 
-    // create 'execution:Attribute'
-    const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , type: 'xs:decimal' }, attributes, bpmnFactory);
+    // create 'bpmnos:Attribute'
+    const attribute = createElement('bpmnos:Attribute', { id: nextId('Attribute_') , type: 'decimal' }, attributes, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -105,7 +105,7 @@ function removeFactory({ commandStack, element, attribute }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
     let attributes = parent.attributes ? parent.get('attributes')[0] : {};
 
     if (!attributes) {
@@ -125,7 +125,7 @@ function removeFactory({ commandStack, element, attribute }) {
       }
     });
 
-    // remove 'execution:Attributes' if there are no attributes anymore
+    // remove 'bpmnos:Attributes' if there are no attributes anymore
     if (!attributeList.length) {
       commands.push({
         cmd: 'element.updateModdleProperties',

@@ -100,7 +100,7 @@ function OperatorType(props) {
     let parameters = [];
     if ( option.parameters ) {
       for (var i=0; i < option.parameters.length; i++ ) {
-        parameters.push( createElement('execution:Parameter', option.parameters[i], operator, bpmnFactory) );
+        parameters.push( createElement('bpmnos:Parameter', option.parameters[i], operator, bpmnFactory) );
       }
     }
     commandStack.execute('element.updateModdleProperties', {
@@ -204,7 +204,7 @@ function OperatorParameters(props) {
     let commands = [];
 
     // create parameter
-    const parameter = createElement('execution:Parameter', {}, operator, bpmnFactory);
+    const parameter = createElement('bpmnos:Parameter', {}, operator, bpmnFactory);
 
     commands.push({
       cmd:'element.updateModdleProperties', 

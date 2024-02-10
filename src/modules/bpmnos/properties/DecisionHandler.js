@@ -34,7 +34,7 @@ export function decisionHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const parent = getCustomItem( element, 'execution:Status' ) || {};
+  const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
   const decisions = parent.decisions ? parent.get('decisions')[0] : {};
 
   const items = ( decisions.decision || []).map((decision, index) => {
@@ -64,12 +64,12 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
 
     let decisions = parent.decisions ? parent.get('decisions')[0] : undefined;
     if ( !decisions ) {
-      // create 'execution:Decisions'
-      decisions = createElement('execution:Decisions', {}, parent, bpmnFactory);
+      // create 'bpmnos:Decisions'
+      decisions = createElement('bpmnos:Decisions', {}, parent, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: parent,
@@ -79,8 +79,8 @@ function addFactory({ bpmnFactory, commandStack, element }) {
       });
     }
 
-    // create 'execution:Decision'
-    let decision = createElement('execution:Decision', { id: nextId('Decision_') }, decisions, bpmnFactory);
+    // create 'bpmnos:Decision'
+    let decision = createElement('bpmnos:Decision', { id: nextId('Decision_') }, decisions, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -101,7 +101,7 @@ function removeFactory({ commandStack, element, decision }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    const parent = getCustomItem( element, 'execution:Status' ) || {};
+    const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
     let decisions = parent.decisions ? parent.get('decisions')[0] : {};
 
     if (!decisions) {
@@ -121,7 +121,7 @@ function removeFactory({ commandStack, element, decision }) {
       }
     });
 
-    // remove 'execution:Decisions' if there are no decisions anymore
+    // remove 'bpmnos:Decisions' if there are no decisions anymore
     if (!decisionList.length) {
       commands.push({
         cmd: 'element.updateModdleProperties',

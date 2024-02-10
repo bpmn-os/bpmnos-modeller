@@ -250,7 +250,7 @@ function RestrictionMinInclusive(props) {
 
     if ( value ) {
       // add  minInclusive element
-      minInclusive = createElement('execution:MinInclusive', { value }, status, bpmnFactory);
+      minInclusive = createElement('bpmnos:MinInclusive', { value }, status, bpmnFactory);
 
       commandStack.execute('element.updateModdleProperties', {
         element,
@@ -310,7 +310,7 @@ function RestrictionMaxInclusive(props) {
 
     if ( value ) {
       // add  maxInclusive element
-      maxInclusive = createElement('execution:MaxInclusive', { value }, status, bpmnFactory);
+      maxInclusive = createElement('bpmnos:MaxInclusive', { value }, status, bpmnFactory);
 
       commandStack.execute('element.updateModdleProperties', {
         element,
@@ -356,7 +356,7 @@ function RestrictionEnumeration(props) {
     let commands = [];
 
     // create enumeration
-    const enumeration = createElement('execution:Enumeration', {}, restriction, bpmnFactory);
+    const enumeration = createElement('bpmnos:Enumeration', {}, restriction, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,

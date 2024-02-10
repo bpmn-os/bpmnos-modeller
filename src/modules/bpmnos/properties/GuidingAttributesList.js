@@ -14,17 +14,17 @@ import {
 
 import { useService } from 'bpmn-js-properties-panel';
 
-import OperatorEntries from './OperatorEntries';
+import AttributeEntries from './AttributeEntries';
 
 
-export default function OperatorsList(props) {
+export default function AttributesList(props) {
   const {
     element,
     idPrefix,
     guidance
   } = props;
 
-  const id = `${ idPrefix }-operators`;
+  const id = `${ idPrefix }-attributes`;
 
   const bpmnFactory = useService('bpmnFactory');
   const commandStack = useService('commandStack');
@@ -32,39 +32,39 @@ export default function OperatorsList(props) {
 
   const businessObject = getBusinessObject(element);
 
-  let parent = guidance.get('operators') || [];
-  const operators = parent.length && parent[0].operator || [];
+  let parent = guidance.get('attributes') || [];
+  const attributes = parent.length && parent[0].attribute || [];
 
   function addFactory() {
-    let operatorList = guidance.operators ? guidance.get('operators')[0] : undefined;
-    if ( !operatorList ) {
-      // create 'execution:Operators'
-      operatorList = createElement('execution:Operators', {}, guidance, bpmnFactory);
+    let attributeList = guidance.attributes ? guidance.get('attributes')[0] : undefined;
+    if ( !attributeList ) {
+      // create 'bpmnos:Attributes'
+      attributeList = createElement('bpmnos:Attributes', {}, guidance, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: guidance,
           properties: {
-            operators: [ ...guidance.get('operators'), operatorList ]
+            attributes: [ ...guidance.get('attributes'), attributeList ]
           }
       });
     }
 
-    // create 'execution:Operator'
-    const operator = createElement('execution:Operator', { id: nextId('Operator_') , type: 'xs:decimal' }, operatorList, bpmnFactory);
+    // create 'bpmnos:Attribute'
+    const attribute = createElement('bpmnos:Attribute', { id: nextId('Attribute_') , type: 'decimal' }, attributeList, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: operatorList,
+      moddleElement: attributeList,
       properties: {
-        operator: [ ...operatorList.get('operator'), operator ]
+        attribute: [ ...attributeList.get('attribute'), attribute ]
       }
     });
   }
 
-  function removeFactory(operator) {
-    let operatorList = guidance.operators ? guidance.get('operators')[0] : undefined;
+  function removeFactory(attribute) {
+    let attributeList = guidance.attributes ? guidance.get('attributes')[0] : undefined;
 
-    if (!operatorList) {
+    if (!attributeList) {
       return;
     }
 
@@ -74,22 +74,22 @@ export default function OperatorsList(props) {
       cmd: 'element.updateModdleProperties',
       context: {
         element,
-        moddleElement: operatorList,
+        moddleElement: attributeList,
         properties: {
-          operator: without(operatorList.get('operator'), operator)
+          attribute: without(attributeList.get('attribute'), attribute)
         }
       }
     });
 
-    // remove 'execution:Operators' if last operator removed
-    if ( guidance.get('operators')[0].get('operator').length <= 1) {
+    // remove 'bpmnos:Attributes' if last attribute removed
+    if ( guidance.get('attributes')[0].get('attribute').length <= 1) {
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
           moddleElement: guidance,
           properties: {
-            operators: undefined
+            attributes: undefined
           }
         }
       });
@@ -102,14 +102,14 @@ export default function OperatorsList(props) {
   return <ListEntry
     element={ element }
     id={ id }
-    label={ translate('Operators') }
-    items={ operators }
-    component={ Operator }
+    label={ translate('Attributes') }
+    items={ attributes }
+    component={ Attribute }
     onAdd={ addFactory }
     onRemove={ removeFactory } />;
 }
 
-function Operator(props) {
+function Attribute(props) {
   const {
     element,
     id,
@@ -118,19 +118,19 @@ function Operator(props) {
     open
   } = props;
 
-  const operator = item;
+  const attribute = item;
   const translate = useService('translate');
 
   return (
     <CollapsibleEntry
       id={ id }
       element={ element }
-      entries={ OperatorEntries({
+      entries={ AttributeEntries({
         idPrefix: id,
         element,
-        operator
+        attribute
       }) }
-      label={ operator.get('attribute') || translate('<empty>') }
+      label={ attribute.get('name') || translate('<empty>') }
       open={ open }
     />
   );

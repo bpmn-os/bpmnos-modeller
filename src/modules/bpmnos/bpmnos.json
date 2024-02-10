@@ -1,7 +1,7 @@
 {
-  "name": "Execution",
-  "uri": "https://bpmn.telematique.eu/execution",
-  "prefix": "execution",
+  "name": "BPMNOS",
+  "uri": "https://bpmnos.telematique.eu",
+  "prefix": "bpmnos",
   "xml": {
     "tagAlias": "lowerCase"
   },
@@ -9,7 +9,7 @@
   "types": [
     {
       "name": "ExecutionExtension",
-      "extends": [ "bpmn:Task" ],
+      "extends": [ "bpmn:Activity" ],
       "properties": [
         {
           "name": "type",

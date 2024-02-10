@@ -14,17 +14,17 @@ import {
 
 import { useService } from 'bpmn-js-properties-panel';
 
-import RestrictionEntries from './RestrictionEntries';
+import OperatorEntries from './OperatorEntries';
 
 
-export default function RestrictionsList(props) {
+export default function OperatorsList(props) {
   const {
     element,
     idPrefix,
     guidance
   } = props;
 
-  const id = `${ idPrefix }-restrictions`;
+  const id = `${ idPrefix }-operators`;
 
   const bpmnFactory = useService('bpmnFactory');
   const commandStack = useService('commandStack');
@@ -32,39 +32,39 @@ export default function RestrictionsList(props) {
 
   const businessObject = getBusinessObject(element);
 
-  let parent = guidance.get('restrictions') || [];
-  const restrictions = parent.length && parent[0].restriction || [];
+  let parent = guidance.get('operators') || [];
+  const operators = parent.length && parent[0].operator || [];
 
   function addFactory() {
-    let restrictionList = guidance.restrictions ? guidance.get('restrictions')[0] : undefined;
-    if ( !restrictionList ) {
-      // create 'execution:Restrictions'
-      restrictionList = createElement('execution:Restrictions', {}, guidance, bpmnFactory);
+    let operatorList = guidance.operators ? guidance.get('operators')[0] : undefined;
+    if ( !operatorList ) {
+      // create 'bpmnos:Operators'
+      operatorList = createElement('bpmnos:Operators', {}, guidance, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: guidance,
           properties: {
-            restrictions: [ ...guidance.get('restrictions'), restrictionList ]
+            operators: [ ...guidance.get('operators'), operatorList ]
           }
       });
     }
 
-    // create 'execution:Restriction'
-    const restriction = createElement('execution:Restriction', { id: nextId('Restriction_') , type: 'xs:decimal' }, restrictionList, bpmnFactory);
+    // create 'bpmnos:Operator'
+    const operator = createElement('bpmnos:Operator', { id: nextId('Operator_') , type: 'decimal' }, operatorList, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: restrictionList,
+      moddleElement: operatorList,
       properties: {
-        restriction: [ ...restrictionList.get('restriction'), restriction ]
+        operator: [ ...operatorList.get('operator'), operator ]
       }
     });
   }
 
-  function removeFactory(restriction) {
-    let restrictionList = guidance.restrictions ? guidance.get('restrictions')[0] : undefined;
+  function removeFactory(operator) {
+    let operatorList = guidance.operators ? guidance.get('operators')[0] : undefined;
 
-    if (!restrictionList) {
+    if (!operatorList) {
       return;
     }
 
@@ -74,22 +74,22 @@ export default function RestrictionsList(props) {
       cmd: 'element.updateModdleProperties',
       context: {
         element,
-        moddleElement: restrictionList,
+        moddleElement: operatorList,
         properties: {
-          restriction: without(restrictionList.get('restriction'), restriction)
+          operator: without(operatorList.get('operator'), operator)
         }
       }
     });
 
-    // remove 'execution:Restrictions' if last restriction removed
-    if ( guidance.get('restrictions')[0].get('restriction').length <= 1) {
+    // remove 'bpmnos:Operators' if last operator removed
+    if ( guidance.get('operators')[0].get('operator').length <= 1) {
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
           moddleElement: guidance,
           properties: {
-            restrictions: undefined
+            operators: undefined
           }
         }
       });
@@ -102,14 +102,14 @@ export default function RestrictionsList(props) {
   return <ListEntry
     element={ element }
     id={ id }
-    label={ translate('Restrictions') }
-    items={ restrictions }
-    component={ Restriction }
+    label={ translate('Operators') }
+    items={ operators }
+    component={ Operator }
     onAdd={ addFactory }
     onRemove={ removeFactory } />;
 }
 
-function Restriction(props) {
+function Operator(props) {
   const {
     element,
     id,
@@ -118,19 +118,19 @@ function Restriction(props) {
     open
   } = props;
 
-  const restriction = item;
+  const operator = item;
   const translate = useService('translate');
 
   return (
     <CollapsibleEntry
       id={ id }
       element={ element }
-      entries={ RestrictionEntries({
+      entries={ OperatorEntries({
         idPrefix: id,
         element,
-        restriction
+        operator
       }) }
-      label={ restriction.get('attribute') || translate('<empty>') }
+      label={ operator.get('attribute') || translate('<empty>') }
       open={ open }
     />
   );

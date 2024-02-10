@@ -18,7 +18,7 @@ function getCustomElements(businessObject) {
 function getStatusElement(businessObject) {
   const customElements = getCustomElements(businessObject);
   for (var i=0; i < customElements.length; i++ ) {
-    if ( customElements[i].$type == "execution:Status" ) {
+    if ( customElements[i].$type == "bpmnos:Status" ) {
       return customElements[i];
     }
   }

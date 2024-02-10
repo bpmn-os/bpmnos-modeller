@@ -55,7 +55,7 @@ function AllocationId(props) {
 
     for ( let messageTask of messageTasks ) {
       let messageTaskElement = elementRegistry.get(messageTask.id);
-      const messages = getCustomItem( messageTaskElement, 'execution:Messages' ) || {};
+      const messages = getCustomItem( messageTaskElement, 'bpmnos:Messages' ) || {};
       for (let message of messages.get('message') ) {
         for (let parameter of message.parameter || [] ) {
           if ( parameter.name == 'allocation' && parameter.value == allocation.id ) {

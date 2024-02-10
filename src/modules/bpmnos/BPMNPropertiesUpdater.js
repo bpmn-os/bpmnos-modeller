@@ -9,10 +9,10 @@ export default function ExecutionPropertiesUpdater(eventBus,commandStack) {
     if ( is(element,'bpmn:Event') ) {
       const eventDefinitions = element.businessObject.eventDefinitions;
       if ( !eventDefinitions || !eventDefinitions.find(definition => definition.$type == 'bpmn:MessageEventDefinition') ) {
-        removeExtensionElements(element,'execution:Message',commandStack);
+        removeExtensionElements(element,'bpmnos:Message',commandStack);
       }
       if ( !eventDefinitions || !eventDefinitions.find(definition => definition.$type == 'bpmn:TimerEventDefinition') ) {
-        removeExtensionElements(element,'execution:Parameter',commandStack);
+        removeExtensionElements(element,'bpmnos:Parameter',commandStack);
       }
     }
   });

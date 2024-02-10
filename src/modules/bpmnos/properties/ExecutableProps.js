@@ -110,11 +110,11 @@ function hasProcessRef(element) {
 }
 
 function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
-  const status = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Status'); 
+  const status = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
   let attributes = status.get('attributes') ? status.attributes[0] : undefined;
   if ( !attributes ) {
-    // create 'execution:Attributes'
-    attributes = createElement('execution:Attributes', {}, parent, bpmnFactory);
+    // create 'bpmnos:Attributes'
+    attributes = createElement('bpmnos:Attributes', {}, parent, bpmnFactory);
     commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: status,
@@ -126,7 +126,7 @@ function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
 
   let attributeList = attributes.get('attribute') || [];
   if ( !attributeList.find(attribute => attribute.name == "instance") ) {
-      const attribute = createElement('execution:Attribute', { id: 'Instance' , name: 'instance', type: 'xs:string' }, attributes, bpmnFactory);
+      const attribute = createElement('bpmnos:Attribute', { id: 'Instance' , name: 'instance', type: 'string' }, attributes, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: attributes,
@@ -136,7 +136,7 @@ function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
       });
   }
   if ( !attributeList.find(attribute => attribute.name == "timestamp") ) {
-      const attribute = createElement('execution:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'xs:decimal', value: '0' }, attributes, bpmnFactory);
+      const attribute = createElement('bpmnos:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'decimal', value: '0' }, attributes, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
         element,
         moddleElement: attributes,

@@ -28,7 +28,7 @@ export function messageHandler({ element }) {
   }
 
   const id = element.id + '-message';
-  let message = getCustomItem( element, 'execution:Message' );
+  let message = getCustomItem( element, 'bpmnos:Message' );
   return MessageEntries({
         idPrefix: id,
         element,

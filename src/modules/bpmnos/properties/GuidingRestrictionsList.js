@@ -14,17 +14,17 @@ import {
 
 import { useService } from 'bpmn-js-properties-panel';
 
-import AttributeEntries from './AttributeEntries';
+import RestrictionEntries from './RestrictionEntries';
 
 
-export default function AttributesList(props) {
+export default function RestrictionsList(props) {
   const {
     element,
     idPrefix,
     guidance
   } = props;
 
-  const id = `${ idPrefix }-attributes`;
+  const id = `${ idPrefix }-restrictions`;
 
   const bpmnFactory = useService('bpmnFactory');
   const commandStack = useService('commandStack');
@@ -32,39 +32,39 @@ export default function AttributesList(props) {
 
   const businessObject = getBusinessObject(element);
 
-  let parent = guidance.get('attributes') || [];
-  const attributes = parent.length && parent[0].attribute || [];
+  let parent = guidance.get('restrictions') || [];
+  const restrictions = parent.length && parent[0].restriction || [];
 
   function addFactory() {
-    let attributeList = guidance.attributes ? guidance.get('attributes')[0] : undefined;
-    if ( !attributeList ) {
-      // create 'execution:Attributes'
-      attributeList = createElement('execution:Attributes', {}, guidance, bpmnFactory);
+    let restrictionList = guidance.restrictions ? guidance.get('restrictions')[0] : undefined;
+    if ( !restrictionList ) {
+      // create 'bpmnos:Restrictions'
+      restrictionList = createElement('bpmnos:Restrictions', {}, guidance, bpmnFactory);
       commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: guidance,
           properties: {
-            attributes: [ ...guidance.get('attributes'), attributeList ]
+            restrictions: [ ...guidance.get('restrictions'), restrictionList ]
           }
       });
     }
 
-    // create 'execution:Attribute'
-    const attribute = createElement('execution:Attribute', { id: nextId('Attribute_') , type: 'xs:decimal' }, attributeList, bpmnFactory);
+    // create 'bpmnos:Restriction'
+    const restriction = createElement('bpmnos:Restriction', { id: nextId('Restriction_') , type: 'decimal' }, restrictionList, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: attributeList,
+      moddleElement: restrictionList,
       properties: {
-        attribute: [ ...attributeList.get('attribute'), attribute ]
+        restriction: [ ...restrictionList.get('restriction'), restriction ]
       }
     });
   }
 
-  function removeFactory(attribute) {
-    let attributeList = guidance.attributes ? guidance.get('attributes')[0] : undefined;
+  function removeFactory(restriction) {
+    let restrictionList = guidance.restrictions ? guidance.get('restrictions')[0] : undefined;
 
-    if (!attributeList) {
+    if (!restrictionList) {
       return;
     }
 
@@ -74,22 +74,22 @@ export default function AttributesList(props) {
       cmd: 'element.updateModdleProperties',
       context: {
         element,
-        moddleElement: attributeList,
+        moddleElement: restrictionList,
         properties: {
-          attribute: without(attributeList.get('attribute'), attribute)
+          restriction: without(restrictionList.get('restriction'), restriction)
         }
       }
     });
 
-    // remove 'execution:Attributes' if last attribute removed
-    if ( guidance.get('attributes')[0].get('attribute').length <= 1) {
+    // remove 'bpmnos:Restrictions' if last restriction removed
+    if ( guidance.get('restrictions')[0].get('restriction').length <= 1) {
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
           moddleElement: guidance,
           properties: {
-            attributes: undefined
+            restrictions: undefined
           }
         }
       });
@@ -102,14 +102,14 @@ export default function AttributesList(props) {
   return <ListEntry
     element={ element }
     id={ id }
-    label={ translate('Attributes') }
-    items={ attributes }
-    component={ Attribute }
+    label={ translate('Restrictions') }
+    items={ restrictions }
+    component={ Restriction }
     onAdd={ addFactory }
     onRemove={ removeFactory } />;
 }
 
-function Attribute(props) {
+function Restriction(props) {
   const {
     element,
     id,
@@ -118,19 +118,19 @@ function Attribute(props) {
     open
   } = props;
 
-  const attribute = item;
+  const restriction = item;
   const translate = useService('translate');
 
   return (
     <CollapsibleEntry
       id={ id }
       element={ element }
-      entries={ AttributeEntries({
+      entries={ RestrictionEntries({
         idPrefix: id,
         element,
-        attribute
+        restriction
       }) }
-      label={ attribute.get('name') || translate('<empty>') }
+      label={ restriction.get('attribute') || translate('<empty>') }
       open={ open }
     />
   );

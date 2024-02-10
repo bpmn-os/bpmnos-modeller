@@ -28,7 +28,7 @@ export function multiMessageHandler({ element, injector }) {
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const messages = getCustomItem( element, 'execution:Messages' ) || {};
+  const messages = getCustomItem( element, 'bpmnos:Messages' ) || {};
 
   const items = ( messages.message || []).map((message, index) => {
     const id = element.id + '-message-' + index;
@@ -59,11 +59,11 @@ function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
 
-    let messages = ensureCustomItem(bpmnFactory, commandStack, element, 'execution:Messages'); 
+    let messages = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Messages'); 
 
-    // create 'execution:Message'
-//    let message = createElement('execution:Message', { id: nextId('Message_') }, messages, bpmnFactory);
-    let message = createElement('execution:Message', { }, messages, bpmnFactory);
+    // create 'bpmnos:Message'
+//    let message = createElement('bpmnos:Message', { id: nextId('Message_') }, messages, bpmnFactory);
+    let message = createElement('bpmnos:Message', { }, messages, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -84,7 +84,7 @@ function removeFactory({ commandStack, element, message }) {
 
     const businessObject = getBusinessObject(element);
 
-    let messages = getCustomItem( element, 'execution:Messages' );
+    let messages = getCustomItem( element, 'bpmnos:Messages' );
 
     if (!messages) {
       return;
@@ -104,7 +104,7 @@ function removeFactory({ commandStack, element, message }) {
     });
 
 
-    // remove 'execution:Messages' if there are no messages anymore
+    // remove 'bpmnos:Messages' if there are no messages anymore
     if (!messageList.length) {
       const extensionElements = businessObject.get('extensionElements');
 

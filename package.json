@@ -35,7 +35,7 @@
     "tiny-svg": "^3.0.0",
     "bpmn-js-sequential-adhoc-subprocesses": "^0.1.0",
     "bpmn-js-subprocess-importer": "^0.2.1",
-    "bpmn-js-collapse-event-subprocess": "^0.2.1"
+    "bpmn-js-collapse-event-subprocess": "^0.2.2"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
