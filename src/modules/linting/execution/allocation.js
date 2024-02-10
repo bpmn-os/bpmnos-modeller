@@ -1,5 +1,5 @@
 const getProcess = require('../engine/helper').getProcess;
-const getCustomElements = require('../../execution/utils/StatusUtil').getCustomElements;
+const getCustomElements = require('../../bpmnos/utils/StatusUtil').getCustomElements;
 
 const {
   is

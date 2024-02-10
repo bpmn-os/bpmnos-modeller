@@ -36,7 +36,7 @@ const EXECUTION_GROUPS = [
 { label: 'Guidance', id: 'guidance', component: ListGroup, handler: guidanceHandler}
 ];
 
-export default class ExecutionPropertiesProvider {
+export default class BPMNOSPropertiesProvider {
 
   constructor(propertiesPanel, injector) {
     propertiesPanel.registerProvider(LOW_PRIORITY, this);
@@ -55,7 +55,7 @@ export default class ExecutionPropertiesProvider {
   }
 }
 
-ExecutionPropertiesProvider.$inject = [ 'propertiesPanel', 'injector' ];
+BPMNOSPropertiesProvider.$inject = [ 'propertiesPanel', 'injector' ];
 
 function addGroup({ label, id, handler, component }, groups, element, injector) {
 //console.log(component);

@@ -8,8 +8,8 @@ import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel';
 
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 
-import ExecutionPropertiesProviderModule from './modules/execution/';
-import ExecutionModdleDescriptor from './modules/execution/bpmnos.json';
+import BPMNOSPropertiesProviderModule from './modules/bpmnos/';
+import BPMNOSModdleDescriptor from './modules/bpmnos/bpmnos.json';
 
 import sampleProcess from './newDiagram.bpmn';
 
@@ -29,7 +29,7 @@ var modelName = 'diagram';
 
 var moddleExtensions = {
 //  resource: ResourceModdleDescriptor,
-    execution: ExecutionModdleDescriptor,
+    execution: BPMNOSModdleDescriptor,
 };
 
 var modeler = new BpmnModeler({
@@ -44,7 +44,7 @@ var modeler = new BpmnModeler({
   additionalModules: [
 //    ResourceExtensionModule,
     BpmnPropertiesPanelModule,
-    ExecutionPropertiesProviderModule,
+    BPMNOSPropertiesProviderModule,
     LintModule,
     TokenSimulationModule,
     SequentialAdHocSubProcessModule,
@@ -53,7 +53,7 @@ var modeler = new BpmnModeler({
   ],
   moddleExtensions: {
 //    resource: ResourceModdleDescriptor,
-    execution: ExecutionModdleDescriptor,
+    bpmnos: BPMNOSModdleDescriptor,
   }
 });
 

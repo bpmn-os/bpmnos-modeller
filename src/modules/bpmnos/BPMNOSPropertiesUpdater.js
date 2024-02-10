@@ -2,7 +2,7 @@ import {
   is
 } from 'bpmn-js/lib/util/ModelUtil';
 
-export default function ExecutionPropertiesUpdater(eventBus,commandStack) {
+export default function BPMNOSPropertiesUpdater(eventBus,commandStack) {
 
   eventBus.on('element.changed', function(event) {
     const element = event.element;
@@ -19,7 +19,7 @@ export default function ExecutionPropertiesUpdater(eventBus,commandStack) {
 
 }
 
-ExecutionPropertiesUpdater.$inject = [ 'eventBus', 'commandStack' ];
+BPMNOSPropertiesUpdater.$inject = [ 'eventBus', 'commandStack' ];
 
 // helper
 

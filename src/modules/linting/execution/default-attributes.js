@@ -1,5 +1,5 @@
-const getStatus = require('../../execution/utils/StatusUtil').getStatus;
-const getCustomElements = require('../../execution/utils/StatusUtil').getCustomElements;
+const getStatus = require('../../bpmnos/utils/StatusUtil').getStatus;
+const getCustomElements = require('../../bpmnos/utils/StatusUtil').getCustomElements;
 
 const {
   is,
@@ -53,7 +53,7 @@ module.exports = function() {
     if ( is(node,'bpmn:CatchEvent') ) {
       const customElements = getCustomElements(node);
       for (var i=0; i < customElements.length; i++ ) {
-        if ( customElements[i].$type == "execution:Message" ) {
+        if ( customElements[i].$type == "bpmnos:Message" ) {
           const contents = customElements[i].content;
           if ( contents && contents.length > 0) {
             for (var j=0; j < contents.length; j++ ) {

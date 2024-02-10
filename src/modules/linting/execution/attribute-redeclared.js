@@ -1,5 +1,5 @@
-const getAttributes = require('../../execution/utils/StatusUtil').getAttributes;
-const getStatus = require('../../execution/utils/StatusUtil').getStatus;
+const getAttributes = require('../../bpmnos/utils/StatusUtil').getAttributes;
+const getStatus = require('../../bpmnos/utils/StatusUtil').getStatus;
 
 const {
   is

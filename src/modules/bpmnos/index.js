@@ -1,14 +1,14 @@
 import DecisionTaskPopupMenu from './DecisionTaskPopupMenu';
 import DecisionTaskDecorator from './DecisionTaskDecorator';
-import ExecutionPropertiesProvider from './ExecutionPropertiesProvider';
-import ExecutionPropertiesUpdater from './ExecutionPropertiesUpdater';
+import BPMNOSPropertiesProvider from './BPMNOSPropertiesProvider';
+import BPMNOSPropertiesUpdater from './BPMNOSPropertiesUpdater';
 import ReplaceIds from './ReplaceIds';
 
 export default {
-  __init__: [ 'decisionTaskPopupMenu', 'decisionTaskDecorator', 'executionPropertiesProvider', 'executionPropertiesUpdater', 'replaceIds' ],
+  __init__: [ 'decisionTaskPopupMenu', 'decisionTaskDecorator', 'bpmnosPropertiesProvider', 'bpmnosPropertiesUpdater', 'replaceIds' ],
   decisionTaskPopupMenu: [ 'type', DecisionTaskPopupMenu ],
   decisionTaskDecorator: [ 'type', DecisionTaskDecorator ],
-  executionPropertiesProvider: [ 'type', ExecutionPropertiesProvider ],
-  executionPropertiesUpdater: [ 'type', ExecutionPropertiesUpdater ],
+  bpmnosPropertiesProvider: [ 'type', BPMNOSPropertiesProvider ],
+  bpmnosPropertiesUpdater: [ 'type', BPMNOSPropertiesUpdater ],
   replaceIds: [ 'type', ReplaceIds ]
 };

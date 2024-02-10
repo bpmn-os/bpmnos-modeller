@@ -1,5 +1,5 @@
-const getCustomElements = require('../../execution/utils/StatusUtil').getCustomElements;
-const getStatus = require('../../execution/utils/StatusUtil').getStatus;
+const getCustomElements = require('../../bpmnos/utils/StatusUtil').getCustomElements;
+const getStatus = require('../../bpmnos/utils/StatusUtil').getStatus;
 
 const {
   is
@@ -46,14 +46,14 @@ module.exports = function() {
           }
         }
       }
-      if ( is(node,'bpmn:Event') && customElements[i].$type == "execution:Parameter" ) {
+      if ( is(node,'bpmn:Event') && customElements[i].$type == "bpmnos:Parameter" ) {
         // Timer parameter
         const timerAttribute = customElements[i].attribute;
         if ( timerAttribute && status.filter(attribute => attribute.name == timerAttribute).length == 0) {
           reporter.report(node.id, "Parameter uses undeclared attribute '" + timerAttribute + "'");
         }
       }
-      if ( is(node,'bpmn:Event') && customElements[i].$type == "execution:Message" ) {
+      if ( is(node,'bpmn:Event') && customElements[i].$type == "bpmnos:Message" ) {
         // Message parameter
         const parameters = customElements[i].parameter;
         if ( parameters ) {
