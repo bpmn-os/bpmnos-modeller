@@ -8,18 +8,15 @@ import { BpmnPropertiesPanelModule } from 'bpmn-js-properties-panel';
 
 import TokenSimulationModule from 'bpmn-js-token-simulation';
 
-import BPMNOSPropertiesProviderModule from './modules/bpmnos/';
 import BPMNOSModdleDescriptor from './modules/bpmnos/bpmnos.json';
+import BPMNOSPropertiesProviderModule from './modules/bpmnos/';
+import BPMNOSTemplatesModule from './modules/templates';
 
 import sampleProcess from './newDiagram.bpmn';
 
 import SubProcessImporterModule from 'bpmn-js-subprocess-importer';
 import CollapseEventSubProcessModule from 'bpmn-js-collapse-event-subprocess';
 import SequentialAdHocSubProcessModule from 'bpmn-js-sequential-adhoc-subprocesses';
-
-//import ResourceModdleDescriptor from './modules/resource/resource.json';
-
-//import ResourceExtensionModule from './modules/resource';
 
 import LintModule from 'bpmn-js-bpmnlint';
 import getLintConfig from './modules/linting';
@@ -28,8 +25,7 @@ import createLintControls from './modules/linting/create-lint-controls';
 var modelName = 'diagram';
 
 var moddleExtensions = {
-//  resource: ResourceModdleDescriptor,
-    execution: BPMNOSModdleDescriptor,
+    bpmnos: BPMNOSModdleDescriptor
 };
 
 var modeler = new BpmnModeler({
@@ -42,19 +38,16 @@ var modeler = new BpmnModeler({
   },
   keyboard: { bindTo: document },
   additionalModules: [
-//    ResourceExtensionModule,
     BpmnPropertiesPanelModule,
     BPMNOSPropertiesProviderModule,
+    BPMNOSTemplatesModule,
     LintModule,
     TokenSimulationModule,
     SequentialAdHocSubProcessModule,
     SubProcessImporterModule,
     CollapseEventSubProcessModule
   ],
-  moddleExtensions: {
-//    resource: ResourceModdleDescriptor,
-    bpmnos: BPMNOSModdleDescriptor,
-  }
+  moddleExtensions
 });
 
 modeler.get('subProcessImporter').setModdleExtensions(moddleExtensions);

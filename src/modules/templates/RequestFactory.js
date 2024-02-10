@@ -5,8 +5,7 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
-import ResourceModdleDescriptor from '../../modules/resource/resource.json';
-import ExecutionModdleDescriptor from '../../modules/execution/execution.json';
+import BPMNOSModdleDescriptor from '../../modules/bpmnos/bpmnos.json';
 import copyAndPaste from 'bpmn-js-subprocess-importer/CopyAndPaste';
 import requestTemplate from './RequestTemplate.bpmn'; 
 
@@ -30,8 +29,7 @@ function ifNewRequestActivity(fn) {
 export default function RequestFactory(bpmnjs, elementRegistry, eventBus, modeling) {
   const sourceModeler = new BpmnModeler({  
     moddleExtensions: {
-      resource: ResourceModdleDescriptor,
-      execution: ExecutionModdleDescriptor,
+      bpmnos: BPMNOSModdleDescriptor
     }
   });
   sourceModeler.importXML(requestTemplate);

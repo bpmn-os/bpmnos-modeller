@@ -5,19 +5,18 @@ import { is } from 'bpmn-js/lib/util/ModelUtil';
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
-import ResourceModdleDescriptor from '../../modules/resource/resource.json';
-import ExecutionModdleDescriptor from '../../modules/execution/execution.json';
+import BPMNOSModdleDescriptor from '../../modules/bpmnos/bpmnos.json';
 import copyAndPaste from 'bpmn-js-subprocess-importer/CopyAndPaste';
-import resourceTemplate from './ResourceTemplate.bpmn'; 
+import releaseTemplate from './ReleaseTemplate.bpmn'; 
 
-function ifNewResourceActivity(fn) {
+function ifNewReleaseActivity(fn) {
   return function(event) {
     var context = event.context,
         element = context.shape;
     if ( event.command == 'shape.create'
       && is(element, 'bpmn:SubProcess')
       && !element.children.length
-      && element.businessObject.type == 'Resource'
+      && element.businessObject.type == 'Release'
     ) {
       fn(element);
     }
@@ -25,16 +24,15 @@ function ifNewResourceActivity(fn) {
 }
 
 /**
- * A handler responsible for creating children of a resource activity when this is created
+ * A handler responsible for creating children of a release activity when this is created
  */
-export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, modeling) {
+export default function ReleaseFactory(bpmnjs, elementRegistry, eventBus, modeling) {
   const sourceModeler = new BpmnModeler({  
     moddleExtensions: {
-      resource: ResourceModdleDescriptor,
-      execution: ExecutionModdleDescriptor,
+      bpmnos: BPMNOSModdleDescriptor
     }
   });
-  sourceModeler.importXML(resourceTemplate);
+  sourceModeler.importXML(releaseTemplate);
   const sourceElementRegistry = sourceModeler.get('elementRegistry');
   const targetElementRegistry = elementRegistry;
 
@@ -44,7 +42,7 @@ export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, model
   CommandInterceptor.call(this, eventBus);
 
   function populateSubProcess(element) {
-    copyAndPaste(sourceModeler,sourceElementRegistry.get('ResourceActivityTemplate'),bpmnjs,element );
+    copyAndPaste(sourceModeler,sourceElementRegistry.get('ReleaseActivityTemplate'),bpmnjs,element );
     const planeElement = bpmnjs.get('elementRegistry').get(`${element.id}_plane`);
 
     if ( preventEditing ) {
@@ -62,9 +60,9 @@ export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, model
 
   this.postExecute([
     'shape.create'
-  ], ifNewResourceActivity(populateSubProcess));
+  ], ifNewReleaseActivity(populateSubProcess));
 }
 
-inherits(ResourceFactory, CommandInterceptor);
+inherits(ReleaseFactory, CommandInterceptor);
 
-ResourceFactory.$inject = [ 'bpmnjs','elementRegistry', 'eventBus', 'modeling' ];
+ReleaseFactory.$inject = [ 'bpmnjs','elementRegistry', 'eventBus', 'modeling' ];
