@@ -9,6 +9,7 @@ import {
 
 
 import { ExecutableProps } from './properties/ExecutableProps';
+import { SequentialPerformerProps } from './properties/SequentialPerformerProps';
 import { AdHocOrderingProps } from './properties/AdHocOrderingProps';
 import { loopHandler } from './properties/LoopHandler';
 import { attributeHandler } from './properties/AttributeHandler';
@@ -95,6 +96,7 @@ function GeneralGroup(element) {
     ...IdProps({ element }),
     ...ProcessProps({ element }),
     ...ExecutableProps({ element }),
+    ...SequentialPerformerProps({ element }),
     ...AdHocOrderingProps({ element }),
     ...DocumentationProps({ element })
   ];
