@@ -2,6 +2,11 @@ import inherits from 'inherits';
 
 import { is } from 'bpmn-js/lib/util/ModelUtil';
 
+import {
+  createElement
+} from '../../modules/bpmnos/utils/ElementUtil';
+
+
 import CommandInterceptor from 'diagram-js/lib/command/CommandInterceptor';
 
 import BpmnModeler from 'bpmn-js/lib/Modeler';
@@ -26,7 +31,7 @@ function ifNewResourceActivity(fn) {
 /**
  * A handler responsible for creating children of a resource activity when this is created
  */
-export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, modeling) {
+export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, modeling, bpmnFactory) {
   const sourceModeler = new BpmnModeler({  
     moddleExtensions: {
       bpmnos: BPMNOSModdleDescriptor
@@ -42,6 +47,11 @@ export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, model
   CommandInterceptor.call(this, eventBus);
 
   function populateSubProcess(element) {
+    // add sequential performer
+    const performer = createElement('bpmn:Performer', { name: 'Sequential' }, element, bpmnFactory);
+    modeling.updateProperties(element, { resources: [ ...(element.businessObject.resources || []), performer] });
+    
+    // add flow elements
     copyAndPaste(sourceModeler,sourceElementRegistry.get('ResourceActivityTemplate'),bpmnjs,element );
     const planeElement = bpmnjs.get('elementRegistry').get(`${element.id}_plane`);
 
@@ -65,4 +75,4 @@ export default function ResourceFactory(bpmnjs, elementRegistry, eventBus, model
 
 inherits(ResourceFactory, CommandInterceptor);
 
-ResourceFactory.$inject = [ 'bpmnjs','elementRegistry', 'eventBus', 'modeling' ];
+ResourceFactory.$inject = [ 'bpmnjs','elementRegistry', 'eventBus', 'modeling', 'bpmnFactory' ];
