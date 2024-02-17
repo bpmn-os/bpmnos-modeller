@@ -1,6 +1,6 @@
 [
-   { "label": "set", "value": "set", "title": "Sets the attribute value", "parameters": [ { "name": "set" } ]},
-   { "label": "unset", "value": "unset", "title": "Unsets the attribute value"},
-   { "label": "expression", "value": "expression", "title": "Calculates the attribute value using an expression", "parameters": [ { "name": "expression" } ] },
+   { "label": "assign", "value": "assign", "title": "Assigns a value to the attribute", "parameters": [ { "name": "assign" } ]},
+   { "label": "unassign", "value": "unassign", "title": "Unsets the value of the attribute"},
+   { "label": "expression", "value": "expression", "title": "Calculates the attribute value using an expression", "parameters": [ { "name": "linear" } ] },
    { "label": "lookup", "value": "lookup", "title": "Obtains the attribute value from a lookup table", "parameters": [ { "name": "source", "value": "file" }, { "name": "filename" }, { "name": "key" } ] }
 ]
