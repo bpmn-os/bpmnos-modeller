@@ -38,12 +38,15 @@ function Id(props) {
   const debounce = useService('debounceInput');
   const translate = useService('translate');
 
-  const setValue = (value) => {
+  const setValue = (value, error) => {
+    if (error) {
+      return;
+    }
+
     modeling.updateProperties(element, {
       id: value
     });
   };
-
   const getValue = (element) => {
     return element.businessObject.id;
   };
