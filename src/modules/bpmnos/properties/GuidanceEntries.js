@@ -1,7 +1,8 @@
 import { SelectEntry } from '@bpmn-io/properties-panel';
 
 import {
-  is
+  is,
+  isAny
 } from 'bpmn-js/lib/util/ModelUtil';
 
 import {
@@ -68,7 +69,10 @@ function GuidanceType(props) {
   if ( is(element, 'bpmn:Task') && businessObject.type == "Decision" ) {
     guidanceTypes.push({ label: 'Choice', value: 'choice' });
   }
-  else if ( isMessageSupported(element) && is(element, 'bpmn:CatchEvent') ) {
+  else if ( is(element, 'bpmn:ReceiveTask') ) {
+    guidanceTypes.push({ label: 'Message delivery', value: 'message' });
+  }
+  else if ( is(element, 'bpmn:CatchEvent') && isMessageSupported(element) ) {
     guidanceTypes = [ { label: 'Message delivery', value: 'message' } ];
   }
 

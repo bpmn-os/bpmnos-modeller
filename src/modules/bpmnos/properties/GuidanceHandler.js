@@ -37,9 +37,6 @@ export function guidanceHandler({ element, injector }) {
   if ( is(businessObject, 'bpmn:SubProcess') && businessObject.triggeredByEvent ) {
     return;
   }
-  if ( is(businessObject, 'bpmn:SendTask') ) {
-    return;
-  }
   if ( is(businessObject, 'bpmn:Activity') && businessObject.isForCompensation ) {
     return;
   }
