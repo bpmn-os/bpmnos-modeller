@@ -244,72 +244,9 @@
           "isAttr": true
         },
         {
-          "name": "key",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "attribute",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "required",
-          "type": "Boolean",
-          "isAttr": true
-        },
-        {
-          "name": "negate",
-          "type": "Boolean",
-          "isAttr": true
-        },
-        {
-          "name": "minInclusive",
-          "type": "MinInclusive",
+          "name": "parameter",
+          "type": "Parameter",
           "isMany": true
-        },
-        {
-          "name": "maxInclusive",
-          "type": "MaxInclusive",
-          "isMany": true
-        },
-        {
-          "name": "enumeration",
-          "type": "Enumeration",
-          "isMany": true
-        }
-      ]
-    },
-    {
-      "name": "MinInclusive",
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "value",
-          "type": "String",
-          "isAttr": true
-        }
-      ]
-    },
-    {
-      "name": "MaxInclusive",
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "value",
-          "type": "String",
-          "isAttr": true
-        }
-      ]
-    },
-    {
-      "name": "Enumeration",
-      "superClass": [ "Element" ],
-      "properties": [
-        {
-          "name": "value",
-          "type": "String",
-          "isAttr": true
         }
       ]
     },

@@ -74,14 +74,14 @@ export function restrictionHandler({ element, injector }) {
 function addFactory({ bpmnFactory, commandStack, element }) {
   return function(event) {
     event.stopPropagation();
-console.log(element);
+//console.log(element);
     const businessObject = element.businessObject;
 
     let parent = undefined;
     let restrictions = undefined;
     if ( element.type == 'bpmn:SequenceFlow' ) {
       restrictions = ensureCustomItem( bpmnFactory, commandStack, element, 'bpmnos:Restrictions' );
-console.log(businessObject, element, restrictions);
+//console.log(businessObject, element, restrictions);
     }
     else {
       parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
@@ -107,6 +107,17 @@ console.log(businessObject, element, restrictions);
       moddleElement: restrictions,
       properties: {
         restriction: [ ...restrictions.get('restriction'), restriction ]
+      }
+    });
+
+    // create 'bpmnos:Parameter'
+    const parameter = createElement('bpmnos:Parameter', { name: 'linear' }, restriction, bpmnFactory);
+
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: restriction,
+      properties: {
+        parameter: [ parameter ]
       }
     });
   };

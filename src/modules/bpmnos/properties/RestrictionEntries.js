@@ -1,4 +1,4 @@
-import { CheckboxEntry, TextFieldEntry, ListEntry } from '@bpmn-io/properties-panel';
+import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
 
@@ -24,33 +24,13 @@ export default function RestrictionEntries(props) {
     idPrefix,
     restriction
   },{
-    id: idPrefix + '-attribute',
-    component: RestrictionAttributeName,
+    id: element.id + '-type',
+    component: RestrictionType,
     idPrefix,
     restriction
   },{
-    id: idPrefix + '-required',
-    component: RestrictionAttributeRequired,
-    idPrefix,
-    restriction
-  },{
-    id: idPrefix + '-minInclusive',
-    component: RestrictionMinInclusive,
-    idPrefix,
-    restriction
-  },{
-    id: idPrefix + '-maxInclusive',
-    component: RestrictionMaxInclusive,
-    idPrefix,
-    restriction
-  },{
-    id: idPrefix + '-enumeration',
-    component: RestrictionEnumeration,
-    idPrefix,
-    restriction
-  },{
-    id: idPrefix + '-negate',
-    component: RestrictionNegate,
+    id: element.id + '-expression',
+    component: RestrictionExpression,
     idPrefix,
     restriction
   } ];
@@ -68,6 +48,7 @@ function RestrictionId(props) {
   const commandStack = useService('commandStack');
   const translate = useService('translate');
   const debounce = useService('debounceInput');
+  const bpmnFactory = useService('bpmnFactory');
 
   const setValue = (value) => {
     commandStack.execute('element.updateModdleProperties', {
@@ -93,7 +74,7 @@ function RestrictionId(props) {
   });
 }
 
-function RestrictionAttributeName(props) {
+function RestrictionType(props) {
   const {
     idPrefix,
     element,
@@ -102,344 +83,115 @@ function RestrictionAttributeName(props) {
 
   const commandStack = useService('commandStack');
   const translate = useService('translate');
-  const debounce = useService('debounceInput');
+  const bpmnFactory = useService('bpmnFactory');
+//  const debounce = useService('debounceInput');
 
   const setValue = (value) => {
+    let parameter = restriction.parameter ? restriction.get('parameter')[0] : undefined;
+    if ( !parameter ) {
+      // create 'bpmnos:Parameter'
+      parameter = createElement('bpmnos:Parameter', { name: 'linear' }, restriction, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: restriction,
+          properties: {
+            parameter: [ parameter ]
+          }
+      });
+    }
+
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: restriction,
+      moddleElement: parameter,
       properties: {
-        attribute: value
+        name: value,
       }
     });
   };
 
   const getValue = () => {
-    return restriction.attribute;
+    const parameter = restriction.parameter ? restriction.get('parameter')[0] : undefined;
+
+    if ( parameter ) {
+      return parameter.get('name');
+    }
+  };
+
+  const getOptions = (element) => {
+    return [
+      { value: 'linear', label: translate('linear') },
+      { value: 'generic', label: translate('generic') }
+    ];
+  };
+
+  return SelectEntry({
+    element: restriction,
+    id: idPrefix + '-type',
+    label: translate('Type'),
+    getValue,
+    setValue,
+    getOptions
+  });
+}
+
+function RestrictionExpression(props) {
+  const {
+    idPrefix,
+    element,
+    restriction
+  } = props;
+
+  const modeling = useService('modeling');
+  const debounce = useService('debounceInput');
+  const translate = useService('translate');
+  const commandStack = useService('commandStack');
+  const bpmnFactory = useService('bpmnFactory');
+
+  const setValue = (value) => {
+    let parameter = restriction.parameter ? restriction.get('parameter')[0] : undefined;
+    if ( !parameter ) {
+      // create 'bpmnos:Parameter'
+      parameter = createElement('bpmnos:Parameter', { name: 'linear' }, restriction, bpmnFactory);
+      commandStack.execute('element.updateModdleProperties', {
+          element,
+          moddleElement: restriction,
+          properties: {
+            parameter: [ parameter ]
+          }
+      });
+    }
+
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: parameter,
+      properties: {
+        value: value,
+      }
+    });
+  };
+
+  const getValue = (element) => {
+    const parameter = restriction.parameter ? restriction.get('parameter')[0] : undefined;
+
+    if ( parameter ) {
+      return parameter.get('value');
+    }
   };
 
   const validate = (value) => {
-/*    if ( value ) {
-      let businessObject = getBusinessObject(restriction);
-      const status = getStatus(businessObject);    
-      if (status.filter(attribute => attribute.name == value).length == 0) {
-        return 'Attribute name does not exist.';
-      }
-    }
-    else {
-*/
     if ( !value || !value.length ) {
-      return 'Attribute name must not be empty.';
+      return 'Expression must not be empty.';
     }
   }
 
   return TextFieldEntry({
-    element: restriction,
-    id: idPrefix + '-attribute',
-    label: translate('Attribute name'),
+    element,
+    id: 'value',
+    label: translate('Expression'),
     validate,
     getValue,
     setValue,
     debounce
   });
 }
-
-function RestrictionAttributeRequired(props) {
-  const {
-    idPrefix,
-    element,
-    restriction
-  } = props;
-
-  const modeling = useService('modeling');
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-
-  const setValue = (value) => {
-      commandStack.execute(
-        'element.updateModdleProperties',
-        {
-          element,
-          moddleElement: restriction,
-          properties: {
-            required: value
-          }
-        }
-      );
-  };
-
-  const getValue = (element) => {
-    return restriction.get('required');
-  };
-
-  return CheckboxEntry({
-    element,
-    id: 'required',
-    label: translate('Value is required'),
-    getValue,
-    setValue
-  });
-}
-
-function RestrictionNegate(props) {
-  const {
-    idPrefix,
-    element,
-    restriction
-  } = props;
-
-  const modeling = useService('modeling');
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-
-  const setValue = (value) => {
-      commandStack.execute(
-        'element.updateModdleProperties',
-        {
-          element,
-          moddleElement: restriction,
-          properties: {
-            negate: value
-          }
-        }
-      );
-  };
-
-  const getValue = (element) => {
-    return restriction.get('negate');
-  };
-
-  return CheckboxEntry({
-    element,
-    id: 'negate',
-    label: translate('Negate restriction'),
-    getValue,
-    setValue
-  });
-}
-
-
-function RestrictionMinInclusive(props) {
-  const {
-    idPrefix,
-    element,
-    restriction
-  } = props;
-
-  const commandStack = useService('commandStack');
-  const bpmnFactory = useService('bpmnFactory');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    let commands = [];
-    // delete prior minInclusive element
-    let minInclusive = restriction.get('minInclusive');
-    if ( minInclusive ) {
-      commands.push({
-        cmd: 'element.updateModdleProperties',
-        context: {
-          element,
-          moddleElement: restriction,
-          properties: {
-            minInclusive: restriction.get('minInclusive').pop()
-          }
-        }
-      });
-    }
-
-    if ( value ) {
-      // add  minInclusive element
-      minInclusive = createElement('bpmnos:MinInclusive', { value }, status, bpmnFactory);
-
-      commandStack.execute('element.updateModdleProperties', {
-        element,
-        moddleElement: restriction,
-        properties: {
-          minInclusive: [ ...restriction.get('minInclusive'), minInclusive ]
-        }
-      });
-    }
-  };
-
-  const getValue = () => {
-    if ( restriction && (restriction.get('minInclusive') || []).length > 0 ) {
-      return restriction.get('minInclusive')[0].value;
-    }
-  };
-
-  return TextFieldEntry({
-    element: restriction,
-    id: idPrefix + '-minInclusive',
-    label: translate('Value must be larger or equal to'),
-    getValue,
-    setValue,
-    debounce
-  });
-}
-
-function RestrictionMaxInclusive(props) {
-  const {
-    idPrefix,
-    element,
-    restriction
-  } = props;
-
-  const commandStack = useService('commandStack');
-  const bpmnFactory = useService('bpmnFactory');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    let commands = [];
-    let maxInclusive = restriction.get('maxInclusive');
-
-    if ( maxInclusive ) {
-      // delete prior maxInclusive element
-      commands.push({
-        cmd: 'element.updateModdleProperties',
-        context: {
-          element,
-          moddleElement: restriction,
-          properties: {
-            maxInclusive: restriction.get('maxInclusive').pop()
-          }
-        }
-      });
-    }
-
-    if ( value ) {
-      // add  maxInclusive element
-      maxInclusive = createElement('bpmnos:MaxInclusive', { value }, status, bpmnFactory);
-
-      commandStack.execute('element.updateModdleProperties', {
-        element,
-        moddleElement: restriction,
-        properties: {
-          maxInclusive: [ ...restriction.get('maxInclusive'), maxInclusive ]
-        }
-      });
-    }
-  };
-
-  const getValue = () => {
-    if ( restriction && (restriction.get('maxInclusive') || []).length > 0 ) {
-      return restriction.get('maxInclusive')[0].value;
-    }
-  };
-
-  return TextFieldEntry({
-    element: restriction,
-    id: idPrefix + '-maxInclusive',
-    label: translate('Value must be smaller or equal to'),
-    getValue,
-    setValue,
-    debounce
-  });
-}
-
-function RestrictionEnumeration(props) {
-  const {
-    idPrefix,
-    element,
-    restriction
-  } = props;
-
-  const bpmnFactory = useService('bpmnFactory');
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-
-  const enumeration = restriction.get('enumeration');
-
-
-  function addValue() {
-    let commands = [];
-
-    // create enumeration
-    const enumeration = createElement('bpmnos:Enumeration', {}, restriction, bpmnFactory);
-
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: restriction,
-      properties: {
-        enumeration: [ ...restriction.get('enumeration'), enumeration ]
-      }
-    });
-  }
-
-  function removeValue(enumeration) {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: restriction,
-      properties: {
-        enumeration: without(restriction.get('enumeration'), enumeration)
-      }
-    });
-  }
-/*
-  function compareKey(content, anotherContent) {
-    const [ key = '', anotherKey = '' ] = [ content.key, anotherContent.key ];
-
-    return key === anotherKey ? 0 : key > anotherKey ? 1 : -1;
-  }
-*/
-  return <ListEntry
-    id={ idPrefix }
-    element={ element }
-    label={ translate('Allowed values') }
-    items={ enumeration }
-    component={ Enumeration }
-    onAdd={ addValue }
-    onRemove={ removeValue }
-//    compareFn={ compareKey }
-    autoFocusEntry
-  />;
-}
-
-function Enumeration(props) {
-  const {
-    element,
-    id: idPrefix,
-    index,
-    item: enumeration,
-    open
-  } = props;
-
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: enumeration,
-      properties: {
-        value: value
-      }
-    });
-  };
-
-  const getValue = () => {
-    return enumeration.value;
-  };
-
-  const validate = (value) => {
-    if ( !value || value.trim() == "" ) {
-      return 'Value must not be empty.';
-    }
-  }
-
-  return TextFieldEntry({
-    element: enumeration,
-    id: idPrefix + '-value',
-    label: 'Value',
-    validate,
-    getValue,
-    setValue,
-    debounce
-  });
-
-}
-
-
 
