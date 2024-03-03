@@ -1,5 +1,9 @@
 import { TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 
+import {
+  is
+} from 'bpmn-js/lib/util/ModelUtil';
+
 import { useService } from 'bpmn-js-properties-panel';
 
 import { getStatus, getBusinessObject } from '../utils/StatusUtil';
@@ -21,6 +25,11 @@ export default function RestrictionEntries(props) {
   const entries = [ {
     id: idPrefix + '-id',
     component: RestrictionId,
+    idPrefix,
+    restriction
+  },{
+    id: element.id + '-scope',
+    component: RestrictionScope,
     idPrefix,
     restriction
   },{
@@ -71,6 +80,55 @@ function RestrictionId(props) {
     getValue,
     setValue,
     debounce
+  });
+}
+
+function RestrictionScope(props) {
+  const {
+    idPrefix,
+    element,
+    restriction
+  } = props;
+
+  if ( is(element, 'bpmn:SequenceFlow') ) {
+    return;
+  }
+
+
+  const commandStack = useService('commandStack');
+  const translate = useService('translate');
+  const bpmnFactory = useService('bpmnFactory');
+//  const debounce = useService('debounceInput');
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: restriction,
+      properties: {
+        scope: value
+      }
+    });
+  };
+
+  const getValue = () => {
+    return restriction.scope || 'full';
+  };
+
+  const getOptions = (element) => {
+    return [
+      { value: 'full', label: translate('full') },
+      { value: 'entry', label: translate('entry') },
+      { value: 'exit', label: translate('exit') }
+    ];
+  };
+
+  return SelectEntry({
+    element: restriction,
+    id: idPrefix + '-scope',
+    label: translate('Scope'),
+    getValue,
+    setValue,
+    getOptions
   });
 }
 
