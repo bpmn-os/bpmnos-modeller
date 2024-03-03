@@ -120,7 +120,8 @@ function RestrictionType(props) {
   const getOptions = (element) => {
     return [
       { value: 'linear', label: translate('linear') },
-      { value: 'generic', label: translate('generic') }
+      { value: 'generic', label: translate('generic') },
+      { value: 'nullcondition', label: translate('null condition') }
     ];
   };
 
