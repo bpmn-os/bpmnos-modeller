@@ -45,7 +45,7 @@ export function attributeHandler({ element, injector }) {
 
     return {
       id,
-      label: attribute.get('name') || attribute.get('id'),
+      label: attribute.get('name') ? attribute.get('name') + " : " + attribute.get('type'): attribute.get('id'),
       entries: AttributeEntries({
         idPrefix: id,
         element,

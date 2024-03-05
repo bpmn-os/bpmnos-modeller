@@ -48,16 +48,15 @@ export function restrictionHandler({ element, injector }) {
 
   const items = ( restrictions.restriction || []).map((restriction, index) => {
     const id = element.id + '-restriction-' + index;
-
     return {
       id,
-      label: restriction.get('attribute') || restriction.get('id'),
+      label: restriction.get('parameter').length ? restriction.get('parameter')[0].value : restriction.get('id'),
       entries: RestrictionEntries({
         idPrefix: id,
         element,
         restriction
       }),
-      autoFocusEntry: id + '-attribute',
+      autoFocusEntry: id + '-expression',
       remove: removeFactory({ commandStack, element, restriction })
     };
   });
