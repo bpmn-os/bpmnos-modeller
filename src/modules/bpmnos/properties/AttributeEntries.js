@@ -169,7 +169,8 @@ function AttributeType(props) {
       { value: 'integer', label: translate('Integer') },
       { value: 'decimal', label: translate('Decimal') },
       { value: 'boolean', label: translate('Boolean') },
-      { value: 'string', label: translate('String') }
+      { value: 'string', label: translate('String') },
+      { value: 'collection', label: translate('Collection') }
     ];
   };
 
@@ -384,7 +385,7 @@ function MultiInstanceParameter(props) {
   return <ListEntry
     id={ id }
     element={ element }
-    label={ translate('Multi-instance values') }
+    label={ translate('Multi-instance parameter') }
     items={ parameter }
     component={ Parameter }
     onAdd={ addParameter }

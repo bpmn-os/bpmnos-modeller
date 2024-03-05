@@ -55,7 +55,6 @@ export function attributeHandler({ element, injector }) {
       remove: removeFactory({ commandStack, element, attribute })
     };
   });
-
   return {
     items,
     add: addFactory({ bpmnFactory, commandStack, element })

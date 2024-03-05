@@ -14,6 +14,7 @@ export function Parameter(props) {
   } = props;
 
   const paramId = `${ idPrefix }-${ index }`;
+
   return (
     <CollapsibleEntry
       entries={ ParameterEntries({
@@ -21,7 +22,7 @@ export function Parameter(props) {
         parameter,
         idPrefix: paramId
       }) }
-      label={ parameter.get('name') || '<empty>' }
+      label={ ( parameter.get('name') || '<empty>') + " : " +  (parameter.get('attribute') || parameter.get('value') ) }
       open={ open }
     />
   );
