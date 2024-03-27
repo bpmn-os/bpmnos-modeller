@@ -157,7 +157,6 @@ var downloadSVG = document.getElementById('js-download-svg');
 
 if (downloadBPMN) {
   downloadBPMN.addEventListener('click', function() {
-
     modeler.saveXML().then( function(model) {
       downloadXML(modelName + '.bpmn', model.xml);
       console.log(model.xml);

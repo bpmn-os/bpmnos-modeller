@@ -27,19 +27,31 @@ export function attributeHandler({ element, injector }) {
     return;
   }
 
-  if ( !is(businessObject, 'bpmn:Process') && !is(businessObject, 'bpmn:Activity') ) {
+  if ( !is(businessObject, 'bpmn:Process') && !is(businessObject, 'bpmn:Activity') && !is(businessObject, 'bpmn:DataObjectReference') ) {
     return;
   }
   if ( is(businessObject, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
     return;
   }
 
+  let dataElement = undefined;
+  if ( is(businessObject, 'bpmn:DataObjectReference') ) {
+    dataElement = element;
+    element = element.businessObject.dataObjectRef;
+  }
+
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
 
-  const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
-  const attributes = parent.attributes ? parent.get('attributes')[0] : {};
-
+  let attributes  = undefined;
+  if ( dataElement ) {
+    attributes = getCustomItem( element, 'bpmnos:Attributes' ) || {};
+  }
+  else {
+    const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
+    attributes = parent.attributes ? parent.get('attributes')[0] : {};
+  }
+  
   const items = ( attributes.attribute || []).map((attribute, index) => {
     const id = element.id + '-attribute-' + index;
 
@@ -52,33 +64,38 @@ export function attributeHandler({ element, injector }) {
         attribute
       }),
       autoFocusEntry: id + '-name',
-      remove: removeFactory({ commandStack, element, attribute })
+      remove: removeFactory({ commandStack, element, attribute, dataElement })
     };
   });
   return {
     items,
-    add: addFactory({ bpmnFactory, commandStack, element })
+    add: addFactory({ bpmnFactory, commandStack, element, dataElement })
   };
 }
 
 // ADD FACTORY //
-function addFactory({ bpmnFactory, commandStack, element }) {
+function addFactory({ bpmnFactory, commandStack, element, dataElement }) {
   return function(event) {
     event.stopPropagation();
 
-    const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
-
-    let attributes = parent.attributes ? parent.get('attributes')[0] : undefined;
-    if ( !attributes ) {
-      // create 'bpmnos:Attributes'
-      attributes = createElement('bpmnos:Attributes', {}, parent, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
+    let attributes  = undefined;
+    if ( dataElement ) {
+      attributes = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Attributes'); 
+    }
+    else {
+      const parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
+      attributes = parent.attributes ? parent.get('attributes')[0] : undefined;
+      if ( !attributes ) {
+        // create 'bpmnos:Attributes'
+        attributes = createElement('bpmnos:Attributes', {}, parent, bpmnFactory);
+        commandStack.execute('element.updateModdleProperties', {
           element,
           moddleElement: parent,
-          properties: {
-            attributes: [ ...parent.get('attributes'), attributes ]
-          }
-      });
+            properties: {
+              attributes: [ ...parent.get('attributes'), attributes ]
+            }
+        });
+      }
     }
 
     // create 'bpmnos:Attribute'
@@ -92,11 +109,18 @@ function addFactory({ bpmnFactory, commandStack, element }) {
       }
     });
 
+    if ( dataElement ) {
+      // trigger update via fake change
+      commandStack.execute('element.updateModdleProperties', {
+        element: dataElement,
+        moddleElement: dataElement.businessObject.id
+      });
+    }
   };
 }
 
 // REMOVE FACTORY //
-function removeFactory({ commandStack, element, attribute }) {
+function removeFactory({ commandStack, element, attribute, dataElement }) {
   return function(event) {
     event.stopPropagation();
 
@@ -104,8 +128,15 @@ function removeFactory({ commandStack, element, attribute }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    const parent = getCustomItem( element, 'bpmnos:Status' ) || {};
-    let attributes = parent.attributes ? parent.get('attributes')[0] : {};
+    let parent = undefined;
+    let attributes  = undefined;
+    if ( dataElement ) {
+      attributes = getCustomItem( element, 'bpmnos:Attributes' ) || {};
+    }
+    else {
+      parent = getCustomItem( element, 'bpmnos:Status' ) || {};
+      attributes = parent.attributes ? parent.get('attributes')[0] : {};
+    }
 
     if (!attributes) {
       return;
@@ -124,8 +155,8 @@ function removeFactory({ commandStack, element, attribute }) {
       }
     });
 
-    // remove 'bpmnos:Attributes' if there are no attributes anymore
-    if (!attributeList.length) {
+    if ( !dataElement && !attributeList.length) {
+      // remove 'bpmnos:Attributes' from 'bpmnos:Status' if there are no attributes anymore
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
@@ -135,6 +166,14 @@ function removeFactory({ commandStack, element, attribute }) {
             attributes: undefined
           }
         }
+      });
+    }
+
+    if ( dataElement ) {
+      // trigger update via fake change
+      commandStack.execute('element.updateModdleProperties', {
+        element: dataElement,
+        moddleElement: dataElement.businessObject.id
       });
     }
 

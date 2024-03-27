@@ -45,7 +45,7 @@ export function operatorHandler({ element, injector }) {
 
     return {
       id,
-      label: operator.get('parameter').length && operator.get('attribute') ? ( operator.get('attribute') + " ← " + ( operator.get('parameter')[0].attribute || operator.get('parameter')[0].value ))  : operator.get('id'),
+      label: operator.get('parameter').length && operator.get('attribute') ? ( operator.get('attribute') + " ← " + operator.get('type') )  : operator.get('id'),
       entries: OperatorEntries({
         idPrefix: id,
         element,
