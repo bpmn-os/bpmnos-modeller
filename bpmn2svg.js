@@ -24,7 +24,7 @@ for (let i = 0; i < args.length; i++) {
       process.exit(1);
     }
     serverURL = args[i + 1];
-    i++; // Skip the next argument (output directory)
+    i++; // Skip the next argument (server URL)
   }
   else {
     fileName = args[i];
@@ -70,7 +70,6 @@ else {
   });
 
   serverProcess.on('exit', (code, signal) => {
-//  console.log('Local server process exited with code', code);
     process.exit(1);
   });
 
@@ -118,7 +117,7 @@ async function bpmn2svg(serverURL) {
   const diagram = fs.readFileSync(fileName, 'utf-8');
 
   
- // Pass the file content to the page context and call the "show" function
+  // Pass the file content to the page context and call the "show" function
   await page.evaluate((diagram) => {
     modeler.importXML(diagram);
   }, diagram);
