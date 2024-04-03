@@ -9,6 +9,7 @@ const startServerCommand = 'npm run start';
 const args = process.argv.slice(2);
 let fileName;
 let outputDir = '.';
+let serverURL;
 
 // Parse command-line arguments
 for (let i = 0; i < args.length; i++) {
@@ -19,14 +20,23 @@ for (let i = 0; i < args.length; i++) {
     }
     outputDir = args[i + 1];
     i++; // Skip the next argument (output directory)
-  } else {
+  }
+  else if (args[i] === '-s' || args[i] === '--server') {
+    if (i + 1 >= args.length || args[i + 1].startsWith('-')) {
+      console.error('Error: Missing server URL after -s option');
+      process.exit(1);
+    }
+    serverURL = args[i + 1];
+    i++; // Skip the next argument (output directory)
+  }
+  else {
     fileName = args[i];
   }
 }
 
 // Check if a filename is provided
 if (!fileName) {
-  console.error('Usage: node bpmn2svg.js [-o <outputDir>] <BPMN filename>');
+  console.error('Usage: node bpmn2svg.js [-s <serverURL>] [-o <outputDir>] <BPMN filename>');
   process.exit(1);
 }
 
@@ -49,44 +59,52 @@ if (!fs.existsSync(outputDir)) {
 
 const baseName = path.basename(fileName, path.extname(fileName));
 
-// Start the local server
-const serverProcess = exec(startServerCommand);
+if ( serverURL ) {
+  // Convert BPMN to SVG
+  bpmn2svg(serverURL);
+}
+else {
+  // Start the local server
+  const serverProcess = exec(startServerCommand);
 
-serverProcess.on('error', (err) => {
-  console.error('Error starting local server:', err);
-  process.exit(1);
-});
+  serverProcess.on('error', (err) => {
+    console.error('Error starting local server:', err);
+    process.exit(1);
+  });
 
-serverProcess.on('exit', (code, signal) => {
+  serverProcess.on('exit', (code, signal) => {
 //  console.log('Local server process exited with code', code);
-  process.exit(1);
-});
+    process.exit(1);
+  });
 
-let serverReady = false;
-serverProcess.stdout.on('data', (data) => {
-  // Check if the stdout contains the message indicating that the server is ready
-  if (data.includes('Your application is ready')) {
-    serverReady = true;
-  }
-  
-  if (serverReady && data.includes('http')) {
-    // Extract the URL from the data
-    const urlMatch = data.match(/(http\S+)/);
-    if (urlMatch && urlMatch[1]) {
-      serverURL = urlMatch[1];
-      console.log('Server URL:', serverURL);
-      // Convert BPMN to SVG
-      bpmn2svg(serverURL);
-    } else {
-      console.error('Error: Failed to extract server URL.');
-      process.exit(1);
+  let serverReady = false;
+  serverProcess.stdout.on('data', async (data) => {
+    // Check if the stdout contains the message indicating that the server is ready
+    if (data.includes('Your application is ready')) {
+      serverReady = true;
     }
-  }
-});
+  
+    if (serverReady && data.includes('http')) {
+      // Extract the URL from the data
+      const urlMatch = data.match(/(http\S+)/);
+      if (urlMatch && urlMatch[1]) {
+        serverURL = urlMatch[1];
+        console.log('Server URL:', serverURL);
+        // Convert BPMN to SVG
+        await bpmn2svg(serverURL);
+        // Close the local server process
+        serverProcess.kill();
+      } else {
+        console.error('Error: Failed to extract server URL.');
+        process.exit(1);
+      }
+    }
+  });
 
-serverProcess.stderr.on('data', (data) => {
-  console.error(`Server process error: ${data}`);
-});
+  serverProcess.stderr.on('data', (data) => {
+    console.error(`Server process error: ${data}`);
+  });
+}
 
 async function bpmn2svg(serverURL) {
   // Launch a headless browser
@@ -150,7 +168,4 @@ async function bpmn2svg(serverURL) {
   console.log("Saved " + (collapsed.length+1) + " diagrams to: " + outputDir);
   // Close the browser
   await browser.close();
-
-  // Close the local server process
-  serverProcess.kill();
 }
