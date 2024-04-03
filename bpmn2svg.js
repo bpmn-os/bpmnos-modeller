@@ -83,12 +83,6 @@ serverProcess.stdout.on('data', (data) => {
   }
 });
 
-/*
-    // The server is ready, proceed with the rest of the script
-console.log("ready:",data);
-//    bpmn2svg();
-*/
-
 serverProcess.stderr.on('data', (data) => {
   console.error(`Server process error: ${data}`);
 });
