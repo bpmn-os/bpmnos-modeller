@@ -75,6 +75,7 @@ serverProcess.stdout.on('data', (data) => {
     if (urlMatch && urlMatch[1]) {
       serverURL = urlMatch[1];
       console.log('Server URL:', serverURL);
+      // Convert BPMN to SVG
       bpmn2svg(serverURL);
     } else {
       console.error('Error: Failed to extract server URL.');
@@ -107,18 +108,18 @@ async function bpmn2svg(serverURL) {
     modeler.importXML(diagram);
   }, diagram);
 
-  // save root diagram
+  // Get SVG of root diagram
   let svg = await page.evaluate(() => {
     return modeler.saveSVG({ format: true }).then((model) => {
       return model.svg;
     });
   });
 
-  // Save the content of model.svg into a file named <baseName>.svg
+  // Create the SVG file
   let outputFile = path.join(outputDir, baseName + '.svg');
   fs.writeFileSync(outputFile, svg, 'utf-8');
 
-  // save diagrams of collapsed elements
+  // Find collapsed elements
   const collapsed = await page.evaluate(() => {
     let elementRegistry = modeler.get('elementRegistry');
     return elementRegistry.getAll().filter( (element) => { return element.collapsed; } );
@@ -127,19 +128,21 @@ async function bpmn2svg(serverURL) {
   for ( const element of collapsed ) {
     const id = element.id;
 
+    // Expand collapsed element
     await page.evaluate((element) => {
       let elementRegistry = modeler.get('elementRegistry');
       let canvas = modeler.get('canvas');
       canvas.setRootElement(elementRegistry.get(element.id + '_plane'));
     }, element);
 
+    // Get SVG of expanded element
     svg = await page.evaluate(() => {
       return modeler.saveSVG({ format: true }).then((model) => {
         return model.svg;
       });
     });
 
-    // Save the content of model.svg into a file named <baseName>-<subprocessName>.svg
+    // Create the SVG file
     outputFile = path.join(outputDir, baseName + '-' + id + '.svg');
     fs.writeFileSync(outputFile, svg, 'utf-8');
   }
