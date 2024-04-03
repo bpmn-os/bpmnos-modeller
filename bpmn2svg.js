@@ -3,9 +3,6 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 
-// Command to start your local server
-const startServerCommand = 'npm run start';
-
 const args = process.argv.slice(2);
 let fileName;
 let outputDir = '.';
@@ -65,7 +62,7 @@ if ( serverURL ) {
 }
 else {
   // Start the local server
-  const serverProcess = exec(startServerCommand);
+  const serverProcess = exec('npm run start');
 
   serverProcess.on('error', (err) => {
     console.error('Error starting local server:', err);
