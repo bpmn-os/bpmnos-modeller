@@ -30,15 +30,15 @@ Serve the application locally or via a web server (nginx, apache, embedded).
 
 ## Convert BPMN to SVG
 
-You can convert a BPMN model to SVG using
+Create a link to the diagram converter by
+```
+sudo npm link
+```
+
+After this, you can convert a BPMN model to SVG using
 
 ```
-node bpmn2svg.js <BPMN filename> [-o <outputDir>] [-s <serverURL>]
-```
-or
-
-```
-./bpmn2svg.js <BPMN filename> [-o <outputDir>] [-s <serverURL>]
+bpmn2svg <BPMN filename> [-o <outputDir>] [-s <serverURL>]
 ```
 
 This command creates an SVG-file for the main diagram and each collapsed subprocesses and saves them in the specified output directory. If no output directory is specified the current folder is used. Tooltips for each BPMN element are automatically added.

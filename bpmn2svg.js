@@ -36,7 +36,7 @@ for (let i = 0; i < args.length; i++) {
 
 // Check if a filename is provided
 if (!fileName) {
-  console.error('Usage: node bpmn2svg.js [-s <serverURL>] [-o <outputDir>] <BPMN filename>');
+  console.error('Usage: bpmn2svg [-s <serverURL>] [-o <outputDir>] <BPMN filename>');
   process.exit(1);
 }
 
@@ -74,7 +74,7 @@ else {
   });
 
   serverProcess.on('exit', (code, signal) => {
-    process.exit(1);
+    process.exit(0);
   });
 
   let serverReady = false;
@@ -147,25 +147,32 @@ async function bpmn2svg(serverURL) {
     const id = element.id;
 
     // Expand collapsed element
-    await page.evaluate((element) => {
+    let expanded = await page.evaluate((element) => {
       let elementRegistry = modeler.get('elementRegistry');
       let canvas = modeler.get('canvas');
-      canvas.setRootElement(elementRegistry.get(element.id + '_plane'));
+      let rootElement = elementRegistry.get(element.id + '_plane');
+      if ( rootElement ) {
+        canvas.setRootElement(rootElement);
+        return true;
+      }
+      return false;
     }, element);
 
-    // Get SVG of expanded element
-    svg = await page.evaluate(() => {
-      return modeler.saveSVG({ format: true }).then((model) => {
-        return model.svg;
+    if ( expanded ) {
+      // Get SVG of expanded element
+      svg = await page.evaluate(() => {
+        return modeler.saveSVG({ format: true }).then((model) => {
+          return model.svg;
+        });
       });
-    });
 
-    // Create the SVG file
-    outputFile = path.join(outputDir, baseName + '-' + id + '.svg');
-    fs.writeFileSync(outputFile, addTooltips(svg), 'utf-8');
+      // Create the SVG file
+      outputFile = path.join(outputDir, baseName + '-' + id + '.svg');
+      fs.writeFileSync(outputFile, addTooltips(svg), 'utf-8');
+    }
   }
   
-  console.log("Saved " + (collapsed.length+1) + " diagrams to: " + outputDir);
+  console.log("Saved " + (collapsed.length+1) + " diagram(s) to: " + outputDir);
   // Close the browser
   await browser.close();
 }
