@@ -24,33 +24,35 @@
   ],
   "license": "MIT",
   "dependencies": {
-    "bpmn-js": "^16.4.0",
     "@bpmn-io/properties-panel": "^3.15.0",
-    "bpmn-js-properties-panel": "^5.7.0",
+    "bpmn-js": "^16.4.0",
     "bpmn-js-bpmnlint": "^0.21.0",
-    "bpmnlint-utils": "^1.1.1",
-    "bpmn-js-token-simulation": "^0.33.0",
-    "bpmn-moddle": "^8.1.0",
-    "diagram-js": "^13.4.0",
-    "tiny-svg": "^3.0.0",
+    "bpmn-js-collapse-event-subprocess": "^0.2.2",
+    "bpmn-js-properties-panel": "^5.7.0",
     "bpmn-js-sequential-adhoc-subprocesses": "^0.1.0",
     "bpmn-js-subprocess-importer": "^0.2.1",
-    "bpmn-js-collapse-event-subprocess": "^0.2.2"
+    "bpmn-js-token-simulation": "^0.33.0",
+    "bpmn-moddle": "^8.1.0",
+    "bpmnlint-utils": "^1.1.1",
+    "diagram-js": "^13.4.0",
+    "puppeteer": "^22.6.2",
+    "tiny-svg": "^3.0.0",
+    "xmldom": "^0.6.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.7",
     "@babel/plugin-transform-react-jsx": "^7.23.4",
     "babel-loader": "^9.1.0",
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.5.1",
     "less": "^4.1.2",
     "less-loader": "^11.1.4",
-    "copy-webpack-plugin": "^11.0.0",
     "npm-run-all": "^4.1.5",
+    "patch-package": "^6.4.7",
     "raw-loader": "^4.0.2",
     "sirv-cli": "^2.0.2",
+    "stringify": "^5.2.0",
     "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
-    "patch-package": "^6.4.7",
-    "stringify": "^5.2.0"
+    "webpack-cli": "^5.1.4"
   }
 }

@@ -1,7 +1,10 @@
+#!/usr/bin/env node
+
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const { DOMParser, XMLSerializer } = require('xmldom');
 
 const args = process.argv.slice(2);
 let fileName;
@@ -37,6 +40,7 @@ if (!fileName) {
   process.exit(1);
 }
 
+
 // Check if the file exists
 if (!fs.existsSync(fileName)) {
   console.error('File does not exist:', fileName);
@@ -62,7 +66,7 @@ if ( serverURL ) {
 }
 else {
   // Start the local server
-  const serverProcess = exec('npm run start');
+  const serverProcess = exec('npm run start', { cwd: __dirname });
 
   serverProcess.on('error', (err) => {
     console.error('Error starting local server:', err);
@@ -131,7 +135,7 @@ async function bpmn2svg(serverURL) {
 
   // Create the SVG file
   let outputFile = path.join(outputDir, baseName + '.svg');
-  fs.writeFileSync(outputFile, svg, 'utf-8');
+  fs.writeFileSync(outputFile, addTooltips(svg), 'utf-8');
 
   // Find collapsed elements
   const collapsed = await page.evaluate(() => {
@@ -158,10 +162,25 @@ async function bpmn2svg(serverURL) {
 
     // Create the SVG file
     outputFile = path.join(outputDir, baseName + '-' + id + '.svg');
-    fs.writeFileSync(outputFile, svg, 'utf-8');
+    fs.writeFileSync(outputFile, addTooltips(svg), 'utf-8');
   }
   
   console.log("Saved " + (collapsed.length+1) + " diagrams to: " + outputDir);
   // Close the browser
   await browser.close();
+}
+
+function addTooltips(svgContent) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+  const elements = doc.getElementsByTagName('*');
+  for (let i = 0; i < elements.length; i++) {
+    const element = elements[i];
+    if (element.hasAttribute('data-element-id')) {
+      const title = doc.createElementNS('http://www.w3.org/2000/svg', 'title');
+      title.textContent = element.getAttribute('data-element-id');
+      element.appendChild(title);
+    }
+  }
+  return new XMLSerializer().serializeToString(doc);
 }

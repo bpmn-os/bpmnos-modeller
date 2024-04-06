@@ -33,13 +33,21 @@ Serve the application locally or via a web server (nginx, apache, embedded).
 You can convert a BPMN model to SVG using
 
 ```
-node bpmn2svg.js <BPMN filename> [-o <outputDir>]
+node bpmn2svg.js <BPMN filename> [-o <outputDir>] [-s <serverURL>]
 ```
-
-This command creates an SVG-file for the main diagram and each collapsed subprocesses and saves them in the specified output directory. If no output directory is specified the current folder is used.
-
-In order to use this command `puppeteer` must be installed
+or
 
 ```
+./bpmn2svg.js <BPMN filename> [-o <outputDir>] [-s <serverURL>]
+```
+
+This command creates an SVG-file for the main diagram and each collapsed subprocesses and saves them in the specified output directory. If no output directory is specified the current folder is used. Tooltips for each BPMN element are automatically added.
+
+In order to use this command `xmldom` and `puppeteer` must be installed
+
+```
+npm install xmldom
 npm install puppeteer
 ```
+
+Please note that `npm install puppeteer` may hang on certain internet connections (see https://github.com/puppeteer/puppeteer/issues/5611).
