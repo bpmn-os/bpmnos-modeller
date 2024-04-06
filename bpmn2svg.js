@@ -147,25 +147,19 @@ async function bpmn2svg(serverURL) {
     const id = element.id;
 
     // Expand collapsed element
-    let expanded = await page.evaluate((element) => {
+    svg = await page.evaluate((element) => {
       let elementRegistry = modeler.get('elementRegistry');
       let canvas = modeler.get('canvas');
       let rootElement = elementRegistry.get(element.id + '_plane');
       if ( rootElement ) {
         canvas.setRootElement(rootElement);
-        return true;
-      }
-      return false;
-    }, element);
-
-    if ( expanded ) {
-      // Get SVG of expanded element
-      svg = await page.evaluate(() => {
         return modeler.saveSVG({ format: true }).then((model) => {
           return model.svg;
         });
-      });
+      }
+    }, element);
 
+    if ( svg ) {
       // Create the SVG file
       outputFile = path.join(outputDir, baseName + '-' + id + '.svg');
       fs.writeFileSync(outputFile, addTooltips(svg), 'utf-8');
