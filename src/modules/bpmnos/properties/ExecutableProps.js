@@ -1,4 +1,8 @@
 import {
+  getRelevantBusinessObject
+} from '../utils/CustomItemUtil';
+
+import {
   is
 } from 'bpmn-js/lib/util/ModelUtil';
 
@@ -109,8 +113,12 @@ function hasProcessRef(element) {
   return is(element, 'bpmn:Participant') && element.businessObject.get('processRef');
 }
 
-function hasInstanceAttribute(element) {
-  let dataObjects = element.businessObject.flowElements.filter((element) => {
+function hasInstanceAttribute(businessObject) {
+  if ( !businessObject.flowElements ) {
+    businessObject.flowElements = [];
+  }
+  
+  let dataObjects = businessObject.flowElements.filter((element) => {
     return element.$type === 'bpmn:DataObject' && element.extensionElements && element.extensionElements.values.length;
   });
   for ( let dataObject of dataObjects ) {
@@ -124,12 +132,14 @@ function hasInstanceAttribute(element) {
 }
 
 function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
-  if ( !hasInstanceAttribute(element) ) {
+  const businessObject = getRelevantBusinessObject(element);
+
+  if ( !hasInstanceAttribute(businessObject) ) {
     var dataObject = bpmnFactory.create('bpmn:DataObject');
     const attributes = ensureCustomItem(bpmnFactory, commandStack, dataObject, 'bpmnos:Attributes');
     const attribute = createElement('bpmnos:Attribute', { id: 'Instance' , name: 'instance', type: 'string' }, attributes, bpmnFactory);
     attributes.get('attribute').push(attribute);
-    element.businessObject.flowElements.push(dataObject);
+    businessObject.flowElements.push(dataObject);
   }
 
   const status = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
