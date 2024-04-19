@@ -27,7 +27,7 @@ export function attributeHandler({ element, injector }) {
     return;
   }
 
-  if ( !is(businessObject, 'bpmn:Process') && !is(businessObject, 'bpmn:Activity') && !is(businessObject, 'bpmn:DataObjectReference') ) {
+  if ( !is(businessObject, 'bpmn:Process') && !is(businessObject, 'bpmn:Activity') && !is(businessObject, 'bpmn:DataObjectReference') && !is(businessObject, 'bpmn:Collaboration') ) {
     return;
   }
   if ( is(businessObject, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
@@ -35,6 +35,7 @@ export function attributeHandler({ element, injector }) {
   }
 
   let dataElement = undefined;
+  let collaboration = is(businessObject, 'bpmn:Collaboration');
   if ( is(businessObject, 'bpmn:DataObjectReference') ) {
     dataElement = element;
     element = element.businessObject.dataObjectRef;
@@ -44,7 +45,7 @@ export function attributeHandler({ element, injector }) {
         commandStack = injector.get('commandStack');
 
   let attributes  = undefined;
-  if ( dataElement ) {
+  if ( dataElement || collaboration ) {
     attributes = getCustomItem( element, 'bpmnos:Attributes' ) || {};
   }
   else {
@@ -64,22 +65,22 @@ export function attributeHandler({ element, injector }) {
         attribute
       }),
       autoFocusEntry: id + '-name',
-      remove: removeFactory({ commandStack, element, attribute, dataElement })
+      remove: removeFactory({ commandStack, element, attribute, dataElement, collaboration })
     };
   });
   return {
     items,
-    add: addFactory({ bpmnFactory, commandStack, element, dataElement })
+    add: addFactory({ bpmnFactory, commandStack, element, dataElement, collaboration })
   };
 }
 
 // ADD FACTORY //
-function addFactory({ bpmnFactory, commandStack, element, dataElement }) {
+function addFactory({ bpmnFactory, commandStack, element, dataElement, collaboration }) {
   return function(event) {
     event.stopPropagation();
 
     let attributes  = undefined;
-    if ( dataElement ) {
+    if ( dataElement || collaboration ) {
       attributes = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Attributes'); 
     }
     else {
@@ -120,7 +121,7 @@ function addFactory({ bpmnFactory, commandStack, element, dataElement }) {
 }
 
 // REMOVE FACTORY //
-function removeFactory({ commandStack, element, attribute, dataElement }) {
+function removeFactory({ commandStack, element, attribute, dataElement, collaboration }) {
   return function(event) {
     event.stopPropagation();
 
@@ -130,7 +131,7 @@ function removeFactory({ commandStack, element, attribute, dataElement }) {
 
     let parent = undefined;
     let attributes  = undefined;
-    if ( dataElement ) {
+    if ( dataElement || collaboration ) {
       attributes = getCustomItem( element, 'bpmnos:Attributes' ) || {};
     }
     else {
@@ -155,7 +156,7 @@ function removeFactory({ commandStack, element, attribute, dataElement }) {
       }
     });
 
-    if ( !dataElement && !attributeList.length) {
+    if ( !dataElement && !collaboration && !attributeList.length) {
       // remove 'bpmnos:Attributes' from 'bpmnos:Status' if there are no attributes anymore
       commands.push({
         cmd: 'element.updateModdleProperties',
