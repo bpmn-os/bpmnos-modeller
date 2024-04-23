@@ -130,7 +130,7 @@ function Attribute(props) {
         element,
         attribute
       }) }
-      label={ attribute.get('name') || translate('<empty>') }
+      label={ attribute.get('name') ? attribute.get('name') + " : " + attribute.get('type') : attribute.get('id') }
       open={ open }
     />
   );

@@ -130,7 +130,7 @@ function Operator(props) {
         element,
         operator
       }) }
-      label={ operator.get('attribute') || translate('<empty>') }
+      label={ operator.get('attribute') ? ( operator.get('attribute') + " ← " + operator.get('type') )  : operator.get('id') }
       open={ open }
     />
   );

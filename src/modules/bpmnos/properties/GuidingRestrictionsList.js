@@ -129,7 +129,7 @@ function Restriction(props) {
         element,
         restriction
       }) }
-      label={ (restriction.get('parameter')[0] || {}).value || translate('<empty>') }
+      label={ (restriction.get('parameter')[0] || {}).value || restriction.get('id') }
       open={ open }
     />
   );
