@@ -120,7 +120,6 @@ function Restriction(props) {
 
   const restriction = item;
   const translate = useService('translate');
-
   return (
     <CollapsibleEntry
       id={ id }
@@ -130,7 +129,7 @@ function Restriction(props) {
         element,
         restriction
       }) }
-      label={ restriction.get('attribute') || translate('<empty>') }
+      label={ (restriction.get('parameter')[0] || {}).value || translate('<empty>') }
       open={ open }
     />
   );
