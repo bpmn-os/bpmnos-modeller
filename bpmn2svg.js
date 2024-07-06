@@ -109,7 +109,7 @@ else {
 async function bpmn2svg(serverURL) {
   // Launch a headless browser
   // const browser = await puppeteer.launch({ headless: false }); // use to debug
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disabled-setupid-sandbox"], headless: true });
 
   // Open a new page
   const page = await browser.newPage();
