@@ -13,10 +13,13 @@ module.exports = function() {
 
   function check(node, reporter) {
     if ( is(node,'bpmn:Process') && node.isExecutable ) {
-      const status = getStatus(node);
-      if ( !status.find(attribute => attribute.name == "instance") ) {
+/*
+      const data = getData(node);
+      if ( !data.find(attribute => attribute.name == "instance") ) {
         reporter.report(node.id, "Attribute 'instance' is missing");
       }
+*/
+      const status = getStatus(node);
       if ( !status.find(attribute => attribute.name == "timestamp") ) {
         reporter.report(node.id, "Attribute 'timestamp' is missing");
       }

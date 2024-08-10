@@ -1,5 +1,6 @@
 import { createLintConfig } from "./create-lint-config";
 
+import adHocSubProcess from "./bpmn/adhoc-subprocess";
 import implicitStart from "./bpmn/implicit-start";
 import implicitEnd from "./bpmn/implicit-end";
 import noBlankEvent from "./bpmn/no-blank-event";
@@ -39,6 +40,7 @@ import allocation from "./execution/allocation";
 export default function() {
   return createLintConfig({
       rules: {
+        "essential/adhoc-subprocess": "error",
         "essential/implicit-start": "error",
         "essential/implicit-end": "error",
         "essential/no-blank-event": "error",
@@ -52,13 +54,13 @@ export default function() {
         "essential/no-duplicate-sequence-flows": "error",
         "essential/superfluous-gateway": "warn",
         "engine/non-executable-process": "warn",
-        "engine/boundary-event": "warn",
-        "engine/event-subprocess": "warn",
-        "engine/activity-marker": "error",
-        "engine/typed-task": "error",
+//        "engine/boundary-event": "warn",
+//        "engine/event-subprocess": "warn",
+//        "engine/activity-marker": "error",
+        "engine/typed-task": "warn",
         "engine/event-type": "error",
         "engine/multiple-event-definitions": "error",
-        "engine/compensation-activity": "error",
+//        "engine/compensation-activity": "error",
         "engine/call-activity": "error",
         "engine/transaction": "error",
         "engine/complex-gateway": "error",
@@ -74,6 +76,7 @@ export default function() {
         {
           name: "essential",
           rules: {
+            "adhoc-subprocess": adHocSubProcess,
             "implicit-start": implicitStart,
             "implicit-end": implicitEnd,
             "no-blank-event": noBlankEvent,
@@ -92,13 +95,13 @@ export default function() {
           name: "engine",
           rules: {
             "non-executable-process": nonExecutableProcess,
-            "boundary-event": boundaryEvent,
-            "event-subprocess": eventSubprocess,
+//            "boundary-event": boundaryEvent,
+//            "event-subprocess": eventSubprocess,
             "activity-marker": activityMarker,
             "typed-task": typedTask,
             "event-type": eventType,
             "multiple-event-definitions": multipleEventDefinitions,
-            "compensation-activity": compensationActivity,
+//            "compensation-activity": compensationActivity,
             "call-activity": callActivity,
             "transaction": transaction,
             "complex-gateway": complexGateway,

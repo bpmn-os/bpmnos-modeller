@@ -13,7 +13,7 @@ module.exports = function () {
       }
       else if ( is(node, 'bpmn:Event') 
                 && node.eventDefinitions && node.eventDefinitions.length > 0 
-                && !isAny(node.eventDefinitions[0], ['bpmn:MessageEventDefinition','bpmn:TimerEventDefinition','bpmn:EscalationEventDefinition','bpmn:ErrorEventDefinition'] )
+                && !isAny(node.eventDefinitions[0], ['bpmn:MessageEventDefinition','bpmn:TimerEventDefinition','bpmn:EscalationEventDefinition','bpmn:ErrorEventDefinition', 'bpmn:CompensateEventDefinition'] )
       ) {
         reporter.report(node.id, 'Event type not supported by execution engine');
       }
