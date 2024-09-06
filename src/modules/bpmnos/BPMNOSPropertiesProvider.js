@@ -18,6 +18,7 @@ import { restrictionHandler } from './properties/RestrictionHandler';
 import { operatorHandler } from './properties/OperatorHandler';
 import { multiMessageHandler } from './properties/MultiMessageHandler';
 import { messageHandler } from './properties/MessageHandler';
+import { signalHandler } from './properties/SignalHandler';
 import { timerHandler } from './properties/TimerHandler';
 import { allocationHandler } from './properties/AllocationHandler';
 import { guidanceHandler } from './properties/GuidanceHandler';
@@ -32,6 +33,7 @@ const EXECUTION_GROUPS = [
 { label: 'Operators', id: 'operators', component: ListGroup, handler: operatorHandler},
 { label: 'Messages', id: 'message', component: ListGroup, handler: multiMessageHandler},
 { label: 'Message', id: 'message', handler: messageHandler},
+{ label: 'Signal', id: 'signal', handler: signalHandler},
 { label: 'Timer', id: 'attribute', component: Group, handler: timerHandler},
 { label: 'Allocations', id: 'allocations', component: ListGroup, handler: allocationHandler},
 { label: 'Guidance', id: 'guidance', component: ListGroup, handler: guidanceHandler}

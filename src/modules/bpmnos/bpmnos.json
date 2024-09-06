@@ -304,6 +304,27 @@
        ]
     },
     {
+      "name": "Signal", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "name",
+          "type": "Name",
+          "isAttr": true
+        },
+        {
+          "name": "content",
+          "type": "Content",
+          "isMany": true
+        }
+       ]
+    },
+    {
       "name": "Content",
       "superClass": [ "Element" ],
       "properties": [
