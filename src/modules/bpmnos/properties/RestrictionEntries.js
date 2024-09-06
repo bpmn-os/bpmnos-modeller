@@ -90,7 +90,7 @@ function RestrictionScope(props) {
     restriction
   } = props;
 
-  if ( is(element, 'bpmn:SequenceFlow') ) {
+  if ( is(element, 'bpmn:SequenceFlow') || is(element, 'bpmn:Event') ) {
     return;
   }
 

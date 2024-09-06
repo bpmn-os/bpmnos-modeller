@@ -15,6 +15,7 @@ import { loopHandler } from './properties/LoopHandler';
 import { attributeHandler } from './properties/AttributeHandler';
 import { decisionHandler } from './properties/DecisionHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
+import { conditionHandler } from './properties/ConditionHandler';
 import { operatorHandler } from './properties/OperatorHandler';
 import { multiMessageHandler } from './properties/MultiMessageHandler';
 import { messageHandler } from './properties/MessageHandler';
@@ -30,6 +31,7 @@ const EXECUTION_GROUPS = [
 { label: 'Attributes', id: 'attributes', component: ListGroup, handler: attributeHandler},
 { label: 'Decisions', id: 'decisions', component: ListGroup, handler: decisionHandler},
 { label: 'Restrictions', id: 'restrictions', component: ListGroup, handler: restrictionHandler},
+{ label: 'Conditions', id: 'conditions', component: ListGroup, handler: conditionHandler},
 { label: 'Operators', id: 'operators', component: ListGroup, handler: operatorHandler},
 { label: 'Messages', id: 'message', component: ListGroup, handler: multiMessageHandler},
 { label: 'Message', id: 'message', handler: messageHandler},

@@ -64,6 +64,10 @@ export function getTimerEventDefinition(element) {
   return getEventDefinition(element, 'bpmn:TimerEventDefinition');
 }
 
+export function getConditionalEventDefinition(element) {
+  return getEventDefinition(element, 'bpmn:ConditionalEventDefinition');
+}
+
 export function getError(element) {
   const errorEventDefinition = getErrorEventDefinition(element);
 
@@ -119,6 +123,10 @@ export function isLinkSupported(element) {
 
 export function isSignalSupported(element) {
   return is(element, 'bpmn:Event') && !!getSignalEventDefinition(element);
+}
+
+export function isConditionSupported(element) {
+  return is(element, 'bpmn:Event') && !!getConditionalEventDefinition(element);
 }
 
 export function getSignal(element) {

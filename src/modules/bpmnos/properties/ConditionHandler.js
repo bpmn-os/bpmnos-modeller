@@ -16,10 +16,14 @@ import {
   ensureCustomItem
 } from '../utils/CustomItemUtil';
 
+import {
+  isConditionSupported
+} from '../utils/EventDefinitionUtil';
+
 import { without } from 'min-dash';
 
 // Creates restrictions entry and returns { items, add }
-export function restrictionHandler({ element, injector }) {
+export function conditionHandler({ element, injector }) {
   let businessObject = getRelevantBusinessObject(element);
 
   // do not offer for empty pools
@@ -27,17 +31,16 @@ export function restrictionHandler({ element, injector }) {
     return;
   }
 
-  if ( !isAny(businessObject, [ 'bpmn:Process', 'bpmn:Activity' ]) ) {
+  if ( !isAny(businessObject, ['bpmn:SequenceFlow', 'bpmn:Event']) ) {
     return;
   }
-  if ( is(businessObject, 'bpmn:Activity') && ( businessObject.type == "Request" || businessObject.type == "Release") ) {
+  if ( is(businessObject, 'bpmn:Event') && !isConditionSupported(element) ) {
     return;
   }
 
   const bpmnFactory = injector.get('bpmnFactory'),
         commandStack = injector.get('commandStack');
-  let parent = getCustomItem( element, 'bpmnos:Status' ) || {};
-  let restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
+  let restrictions = getCustomItem( element, 'bpmnos:Restrictions' ) || {};
 
   const items = ( restrictions.restriction || []).map((restriction, index) => {
     const id = element.id + '-restriction-' + index;
@@ -69,22 +72,10 @@ function addFactory({ bpmnFactory, commandStack, element }) {
 //console.log(element);
     const businessObject = element.businessObject;
 
-    let parent = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Status'); 
-    let restrictions = parent.restrictions ? parent.get('restrictions')[0] : undefined;
-    if ( !restrictions ) {
-      // create 'bpmnos:Restrictions'
-      restrictions = createElement('bpmnos:Restrictions', {}, parent, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
-          element,
-          moddleElement: parent,
-          properties: {
-            restrictions: [ ...parent.get('restrictions'), restrictions ]
-          }
-      });
-    }
+    let restrictions = ensureCustomItem( bpmnFactory, commandStack, element, 'bpmnos:Restrictions' );
 
     // create 'bpmnos:Restriction'
-    const restriction = createElement('bpmnos:Restriction', { id: nextId('Restriction_') }, restrictions, bpmnFactory);
+    const restriction = createElement('bpmnos:Restriction', { id: nextId('Condition_') }, restrictions, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -116,8 +107,7 @@ function removeFactory({ commandStack, element, restriction }) {
 
     const businessObject = getRelevantBusinessObject(element);
 
-    let parent = getCustomItem( element, 'bpmnos:Status' ) || {};
-    let restrictions = parent.restrictions ? parent.get('restrictions')[0] : {};
+    let restrictions = getCustomItem( element, 'bpmnos:Restrictions' ) || {};
 
     if (!restrictions) {
       return;
@@ -137,14 +127,14 @@ function removeFactory({ commandStack, element, restriction }) {
     });
 
     if (!restrictionList.length) {
-      // remove 'bpmnos:Restrictions' from parent if there are no restrictions anymore
+      const extensionElements = businessObject.get('extensionElements');
       commands.push({
         cmd: 'element.updateModdleProperties',
         context: {
           element,
-          moddleElement: parent,
+          moddleElement: extensionElements,
           properties: {
-            restrictions: undefined
+            values: without(extensionElements.values, restrictions)
           }
         }
       });
