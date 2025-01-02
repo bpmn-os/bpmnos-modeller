@@ -186,6 +186,11 @@
           "isAttr": true
         },
         {
+          "name": "expression",
+          "type": "String",
+          "isAttr": true
+        },
+        {
           "name": "name",
           "type": "String",
           "isAttr": true
@@ -245,6 +250,11 @@
         },
         {
           "name": "scope",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "expression",
           "type": "String",
           "isAttr": true
         },
