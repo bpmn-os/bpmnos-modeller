@@ -12,7 +12,7 @@ import {
 
 import { without } from 'min-dash';
 
-import operatorOptions from '../operators.json';
+import operatorOptions from '../operators.json'; // REMOVE
 
 export default function OperatorEntries(props) {
 
@@ -25,6 +25,11 @@ export default function OperatorEntries(props) {
   const entries = [ {
     id: idPrefix + '-id',
     component: OperatorId,
+    idPrefix,
+    operator
+  },{
+    id: element.id + '-expression',
+    component: OperatorExpression,
     idPrefix,
     operator
   },{
@@ -83,6 +88,52 @@ function OperatorId(props) {
     debounce
   });
 }
+
+function OperatorExpression(props) {
+  const {
+    idPrefix,
+    element,
+    operator
+  } = props;
+
+  const modeling = useService('modeling');
+  const debounce = useService('debounceInput');
+  const translate = useService('translate');
+  const commandStack = useService('commandStack');
+  const bpmnFactory = useService('bpmnFactory');
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: operator,
+      properties: {
+        expression: value,
+      }
+    });
+  };
+
+  const getValue = (element) => {
+    return operator.expression;
+  };
+
+  const validate = (value) => {
+    if ( !value || !value.length ) {
+      return 'Expression must not be empty.';
+    }
+  }
+
+  return TextFieldEntry({
+    element,
+    id: 'value',
+    label: translate('Expression'),
+    validate,
+    getValue,
+    setValue,
+    debounce
+  });
+}
+
+//////////////////////// REMOVE BELOW //////////////////////////
 
 function OperatorType(props) {
   const {
@@ -227,7 +278,7 @@ function OperatorParameters(props) {
       element,
       moddleElement: operator,
       properties: {
-        parameter: without(operator.get('parameter'), parameter)
+        parameter: []
       }
     });
   }

@@ -43,7 +43,7 @@ export function restrictionHandler({ element, injector }) {
     const id = element.id + '-restriction-' + index;
     return {
       id,
-      label: restriction.get('parameter').length ? restriction.get('parameter')[0].value : restriction.get('id'),
+      label: restriction.expression && restriction.expression.length ? restriction.expression : restriction.get('id'),
       entries: RestrictionEntries({
         idPrefix: id,
         element,
@@ -94,6 +94,7 @@ function addFactory({ bpmnFactory, commandStack, element }) {
       }
     });
 
+/*
     // create 'bpmnos:Parameter'
     const parameter = createElement('bpmnos:Parameter', { name: 'linear' }, restriction, bpmnFactory);
 
@@ -104,6 +105,7 @@ function addFactory({ bpmnFactory, commandStack, element }) {
         parameter: [ parameter ]
       }
     });
+*/
   };
 }
 

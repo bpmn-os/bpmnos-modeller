@@ -45,7 +45,7 @@ export function operatorHandler({ element, injector }) {
 
     return {
       id,
-      label: operator.get('parameter').length && operator.get('attribute') ? ( operator.get('attribute') + " ← " + operator.get('type') )  : operator.get('id'),
+      label: operator.expression && operator.expression.length ? operator.expression : operator.get('id'),
       entries: OperatorEntries({
         idPrefix: id,
         element,
@@ -85,7 +85,7 @@ function addFactory({ bpmnFactory, commandStack, element }) {
     }
 
     // create 'bpmnos:Operator'
-    let operator = createElement('bpmnos:Operator', { id: nextId('Operator_') , type: 'unset' }, operators, bpmnFactory);
+    let operator = createElement('bpmnos:Operator', { id: nextId('Operator_') }, operators, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,

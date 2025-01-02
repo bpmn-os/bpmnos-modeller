@@ -33,13 +33,18 @@ export default function RestrictionEntries(props) {
     idPrefix,
     restriction
   },{
+    id: element.id + '-expression',
+    component: RestrictionExpression,
+    idPrefix,
+    restriction
+  },{
     id: element.id + '-type',
     component: RestrictionType,
     idPrefix,
     restriction
   },{
-    id: element.id + '-expression',
-    component: RestrictionExpression,
+    id: element.id + '-legacy-expression',
+    component: LegacyRestrictionExpression,
     idPrefix,
     restriction
   } ];
@@ -132,6 +137,52 @@ function RestrictionScope(props) {
   });
 }
 
+function RestrictionExpression(props) {
+  const {
+    idPrefix,
+    element,
+    restriction
+  } = props;
+
+  const modeling = useService('modeling');
+  const debounce = useService('debounceInput');
+  const translate = useService('translate');
+  const commandStack = useService('commandStack');
+  const bpmnFactory = useService('bpmnFactory');
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: restriction,
+      properties: {
+        expression: value,
+      }
+    });
+  };
+
+  const getValue = (element) => {
+    return restriction.expression;
+  };
+
+  const validate = (value) => {
+    if ( !value || !value.length ) {
+      return 'Expression must not be empty.';
+    }
+  }
+
+  return TextFieldEntry({
+    element,
+    id: 'value',
+    label: translate('Expression'),
+    validate,
+    getValue,
+    setValue,
+    debounce
+  });
+}
+
+//////////////////////// REMOVE BELOW //////////////////////////
+
 function RestrictionType(props) {
   const {
     idPrefix,
@@ -145,24 +196,12 @@ function RestrictionType(props) {
 //  const debounce = useService('debounceInput');
 
   const setValue = (value) => {
-    let parameter = restriction.parameter ? restriction.get('parameter')[0] : undefined;
-    if ( !parameter ) {
-      // create 'bpmnos:Parameter'
-      parameter = createElement('bpmnos:Parameter', { name: 'linear' }, restriction, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
-          element,
-          moddleElement: restriction,
-          properties: {
-            parameter: [ parameter ]
-          }
-      });
-    }
-
     commandStack.execute('element.updateModdleProperties', {
       element,
-      moddleElement: parameter,
+      moddleElement: restriction,
       properties: {
-        name: value,
+        type: undefined,
+        parameter: []
       }
     });
   };
@@ -177,6 +216,7 @@ function RestrictionType(props) {
 
   const getOptions = (element) => {
     return [
+      { value: '', label: translate('none') },
       { value: 'generic', label: translate('generic') },
       { value: 'linear', label: translate('linear') },
       { value: 'string', label: translate('string') },
@@ -195,7 +235,7 @@ function RestrictionType(props) {
   });
 }
 
-function RestrictionExpression(props) {
+function LegacyRestrictionExpression(props) {
   const {
     idPrefix,
     element,
@@ -238,18 +278,18 @@ function RestrictionExpression(props) {
       return parameter.get('value');
     }
   };
-
+/*
   const validate = (value) => {
     if ( !value || !value.length ) {
       return 'Expression must not be empty.';
     }
   }
-
+*/
   return TextFieldEntry({
     element,
     id: 'value',
-    label: translate('Expression'),
-    validate,
+    label: translate('Legacy expression'),
+//    validate,
     getValue,
     setValue,
     debounce
