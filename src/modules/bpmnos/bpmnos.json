@@ -39,7 +39,7 @@
           "isAttr": true
         },
         {
-          "name": "attribute",
+          "name": "condition",
           "type": "String",
           "isAttr": true
         }
@@ -134,12 +134,12 @@
           "isAttr": true
         },
         {
-          "name": "name",
+          "name": "type",
           "type": "String",
           "isAttr": true
         },
         {
-          "name": "type",
+          "name": "name",
           "type": "String",
           "isAttr": true
         },
@@ -147,11 +147,6 @@
           "name": "parameter",
           "type": "Parameter",
           "isMany": true
-        },
-        {
-          "name": "value",
-          "type": "String",
-          "isAttr": true
         },
         {
           "name": "objective",
@@ -189,21 +184,6 @@
           "name": "expression",
           "type": "String",
           "isAttr": true
-        },
-        {
-          "name": "name",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "attribute",
-          "type": "String",
-          "isAttr": true
-        },
-        {
-          "name": "parameter",
-          "type": "Parameter",
-          "isMany": true
         }
        ]
     },
@@ -257,11 +237,6 @@
           "name": "expression",
           "type": "String",
           "isAttr": true
-        },
-        {
-          "name": "parameter",
-          "type": "Parameter",
-          "isMany": true
         }
       ]
     },
@@ -381,6 +356,38 @@
           "isAttr": true
         }
        ]
+    },
+    {
+      "name": "Tables", 
+      "superClass": [ "Element" ],
+      "properties": [
+         {
+          "name": "table",
+          "type": "Table",
+          "isMany": true
+        }
+      ]
+    },
+    {
+      "name": "Table", 
+      "superClass": [ "Element" ],
+      "properties": [
+        {
+          "name": "id",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "source",
+          "type": "String",
+          "isAttr": true
+        },
+        {
+          "name": "name",
+          "type": "String",
+          "isAttr": true
+        }
+      ]
     }
   ]
 }

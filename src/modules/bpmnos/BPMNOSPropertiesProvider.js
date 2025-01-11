@@ -23,6 +23,7 @@ import { signalHandler } from './properties/SignalHandler';
 import { timerHandler } from './properties/TimerHandler';
 import { allocationHandler } from './properties/AllocationHandler';
 import { guidanceHandler } from './properties/GuidanceHandler';
+import { tableHandler } from './properties/TableHandler';
 
 const LOW_PRIORITY = 500;
 
@@ -38,7 +39,8 @@ const EXECUTION_GROUPS = [
 { label: 'Signal', id: 'signal', handler: signalHandler},
 { label: 'Timer', id: 'attribute', component: Group, handler: timerHandler},
 { label: 'Allocations', id: 'allocations', component: ListGroup, handler: allocationHandler},
-{ label: 'Guidance', id: 'guidance', component: ListGroup, handler: guidanceHandler}
+{ label: 'Guidance', id: 'guidance', component: ListGroup, handler: guidanceHandler},
+{ label: 'Lookup table', id: 'table', component: ListGroup, handler: tableHandler}
 ];
 
 export default class BPMNOSPropertiesProvider {

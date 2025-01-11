@@ -26,6 +26,12 @@ export function operatorHandler({ element, injector }) {
     return;
   }
 
+// TODO: operators are only allowed for tasks and event-subprocesses!
+/*
+  if ( !is(element, 'bpmn:Task') && !( is(element, 'bpmn:SubProcess') && !element.businessObject.triggeredByEvent ) ) {
+    return;
+  }
+*/
   if ( !is(businessObject, 'bpmn:Process') && !is(businessObject, 'bpmn:Activity') ) {
     return;
   }
@@ -51,7 +57,7 @@ export function operatorHandler({ element, injector }) {
         element,
         operator
       }),
-      autoFocusEntry: id + '-attribute',
+      autoFocusEntry: id + '-expression',
       remove: removeFactory({ commandStack, element, operator })
     };
   });

@@ -130,7 +130,7 @@ function Operator(props) {
         element,
         operator
       }) }
-      label={ operator.get('attribute') ? ( operator.get('attribute') + " ← " + operator.get('type') )  : operator.get('id') }
+      label={ operator.expression || operator.get('id') }
       open={ open }
     />
   );

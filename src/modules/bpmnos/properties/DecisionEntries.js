@@ -16,8 +16,8 @@ export default function DecisionEntries(props) {
     idPrefix,
     decision
   },{
-    id: idPrefix + '-attribute',
-    component: DecisionAttribute,
+    id: idPrefix + '-condition',
+    component: DecisionCondition,
     idPrefix,
     decision
   } ];
@@ -60,7 +60,7 @@ function DecisionId(props) {
   });
 }
 
-function DecisionAttribute(props) {
+function DecisionCondition(props) {
   const {
     idPrefix,
     element,
@@ -76,25 +76,25 @@ function DecisionAttribute(props) {
       element,
       moddleElement: decision,
       properties: {
-        attribute: value
+        condition: value
       }
     });
   };
 
   const getValue = () => {
-    return decision.attribute;
+    return decision.condition;
   };
 
   const validate = (value) => {
     if ( !value || value.trim() == "" ) {
-      return 'Attribute name must not be empty.';
+      return 'Condition must not be empty.';
     }
   }
 
   return TextFieldEntry({
     element: decision,
-    id: idPrefix + '-attribute',
-    label: translate('Attribute name'),
+    id: idPrefix + '-condition',
+    label: translate('Condition'),
     validate,
     getValue,
     setValue,

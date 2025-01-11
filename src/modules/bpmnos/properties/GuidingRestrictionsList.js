@@ -50,7 +50,7 @@ export default function RestrictionsList(props) {
     }
 
     // create 'bpmnos:Restriction'
-    const restriction = createElement('bpmnos:Restriction', { id: nextId('Restriction_') , type: 'decimal' }, restrictionList, bpmnFactory);
+    const restriction = createElement('bpmnos:Restriction', { id: nextId('Restriction_') }, restrictionList, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
@@ -129,7 +129,7 @@ function Restriction(props) {
         element,
         restriction
       }) }
-      label={ (restriction.get('parameter')[0] || {}).value || restriction.get('id') }
+      label={ restriction.expression || restriction.get('id') }
       open={ open }
     />
   );

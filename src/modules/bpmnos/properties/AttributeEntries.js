@@ -28,23 +28,18 @@ export default function AttributeEntries(props) {
     idPrefix,
     attribute
   },{
-    id: idPrefix + '-name',
-    component: AttributeName,
-    idPrefix,
-    attribute
-  },{
     id: idPrefix + '-type',
     component: AttributeType,
     idPrefix,
     attribute
   },{
-    id: idPrefix + '-multi-instance-parameter',
-    component: MultiInstanceParameter,
+    id: idPrefix + '-name',
+    component: AttributeName,
     idPrefix,
     attribute
   },{
-    id: idPrefix + '-value',
-    component: AttributeValue,
+    id: idPrefix + '-multi-instance-parameter',
+    component: MultiInstanceParameter,
     idPrefix,
     attribute
   },{
@@ -131,7 +126,7 @@ function AttributeName(props) {
   return TextFieldEntry({
     element: attribute,
     id: idPrefix + '-name',
-    label: translate('Name'),
+    label: translate('Name (and initial value)'),
     validate,
     getValue,
     setValue,
@@ -181,46 +176,6 @@ function AttributeType(props) {
     getValue,
     setValue,
     getOptions
-  });
-}
-
-function AttributeValue(props) {
-  const {
-    idPrefix,
-    element,
-    attribute
-  } = props;
-
-  let parameter = attribute.get('parameter') || [];
-  if ( parameter.length ) {
-    return;
-  }
-
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: attribute,
-      properties: {
-        value
-      }
-    });
-  };
-
-  const getValue = () => {
-    return attribute.value;
-  };
-
-  return TextFieldEntry({
-    element: attribute,
-    id: idPrefix + '-value',
-    label: translate('Value'),
-    getValue,
-    setValue,
-    debounce
   });
 }
 

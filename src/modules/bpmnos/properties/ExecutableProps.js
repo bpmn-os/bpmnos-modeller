@@ -157,20 +157,8 @@ function ensureDefaultAttributes(element,bpmnFactory,commandStack) {
   }
 
   let attributeList = attributes.get('attribute') || [];
-/*
-  if ( !attributeList.find(attribute => attribute.name == "instance") ) {
-      const attribute = createElement('bpmnos:Attribute', { id: 'Instance' , name: 'instance', type: 'string' }, attributes, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
-        element,
-        moddleElement: attributes,
-        properties: {
-          attribute: [ ...attributes.get('attribute'), attribute ]
-        }
-      });
-  }
-*/
   if ( !attributeList.find(attribute => attribute.name == "timestamp") ) {
-    const attribute = createElement('bpmnos:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'decimal', value: '0' }, attributes, bpmnFactory);
+    const attribute = createElement('bpmnos:Attribute', { id: 'Timestamp' , name: 'timestamp', type: 'decimal' }, attributes, bpmnFactory);
     commandStack.execute('element.updateModdleProperties', {
       element,
       moddleElement: attributes,
