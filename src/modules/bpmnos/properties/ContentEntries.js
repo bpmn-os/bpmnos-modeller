@@ -23,7 +23,7 @@ export function Content(props) {
         content,
         idPrefix: contentId
       }) }
-      label={ content.get('key') && content.get('attribute') ? content.get('key')  + " ↔ " +  content.get('attribute') : content.get('id')}
+      label={ content.get('key') && content.get('attribute') ? content.get('key')  + " ~ " +  content.get('attribute') : content.get('id')}
       open={ open }
     />
   );
