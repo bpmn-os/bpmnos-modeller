@@ -52,11 +52,6 @@ export function ContentEntries(props) {
     component: ContentAttribute,
     idPrefix,
     content
-  },{
-    id: idPrefix + '-value',
-    component: ContentValue,
-    idPrefix,
-    content
   }
  ];
 
@@ -165,6 +160,10 @@ function ContentAttribute(props) {
   };
 
   const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Attribute name must not be empty.';
+    }
+/*
     if ( value ) {
       let businessObject = getBusinessObject(content);
       const status = getStatus(businessObject);    
@@ -172,52 +171,16 @@ function ContentAttribute(props) {
         return 'Attribute name does not exist.';
       }
     }
+*/
   }
 
   return TextFieldEntry({
     element: content,
     id: idPrefix + '-attribute',
     label: translate('Attribute name'),
-//    validate,
+    validate,
     getValue,
     setValue,
     debounce
   });
 }
-
-function ContentValue(props) {
-  const {
-    idPrefix,
-    element,
-    content
-  } = props;
-
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element: content,
-      moddleElement: content,
-      properties: {
-        value
-      }
-    });
-  };
-
-  const getValue = () => {
-    return content.value;
-  };
-
-  return TextFieldEntry({
-    element: content,
-    id: idPrefix + '-value',
-    label: translate('Value'),
-    getValue,
-    setValue,
-    debounce
-  });
-}
-
-

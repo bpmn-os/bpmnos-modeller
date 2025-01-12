@@ -120,7 +120,8 @@ function addFactory({ elementRegistry, bpmnFactory, commandStack, element }) {
       if ( name == 'Request message' ) {
         // create 'bpmnos:Content'
         let clientContent = createElement('bpmnos:Content', { id: nextId('Content_'), key: 'ClientID', attribute: 'instance' }, message, bpmnFactory);
-        let allocationContent = createElement('bpmnos:Content', { id: nextId('Content_'), key: 'AllocationID', value: allocation.id }, message, bpmnFactory);
+console.error("Allocation id should be replaced by attribute name");
+        let allocationContent = createElement('bpmnos:Content', { id: nextId('Content_'), key: 'AllocationID', attribute: allocation.id }, message, bpmnFactory);
 
         commandStack.execute('element.updateModdleProperties', {
           element: messageTaskElement,

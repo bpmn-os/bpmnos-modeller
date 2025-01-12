@@ -72,14 +72,14 @@ function AllocationId(props) {
           }
         }
         for (let content of message.content || [] ) {
-          if ( content.key == 'AllocationID' && content.value == allocation.id ) {
+          if ( content.key == 'AllocationID' && content.attribute == allocation.id ) {
             commands.push({
               cmd: 'element.updateModdleProperties', 
               context: {
                 element: messageTaskElement,
                 moddleElement: content,
                 properties: {
-                  value
+                  attribute
                 }
               }
             });
