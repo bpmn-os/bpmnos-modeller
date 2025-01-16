@@ -314,11 +314,6 @@
       "superClass": [ "Element" ],
       "properties": [
         {
-          "name": "id",
-          "type": "String",
-          "isAttr": true
-        },
-        {
           "name": "key",
           "type": "String",
           "isAttr": true

@@ -188,7 +188,7 @@ function MessageContent(props) {
       message = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Message'); 
     }
     // create 'bpmnos:Content'
-    const content = createElement('bpmnos:Content', { id: nextId('Content_') }, message, bpmnFactory);
+    const content = createElement('bpmnos:Content', {}, message, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,

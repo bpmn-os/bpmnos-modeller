@@ -23,7 +23,7 @@ export function Content(props) {
         content,
         idPrefix: contentId
       }) }
-      label={ content.get('key') && content.get('attribute') ? content.get('key')  + " ~ " +  content.get('attribute') : content.get('id')}
+      label={ (content.get('key')  || "<key>") + " ~ " +  (content.get('attribute') || "<attribute>") }
       open={ open }
     />
   );
@@ -38,11 +38,6 @@ export function ContentEntries(props) {
   } = props;
 
   const entries = [ {
-    id: idPrefix + '-id',
-    component: ContentId,
-    idPrefix,
-    content
-  },{
     id: idPrefix + '-key',
     component: ContentKey,
     idPrefix,
@@ -56,40 +51,6 @@ export function ContentEntries(props) {
  ];
 
   return entries;
-}
-
-function ContentId(props) {
-  const {
-    idPrefix,
-    content
-  } = props;
-
-  const commandStack = useService('commandStack');
-  const translate = useService('translate');
-  const debounce = useService('debounceInput');
-
-  const setValue = (value) => {
-    commandStack.execute('element.updateModdleProperties', {
-      element: content,
-      moddleElement: content,
-      properties: {
-        id: value
-      }
-    });
-  };
-
-  const getValue = () => {
-    return content.id;
-  };
-
-  return TextFieldEntry({
-    element: content,
-    id: idPrefix + '-id',
-    label: translate('Id'),
-    getValue,
-    setValue,
-    debounce
-  });
 }
 
 function ContentKey(props) {

@@ -114,7 +114,7 @@ function SignalContent(props) {
       signal = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Signal'); 
     }
     // create 'bpmnos:Content'
-    const content = createElement('bpmnos:Content', { id: nextId('Content_') }, signal, bpmnFactory);
+    const content = createElement('bpmnos:Content', { }, signal, bpmnFactory);
 
     commandStack.execute('element.updateModdleProperties', {
       element,
