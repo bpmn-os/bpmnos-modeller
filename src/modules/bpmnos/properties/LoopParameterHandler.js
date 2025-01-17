@@ -3,7 +3,7 @@ import {
   is
 } from 'bpmn-js/lib/util/ModelUtil';
 
-import ParameterEntries from './ParameterEntries';
+import LoopParameterEntries from './LoopParameterEntries';
 
 import {
   createElement,
@@ -18,7 +18,7 @@ import {
 import { without } from 'min-dash';
 
 // Creates loop entry and returns { items, add }
-export function loopHandler({ element, injector }) {
+export function loopParameterHandler({ element, injector }) {
   let businessObject = getBusinessObject(element);
 
   if ( !is(element, 'bpmn:Activity') || !businessObject.loopCharacteristics ) {
@@ -35,8 +35,8 @@ export function loopHandler({ element, injector }) {
 
     return {
       id,
-      label: parameter.get('name'),
-      entries: ParameterEntries({
+      label: parameter.get('name') + " ~ " + parameter.get('value') ,
+      entries: LoopParameterEntries({
         idPrefix: id,
         element,
         parameter

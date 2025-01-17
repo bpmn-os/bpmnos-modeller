@@ -11,7 +11,7 @@ import {
 import { ExecutableProps } from './properties/ExecutableProps';
 import { SequentialPerformerProps } from './properties/SequentialPerformerProps';
 import { AdHocOrderingProps } from './properties/AdHocOrderingProps';
-import { loopHandler } from './properties/LoopHandler';
+import { loopParameterHandler } from './properties/LoopParameterHandler';
 import { attributeHandler } from './properties/AttributeHandler';
 import { decisionHandler } from './properties/DecisionHandler';
 import { restrictionHandler } from './properties/RestrictionHandler';
@@ -28,7 +28,7 @@ import { tableHandler } from './properties/TableHandler';
 const LOW_PRIORITY = 500;
 
 const EXECUTION_GROUPS = [
-{ label: 'Loop parameters', id: 'loop', component: ListGroup, handler: loopHandler},
+{ label: 'Loop parameters', id: 'loop', component: ListGroup, handler: loopParameterHandler},
 { label: 'Attributes', id: 'attributes', component: ListGroup, handler: attributeHandler},
 { label: 'Decisions', id: 'decisions', component: ListGroup, handler: decisionHandler},
 { label: 'Restrictions', id: 'restrictions', component: ListGroup, handler: restrictionHandler},

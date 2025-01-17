@@ -1,10 +1,10 @@
-import { CollapsibleEntry, TextFieldEntry } from '@bpmn-io/properties-panel';
+import { CollapsibleEntry, TextFieldEntry, SelectEntry } from '@bpmn-io/properties-panel';
 
 import { useService } from 'bpmn-js-properties-panel';
 
 import { getStatus, getBusinessObject } from '../utils/StatusUtil';
 
-export function Parameter(props) {
+export function LoopParameter(props) {
   const {
     element,
     id: idPrefix,
@@ -17,7 +17,7 @@ export function Parameter(props) {
 
   return (
     <CollapsibleEntry
-      entries={ ParameterEntries({
+      entries={ LoopParameterEntries({
         element,
         parameter,
         idPrefix: paramId
@@ -29,7 +29,7 @@ export function Parameter(props) {
 
 }
 
-export default function ParameterEntries(props) {
+export default function LoopParameterEntries(props) {
 
   const {
     idPrefix,
@@ -39,12 +39,12 @@ export default function ParameterEntries(props) {
 
   const entries = [ {
     id: idPrefix + '-name',
-    component: ParameterName,
+    component: LoopParameterName,
     idPrefix,
     parameter
   },{
     id: idPrefix + '-value',
-    component: ParameterValue,
+    component: LoopParameterValue,
     idPrefix,
     parameter
   } ];
@@ -53,7 +53,52 @@ export default function ParameterEntries(props) {
 }
 
 
-function ParameterName(props) {
+function LoopParameterName(props) {
+  const {
+    idPrefix,
+    element,
+    parameter
+  } = props;
+
+  const commandStack = useService('commandStack');
+  const translate = useService('translate');
+//  const debounce = useService('debounceInput');
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: parameter,
+      properties: {
+        name: value
+      }
+    });
+  };
+
+  const getValue = () => {
+    return parameter.name;
+  };
+
+  const getOptions = (element) => {
+    return [
+      { value: 'index', label: translate('Index attribute') },
+      { value: 'cardinality', label: translate('Number of instances') },
+      { value: 'condition', label: translate('Loop condition attribute') },
+      { value: 'maximum', label: translate('Maximum number of loops') }
+    ];
+  };
+
+  return SelectEntry({
+    element: parameter,
+    id: idPrefix + '-name',
+    label: translate('Name'),
+    getValue,
+    setValue,
+    getOptions
+  });
+}
+
+/*
+function LoopParameterName(props) {
   const {
     idPrefix,
     element,
@@ -96,8 +141,9 @@ function ParameterName(props) {
     debounce
   });
 }
+*/
 
-function ParameterValue(props) {
+function LoopParameterValue(props) {
   const {
     idPrefix,
     element,
