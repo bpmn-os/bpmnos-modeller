@@ -42,13 +42,13 @@ export function decisionHandler({ element, injector }) {
 
     return {
       id,
-      label: decision.get('attribute') || decision.get('id'),
+      label: decision.get('condition') || decision.get('id'),
       entries: DecisionEntries({
         idPrefix: id,
         element,
         decision
       }),
-      autoFocusEntry: id + '-attribute',
+      autoFocusEntry: id + '-condition',
       remove: removeFactory({ commandStack, element, decision })
     };
   });
