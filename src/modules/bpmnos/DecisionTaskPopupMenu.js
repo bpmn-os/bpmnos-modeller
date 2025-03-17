@@ -18,6 +18,7 @@ export default class DecisionTaskPopupMenu {
 
   getPopupMenuEntries(element) {
     const self = this;
+
     const untypedTask = {
       label: "Task",
       className: "bpmn-icon-task",
@@ -47,11 +48,13 @@ export default class DecisionTaskPopupMenu {
     };
 
     return function (entries) {
-      entries = {
-        "replace-with-task": untypedTask,
-        "replace-with-decision-task": decisionTask,
-        ...entries
-      };
+     if ( is(element, "bpmn:Activity") && element.collapsed != false )  {
+        entries = {
+          "replace-with-task": untypedTask,
+          "replace-with-decision-task": decisionTask,
+          ...entries
+        };
+      }
       if ( element.type == "bpmn:Task" ) {
         if ( element.businessObject.type == 'Decision' ) {
           delete entries["replace-with-decision-task"];
