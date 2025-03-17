@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-core');
+const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
-const { DOMParser, XMLSerializer } = require('xmldom');
+const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
 
 const args = process.argv.slice(2);
 let fileName;
@@ -107,10 +108,17 @@ else {
 }
 
 async function bpmn2svg(serverURL) {
-  // Launch a headless browser
-  // const browser = await puppeteer.launch({ headless: false }); // use to debug
-  const browser = await puppeteer.launch({ args: ["--no-sandbox", "--disabled-setupid-sandbox"], headless: true });
+  const chromePath = chromeLauncher.Launcher.getFirstInstallation();
+  if (!chromePath) {
+    throw new Error("Cannot find chrome browser. To install run: sudo apt install google-chrome-stable");
+  }
+//  console.log("Detected google-chrome path:", chromePath); 
 
+  const browser = await puppeteer.launch({
+    executablePath: chromePath,
+    args: ["--no-sandbox", "--disabled-setupid-sandbox"], 
+    headless: true
+  });
   // Open a new page
   const page = await browser.newPage();
 

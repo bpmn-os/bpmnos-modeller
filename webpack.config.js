@@ -9,6 +9,17 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'app.js'
   },
+  devtool: "source-map",
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
+        exclude: /node_modules/
+      }
+    ]
+  },
   module: {
     rules: [
       {

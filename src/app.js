@@ -36,7 +36,6 @@ var modeler = new BpmnModeler({
   linting: {
     bpmnlint: getLintConfig()
   },
-  keyboard: { bindTo: document },
   additionalModules: [
     BpmnPropertiesPanelModule,
     BPMNOSPropertiesProviderModule,
@@ -50,8 +49,10 @@ var modeler = new BpmnModeler({
   moddleExtensions
 });
 
-modeler.get('subProcessImporter').setModdleExtensions(moddleExtensions);
-
+var subProcessImporter = modeler.get('subProcessImporter');
+if ( subProcessImporter ) {
+  subProcessImporter.setModdleExtensions(moddleExtensions);
+}
 
 createLintControls(modeler);
 
