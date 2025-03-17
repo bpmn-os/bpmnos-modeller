@@ -1,10 +1,10 @@
 # A BPMN 2.0 modeller for optimization and simulation
 
-This modeller uses [bpmn-js](https://github.com/bpmn-io/bpmn-js) and [bpmn-js-properties-panel](https://github.com/bpmn-io/bpmn-js-properties-panel). It implements a BPMN 2.0 modeler that allows you to edit execution related properties via a properties panel.
+Implementation of a BPMN 2.0 modeler allowing to provide data relevant for optimization and simulation. The modeller is based on [bpmn-js](https://github.com/bpmn-io/bpmn-js), [bpmn-js-properties-panel](https://github.com/bpmn-io/bpmn-js-properties-panel), and [bpmn-js-token-simulation](https://github.com/bpmn-io/bpmn-js-token-simulation). 
 
 ## Building the modeller
 
-You need a [NodeJS](http://nodejs.org) development stack with [npm](https://npmjs.org) and installed to build the project.
+You need a [NodeJS](http://nodejs.org) development stack with [npm](https://npmjs.org) installed to build the project.
 
 To install all project dependencies execute
 
@@ -12,16 +12,16 @@ To install all project dependencies execute
 npm install
 ```
 
-Build the example using [browserify](http://browserify.org) via
+Build the modeller and start a local server via
 
 ```
-npm run all
+npm run start
 ```
 
-You may also spawn a development setup by executing
+You may also build the modeller without starting a local server via
 
 ```
-npm run dev
+npm run bundle
 ```
 
 Both tasks generate the distribution ready client-side modeller application into the `dist` folder.
@@ -43,13 +43,3 @@ bpmn2svg <BPMN filename> [-o <outputDir>] [-s <serverURL>]
 
 This command creates an SVG-file for the main diagram and each collapsed subprocesses and saves them in the specified output directory. If no output directory is specified the current folder is used. Tooltips for each BPMN element are automatically added.
 
-<!--
-In order to use this command `xmldom` and `puppeteer` must be installed
-
-```
-npm install xmldom
-npm install puppeteer
-```
-
-Please note that `npm install puppeteer` may hang on certain internet connections (see https://github.com/puppeteer/puppeteer/issues/5611).
--->

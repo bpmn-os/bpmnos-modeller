@@ -4,14 +4,11 @@
   "description": "A BPMN modeller for optimization and simulation",
   "main": "src/app.js",
   "scripts": {
-    "all": "run-s bundle",
-    "dev": "run-s bundle:less watch:js",
     "start": "run-s bundle serve",
     "serve": "sirv dist --dev",
     "bundle": "run-s bundle:*",
     "bundle:less": "lessc src/app.less dist/app.css",
-    "bundle:js": "webpack -c webpack.config.js",
-    "watch:js": "run-s \"bundle:js -- --watch\""
+    "bundle:js": "webpack -c webpack.config.js"
   },
   "author": {
     "name": "Asvin Goel"
