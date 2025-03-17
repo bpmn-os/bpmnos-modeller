@@ -4,7 +4,7 @@ const puppeteer = require('puppeteer-core');
 const chromeLauncher = require('chrome-launcher');
 const fs = require('fs');
 const path = require('path');
-const { exec } = require('child_process');
+const { spawn } = require('node:child_process');
 const { DOMParser, XMLSerializer } = require('@xmldom/xmldom');
 
 const args = process.argv.slice(2);
@@ -60,14 +60,23 @@ if (!fs.existsSync(outputDir)) {
 }
 
 const baseName = path.basename(fileName, path.extname(fileName));
-
 if ( serverURL ) {
   // Convert BPMN to SVG
   bpmn2svg(serverURL);
 }
 else {
   // Start the local server
-  const serverProcess = exec('npm run start', { cwd: __dirname });
+  startServer();
+}
+
+async function startServer() {
+  let serverReady = false;
+  console.log("Start local server ...");
+
+  const serverProcess = spawn('unbuffer', ['npm', 'run', 'start'], { cwd: __dirname, 
+    detached: true,
+    stdio: ['ignore', 'pipe', 'pipe']  // Ignore stdin, capture stdout and stderr
+  });
 
   serverProcess.on('error', (err) => {
     console.error('Error starting local server:', err);
@@ -77,17 +86,17 @@ else {
   serverProcess.on('exit', (code, signal) => {
     process.exit(0);
   });
-
-  let serverReady = false;
   serverProcess.stdout.on('data', async (data) => {
+    // console.error(`Server data: ${data}`);
+    const output = data.toString();
     // Check if the stdout contains the message indicating that the server is ready
-    if (data.includes('Your application is ready')) {
+    if (output.includes('Your application is ready')) {
       serverReady = true;
     }
   
-    if (serverReady && data.includes('http')) {
+    if (serverReady && output.includes('http')) {
       // Extract the URL from the data
-      const urlMatch = data.match(/(http\S+)/);
+      const urlMatch = output.match(/(http\S+)/);
       if (urlMatch && urlMatch[1]) {
         serverURL = urlMatch[1];
         console.log('Server URL:', serverURL);
@@ -104,6 +113,7 @@ else {
 
   serverProcess.stderr.on('data', (data) => {
     console.error(`Server process error: ${data}`);
+    process.exit(1);
   });
 }
 
