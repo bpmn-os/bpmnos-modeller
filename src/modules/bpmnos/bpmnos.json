@@ -192,11 +192,6 @@
           "isAttr": true
         },
         {
-          "name": "attribute",
-          "type": "String",
-          "isAttr": true
-        },
-        {
           "name": "value",
           "type": "String",
           "isAttr": true

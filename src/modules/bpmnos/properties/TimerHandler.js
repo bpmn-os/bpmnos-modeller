@@ -36,9 +36,6 @@ export function timerHandler({ element }) {
     {
       id: element.id + '-name',
       component: TimerParameterName
-    },    {
-      id: element.id + '-attribute',
-      component: TimerParameterAttribute
     }, {
       id: element.id + '-value',
       component: TimerParameterValue
@@ -110,72 +107,7 @@ function TimerParameterName(props) {
   });
 }
 
-function TimerParameterAttribute(props) {
-  const {
-    element
-  } = props;
 
-  const modeling = useService('modeling');
-  const debounce = useService('debounceInput');
-  const translate = useService('translate');
-  const commandStack = useService('commandStack');
-  const bpmnFactory = useService('bpmnFactory');
-
-  const setValue = (value) => {
-    const timer = ensureCustomItem(bpmnFactory, commandStack, element, 'bpmnos:Timer'); 
-
-    let parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
-    if ( !parameter ) {
-      // create 'bpmnos:Parameter'
-      parameter = createElement('bpmnos:Parameter', { name: 'trigger' }, timer, bpmnFactory);
-      commandStack.execute('element.updateModdleProperties', {
-          element,
-          moddleElement: timer,
-          properties: {
-            parameter: [ parameter ]
-          }
-      });
-    }
-
-    commandStack.execute('element.updateModdleProperties', {
-      element,
-      moddleElement: parameter,
-      properties: {
-        name: 'trigger',
-        attribute: value
-      }
-    });
-  };
-
-  const getValue = (element) => {
-    const timer = getCustomItem( element, 'bpmnos:Timer' ) || {};
-    const parameter = timer.parameter ? timer.get('parameter')[0] : undefined;
-
-    if ( parameter ) {
-      return parameter.get('attribute');
-    }
-  };
-
-  const validate = (value) => {
-    if ( value ) {
-      let businessObject = getBusinessObject(element);
-      const status = getStatus(businessObject);    
-      if (status.filter(attribute => attribute.name == value).length == 0) {
-        return 'Attribute name does not exist.';
-      }
-    }
-  }
-
-  return TextFieldEntry({
-    element,
-    id: 'attribute',
-    label: translate('Attribute name'),
-//    validate,
-    getValue,
-    setValue,
-    debounce
-  });
-}
 function TimerParameterValue(props) {
   const {
     element
