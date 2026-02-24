@@ -113,6 +113,7 @@ function RestrictionScope(props) {
     return [
       { value: 'full', label: translate('full') },
       { value: 'entry', label: translate('entry') },
+      { value: 'completion', label: translate('completion') },
       { value: 'exit', label: translate('exit') }
     ];
   };
