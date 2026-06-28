@@ -17,7 +17,7 @@ export const RULES = {
   'implicit-start': '../src/modules/linting/bpmn/implicit-start.js',
   'implicit-end': '../src/modules/linting/bpmn/implicit-end.js',
   'structural-anomaly': '../src/modules/linting/bpmn/structural-anomaly.js',
-  'non-interrupting-boundary-event': '../src/modules/linting/engine/non-interrupting-boundary-event.js',
+  'non-interrupting-boundary-event': '../src/modules/linting/bpmn/non-interrupting-boundary-event.js',
 };
 
 // Recursively visit every moddle element (skipping $parent back-references to avoid loops).
