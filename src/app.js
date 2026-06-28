@@ -10,7 +10,7 @@ import TokenSimulationModule from 'bpmn-js-token-simulation';
 
 import BPMNOSModdleDescriptor from './modules/bpmnos/bpmnos.json';
 import BPMNOSPropertiesProviderModule from './modules/bpmnos/';
-import BPMNOSTemplatesModule from './modules/templates';
+//import BPMNOSTemplatesModule from './modules/templates'; // Resource, request, release templates
 
 import sampleProcess from './newDiagram.bpmn';
 
@@ -39,7 +39,7 @@ var modeler = new BpmnModeler({
   additionalModules: [
     BpmnPropertiesPanelModule,
     BPMNOSPropertiesProviderModule,
-    BPMNOSTemplatesModule,
+//    BPMNOSTemplatesModule,
     LintModule,
     TokenSimulationModule,
     SequentialAdHocSubProcessModule,
