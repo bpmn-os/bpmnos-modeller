@@ -25,12 +25,12 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          # No npm cache: the repo intentionally has no lockfile (.npmrc: package-lock=false),
-          # and actions/setup-node's npm cache requires a lockfile.
+          cache: npm
 
-      # No lockfile -> use `npm install` (not `npm ci`). Add --legacy-peer-deps here only if a
-      # peer-dependency conflict ever breaks the install.
-      - run: npm install
+      # Reproducible install from the committed package-lock.json. This pins all transitive
+      # deps to the known-good set (e.g. ids@1.0.5, which the bpmn.io stack requires) so CI
+      # matches a working local install instead of resolving newer, breaking versions.
+      - run: npm ci
 
       # Produces dist/ (less -> dist/app.css, webpack -> dist/app.js + copies index.html,
       # BPMNOS.svg, vendor/ and modules/ assets). index.html uses relative asset paths, so it
