@@ -32,6 +32,7 @@
     "bpmn-js-collapse-event-subprocess": "^0.2.2",
     "bpmn-js-properties-panel": "^5.60.0",
     "bpmn-js-sequential-adhoc-subprocesses": "^0.1.0",
+    "bpmn-js-side-panel": "github:bpmn-os/bpmn-js-side-panel#0f7cf244b680656f1e92dbad195b3bff361c2fed",
     "bpmn-js-subprocess-importer": "^0.2.1",
     "bpmn-js-token-simulation": "^0.39.4",
     "bpmn-moddle": "^10.0.0",

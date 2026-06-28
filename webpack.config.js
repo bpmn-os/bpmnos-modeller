@@ -79,6 +79,7 @@ module.exports = {
         { from: 'node_modules/@bpmn-io/properties-panel/dist/assets', to: 'vendor/@bpmn-io/properties-panel/' },
         { from: 'node_modules/bpmn-js-bpmnlint/dist/assets/css', to: 'vendor/bpmn-js-bpmnlint/' },
         { from: 'node_modules/bpmn-js-token-simulation/assets/css', to: 'vendor/bpmn-js-token-simulation/' },
+        { from: 'node_modules/bpmn-js-side-panel/assets/side-panel.css', to: 'vendor/bpmn-js-side-panel/' },
         { from: 'src/modules/bpmnos/css', to: 'modules/bpmnos/' },
         { from: 'src/modules/templates/css', to: 'modules/templates/' },
       ]

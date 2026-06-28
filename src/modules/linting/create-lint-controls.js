@@ -1,4 +1,4 @@
-export default function(modeler) {
+export default function(modeler, parent) {
   const linting = modeler.get('linting');
   const eventBus = modeler.get('eventBus');
   const elementRegistry = modeler.get('elementRegistry');
@@ -6,7 +6,6 @@ export default function(modeler) {
   const canvas = modeler.get('canvas');
   const contextPad = modeler.get('contextPad');
 
-  const parent = document.getElementById("pane-issues");
   parent.innerHTML += 
          `<div class="bio-properties-panel">
             <div class="bio-properties-panel-entry bio-properties-panel-toggle-switch-entry">

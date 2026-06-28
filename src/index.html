@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="vendor/@bpmn-io/properties-panel/properties-panel.css" />
   <link rel="stylesheet" href="vendor/bpmn-js-bpmnlint/bpmn-js-bpmnlint.css" />
   <link rel="stylesheet" href="vendor/bpmn-js-token-simulation/bpmn-js-token-simulation.css" />
+  <link rel="stylesheet" href="vendor/bpmn-js-side-panel/side-panel.css" />
   <link rel="stylesheet" href="modules/bpmnos/bpmnos.css" />
   <link rel="stylesheet" href="modules/templates/bpmnos.css" />
 
@@ -52,18 +53,7 @@
      </ul>
     </div>
   </div>
-  <div id="separator" ></div>
-  <div id="rightbox" class="properties-panel-parent">
-      <div><img src="BPMNOS.svg" style="width:120px;margin:10px 10px 6px 10px;"/></div>
-      <div id="panel-tabs">
-        <button type="button" class="panel-tab active" data-tab="properties">Properties</button>
-        <button type="button" class="panel-tab" data-tab="issues">Issues</button>
-      </div>
-      <div class="panel-pane active" id="pane-properties">
-        <div id="properties-panel"></div>
-      </div>
-      <div class="panel-pane" id="pane-issues"></div>
-  </div>
+  <div id="side-panel"></div>
 </div>
   <script src="app.js"></script>
 
