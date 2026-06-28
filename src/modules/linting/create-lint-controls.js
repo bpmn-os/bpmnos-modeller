@@ -6,7 +6,7 @@ export default function(modeler) {
   const canvas = modeler.get('canvas');
   const contextPad = modeler.get('contextPad');
 
-  const parent = document.getElementById("global-controls");
+  const parent = document.getElementById("pane-model-checker");
   parent.innerHTML += 
          `<div class="bio-properties-panel">
             <div class="bio-properties-panel-entry bio-properties-panel-toggle-switch-entry">
@@ -16,7 +16,7 @@ export default function(modeler) {
                        <input id="lintingToggle" class="bio-properties-panel-input" type="checkbox">
                        <span class="bio-properties-panel-toggle-switch__slider"></span>
                      </label>
-                     <p class="bio-properties-panel-toggle-switch__label">Use model checker</p>
+                     <p class="bio-properties-panel-toggle-switch__label">Show issues</p>
                   </div>
                </div>
             </div>

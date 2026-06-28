@@ -23,6 +23,8 @@ import LintModule from 'bpmn-js-bpmnlint';
 import getLintConfig from './modules/linting';
 import createLintControls from './modules/linting/create-lint-controls';
 
+import createPanelTabs from './panel-tabs';
+
 var modelName = 'diagram';
 
 var moddleExtensions = {
@@ -56,6 +58,7 @@ if ( subProcessImporter ) {
   subProcessImporter.setModdleExtensions(moddleExtensions);
 }
 
+createPanelTabs();
 createLintControls(modeler);
 
 modeler.importXML(sampleProcess);

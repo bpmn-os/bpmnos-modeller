@@ -55,8 +55,14 @@
   <div id="separator" ></div>
   <div id="rightbox" class="properties-panel-parent">
       <div><img src="BPMNOS.svg" style="width:120px;margin:10px 10px 6px 10px;"/></div>
-      <div id="global-controls"></div>
-      <div id="properties-panel"></div>
+      <div id="panel-tabs">
+        <button type="button" class="panel-tab active" data-tab="properties">Properties</button>
+        <button type="button" class="panel-tab" data-tab="model-checker">Model checker</button>
+      </div>
+      <div class="panel-pane active" id="pane-properties">
+        <div id="properties-panel"></div>
+      </div>
+      <div class="panel-pane" id="pane-model-checker"></div>
   </div>
 </div>
   <script src="app.js"></script>

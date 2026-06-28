@@ -275,6 +275,58 @@ a:link {
   top: 0;
 }
 
+/* Right-panel tabs (Properties / Model checker) */
+
+#panel-tabs {
+  display: flex;
+  border-bottom: 1px solid #ccc;
+}
+
+.panel-tab {
+  flex: 1;
+  padding: 8px 10px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font: inherit;
+  color: #555;
+  cursor: pointer;
+}
+
+.panel-tab:hover {
+  color: #000;
+}
+
+.panel-tab.active {
+  color: #000;
+  font-weight: bold;
+  border-bottom-color: #52b415;
+}
+
+.panel-pane {
+  display: none;
+}
+
+.panel-pane.active {
+  display: block;
+}
+
+/* Make the "Show issues" toggle look like a properties-panel header bar,
+   with the switch vertically centered. */
+#pane-model-checker .bio-properties-panel-toggle-switch-entry {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  max-height: 64px;
+  margin: 0;
+  padding: 16px 10px;
+  font-size: var(--text-size-base);
+  background-color: var(--header-background-color);
+  border-top: 1px solid var(--header-bottom-border-color);
+  border-bottom: 1px solid var(--header-bottom-border-color);
+}
+
 /* CSS hacks for property panel and linting */
 
 .properties-panel-parent {
@@ -282,7 +334,7 @@ a:link {
   overflow-y: auto;
 }
 
-#global-controls > .bio-properties-panel {
+#pane-model-checker > .bio-properties-panel {
   display: unset;
   position: unset;
   height: unset;
@@ -312,6 +364,15 @@ a:link {
 
 .bjsl-button, .bjsl-issues-bottom-right {
   display: none;
+}
+
+/* Each issue box has a full 1px border, so stacked boxes (and the first box vs. the
+   toggle header) double up. Drop the top border so every boundary is a single bottom
+   border; the header's bottom border provides the line above the first box. */
+#pane-model-checker #issueList .bjsl-issues {
+  border-top: none;
+  border-left: none;
+  border-right: none;
 }
 
 
