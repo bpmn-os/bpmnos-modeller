@@ -366,6 +366,16 @@ a:link {
   display: none;
 }
 
+/* Hide the rule id/path in the canvas marker tooltip — a technical detail irrelevant to users. */
+.bjsl-overlay .rule {
+  display: none;
+}
+
+/* The tooltip box has a fixed min-width sized for the (now hidden) rule; let it fit the message. */
+.bjsl-overlay .bjsl-dropdown-content {
+  min-width: 0;
+}
+
 /* Each issue box has a full 1px border, so stacked boxes (and the first box vs. the
    toggle header) double up. Drop the top border so every boundary is a single bottom
    border; the header's bottom border provides the line above the first box. */
