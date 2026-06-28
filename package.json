@@ -4,7 +4,10 @@
   "description": "A BPMN modeller for optimization and simulation",
   "main": "src/app.js",
   "scripts": {
-    "start": "run-s bundle serve",
+    "start": "run-s bundle dev",
+    "dev": "run-p watch:js watch:css serve",
+    "watch:js": "webpack -c webpack.config.js --watch",
+    "watch:css": "node scripts/watch-less.mjs",
     "serve": "sirv dist --dev",
     "bundle": "run-s bundle:*",
     "bundle:less": "lessc src/app.less dist/app.css",
