@@ -313,7 +313,7 @@ a:link {
 
 /* Make the "Show issues" toggle look like a properties-panel header bar,
    with the switch vertically centered. */
-#pane-model-checker .bio-properties-panel-toggle-switch-entry {
+#pane-issues .bio-properties-panel-toggle-switch-entry {
   box-sizing: border-box;
   display: flex;
   align-items: center;
@@ -334,7 +334,7 @@ a:link {
   overflow-y: auto;
 }
 
-#pane-model-checker > .bio-properties-panel {
+#pane-issues > .bio-properties-panel {
   display: unset;
   position: unset;
   height: unset;
@@ -369,7 +369,7 @@ a:link {
 /* Each issue box has a full 1px border, so stacked boxes (and the first box vs. the
    toggle header) double up. Drop the top border so every boundary is a single bottom
    border; the header's bottom border provides the line above the first box. */
-#pane-model-checker #issueList .bjsl-issues {
+#pane-issues #issueList .bjsl-issues {
   border-top: none;
   border-left: none;
   border-right: none;

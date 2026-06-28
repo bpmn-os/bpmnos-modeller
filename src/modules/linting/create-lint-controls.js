@@ -6,14 +6,14 @@ export default function(modeler) {
   const canvas = modeler.get('canvas');
   const contextPad = modeler.get('contextPad');
 
-  const parent = document.getElementById("pane-model-checker");
+  const parent = document.getElementById("pane-issues");
   parent.innerHTML += 
          `<div class="bio-properties-panel">
             <div class="bio-properties-panel-entry bio-properties-panel-toggle-switch-entry">
                <div class="bio-properties-panel-toggle-switch">
                   <div class="bio-properties-panel-field-wrapper">
                      <label class="bio-properties-panel-toggle-switch__switcher">
-                       <input id="lintingToggle" class="bio-properties-panel-input" type="checkbox">
+                       <input id="lintingToggle" class="bio-properties-panel-input" type="checkbox" checked>
                        <span class="bio-properties-panel-toggle-switch__slider"></span>
                      </label>
                      <p class="bio-properties-panel-toggle-switch__label">Show issues</p>
@@ -73,4 +73,6 @@ export default function(modeler) {
     }
   });
 
+  // Enable the model checker by default so issues are shown without toggling.
+  linting.toggle(true);
 }
