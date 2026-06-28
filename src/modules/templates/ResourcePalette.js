@@ -18,15 +18,6 @@ export default class ResourcePalette {
     } = this;
 
     return {
-      'create.event-subprocess-expanded': {
-        group: 'activity',
-        className: 'bpmn-icon-event-subprocess-expanded',
-        title: translate('Create expanded event sub-process'),
-        action: {
-          dragstart: createEventSubProcess,
-          click: createEventSubProcess
-        }
-      },
       'create.resource': {
         group: 'activity',
         className: 'bpmn-icon-resource',
