@@ -143,6 +143,13 @@ a:link {
     height: 100%;
 }
 
+/* The canvas <svg> is focusable; on first focus the browser paints its native focus ring
+   (a red 1px border in some themes). It's the canvas keyboard-focus cue, not a BPMN
+   selection, and looks inconsistent — hide it. */
+.djs-container svg:focus {
+    outline: none;
+}
+
 
 .bts-set-animation-speed {
   bottom: auto;
