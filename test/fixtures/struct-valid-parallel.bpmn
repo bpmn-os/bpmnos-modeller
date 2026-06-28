@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" id="d" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:process id="P" isExecutable="false">
+    <bpmn2:startEvent id="S"><bpmn2:outgoing>f0</bpmn2:outgoing></bpmn2:startEvent>
+    <bpmn2:sequenceFlow id="f0" sourceRef="S" targetRef="PG"/>
+    <bpmn2:parallelGateway id="PG"><bpmn2:incoming>f0</bpmn2:incoming><bpmn2:outgoing>f1</bpmn2:outgoing><bpmn2:outgoing>f2</bpmn2:outgoing></bpmn2:parallelGateway>
+    <bpmn2:task id="A"><bpmn2:incoming>f1</bpmn2:incoming><bpmn2:outgoing>f3</bpmn2:outgoing></bpmn2:task>
+    <bpmn2:task id="B"><bpmn2:incoming>f2</bpmn2:incoming><bpmn2:outgoing>f4</bpmn2:outgoing></bpmn2:task>
+    <bpmn2:sequenceFlow id="f1" sourceRef="PG" targetRef="A"/>
+    <bpmn2:sequenceFlow id="f2" sourceRef="PG" targetRef="B"/>
+    <bpmn2:sequenceFlow id="f3" sourceRef="A" targetRef="PJ"/>
+    <bpmn2:sequenceFlow id="f4" sourceRef="B" targetRef="PJ"/>
+    <bpmn2:parallelGateway id="PJ"><bpmn2:incoming>f3</bpmn2:incoming><bpmn2:incoming>f4</bpmn2:incoming><bpmn2:outgoing>f5</bpmn2:outgoing></bpmn2:parallelGateway>
+    <bpmn2:sequenceFlow id="f5" sourceRef="PJ" targetRef="E"/>
+    <bpmn2:endEvent id="E"><bpmn2:incoming>f5</bpmn2:incoming></bpmn2:endEvent>
+  </bpmn2:process>
+</bpmn2:definitions>

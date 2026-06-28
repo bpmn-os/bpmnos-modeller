@@ -7,7 +7,8 @@ import noBlankEvent from "./bpmn/no-blank-event";
 import implicitSplit from "./bpmn/implicit-split";
 import implicitJoin from "./bpmn/implicit-join";
 import conditionalFlow from "./bpmn/conditional-flow";
-import loop from "./bpmn/loop";
+//import loop from "./bpmn/loop"; // redundant: replaced by the cycle rule
+import cycle from "./bpmn/cycle";
 import structuralAnomaly from "./bpmn/structural-anomaly";
 import singleBlankStartEvent from "bpmnlint/rules/single-blank-start-event";
 import subProcessBlankStartEvent from "bpmnlint/rules/sub-process-blank-start-event";
@@ -19,6 +20,7 @@ import nonExecutableProcess from "./engine/non-executable-process";
 import activityMarker from "./engine/activity-marker";
 import typedTask from "./engine/typed-task";
 import boundaryEvent from "./engine/boundary-event";
+import nonInterruptingBoundaryEvent from "./engine/non-interrupting-boundary-event";
 import eventType from "./engine/event-type";
 import multipleEventDefinitions from "./engine/multiple-event-definitions";
 import eventSubprocess from "./engine/event-subprocess";
@@ -47,13 +49,15 @@ export default function() {
         "essential/implicit-split": "error",
         "essential/implicit-join": "error",
         "essential/conditional-flow": "error",
-        "essential/loop": "error",
+//        "essential/loop": "error", // redundant: replaced by the cycle rule
+        "essential/cycle": "warn",
         "essential/structural-anomaly": "error",
         "essential/single-blank-start-event": "error",
         "essential/sub-process-blank-start-event": "error",
         "essential/no-duplicate-sequence-flows": "error",
         "essential/superfluous-gateway": "warn",
         "engine/non-executable-process": "warn",
+        "engine/non-interrupting-boundary-event": "warn",
 //        "engine/boundary-event": "warn",
 //        "engine/event-subprocess": "warn",
 //        "engine/activity-marker": "error",
@@ -83,7 +87,8 @@ export default function() {
             "implicit-split": implicitSplit,
             "implicit-join": implicitJoin,
             "conditional-flow": conditionalFlow,
-            "loop": loop,
+//            "loop": loop, // redundant: replaced by the cycle rule
+            "cycle": cycle,
             "structural-anomaly": structuralAnomaly,
             "single-blank-start-event": singleBlankStartEvent,
             "sub-process-blank-start-event": subProcessBlankStartEvent,
@@ -95,6 +100,7 @@ export default function() {
           name: "engine",
           rules: {
             "non-executable-process": nonExecutableProcess,
+            "non-interrupting-boundary-event": nonInterruptingBoundaryEvent,
 //            "boundary-event": boundaryEvent,
 //            "event-subprocess": eventSubprocess,
             "activity-marker": activityMarker,

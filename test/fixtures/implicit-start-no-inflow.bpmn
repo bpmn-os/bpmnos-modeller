@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn2:definitions xmlns:bpmn2="http://www.omg.org/spec/BPMN/20100524/MODEL" id="d" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn2:process id="P" isExecutable="false">
+    <bpmn2:task id="A"><bpmn2:outgoing>f1</bpmn2:outgoing></bpmn2:task>
+    <bpmn2:sequenceFlow id="f1" sourceRef="A" targetRef="E"/>
+    <bpmn2:endEvent id="E"><bpmn2:incoming>f1</bpmn2:incoming></bpmn2:endEvent>
+  </bpmn2:process>
+</bpmn2:definitions>

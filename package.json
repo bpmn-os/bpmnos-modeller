@@ -8,7 +8,8 @@
     "serve": "sirv dist --dev",
     "bundle": "run-s bundle:*",
     "bundle:less": "lessc src/app.less dist/app.css",
-    "bundle:js": "webpack -c webpack.config.js"
+    "bundle:js": "webpack -c webpack.config.js",
+    "test": "node --test test/*.test.mjs"
   },
   "author": {
     "name": "Asvin Goel"
