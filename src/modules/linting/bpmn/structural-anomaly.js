@@ -387,8 +387,11 @@ module.exports = function () {
     for (let id in graph) {
       if ( graph[id].fork && graph[id].fork != PARALLEL ) {
         let alternativeEnds = graph[id].successors.filter(function(successorId) {
+          // A node with a merge (>= 2 incoming) is a join, not an alternative end. Do not
+          // dissolve it here: it must survive until its block is reduced, otherwise an
+          // exclusive merge fed by concurrent branches (a race) would be lost.
           return ( graph[successorId].successors.length == 0
-                   && graph[successorId].merge != PARALLEL );
+                   && !graph[successorId].merge );
         });
         // remove all alternative ends
         for (var i = 0; i < alternativeEnds.length; i++) {

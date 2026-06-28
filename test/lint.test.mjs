@@ -33,6 +33,13 @@ const cases = [
   ['struct-deadlock',                ['structural-anomaly'], ["Not symmetric with 'PJ'", "Not symmetric with 'XF'"]],
   // parallel fork -> exclusive join: the join fires per token (race)
   ['struct-race-parallel-exclusive', ['structural-anomaly'], ["Not symmetric with 'PG'", "Not symmetric with 'XG'"]],
+  // parallel fork -> exclusive join where one branch can escape (error boundary): the join
+  // may receive one or two tokens (race). The exclusive merge is kept alive until its block
+  // is reduced (removeAlternativeEnds no longer dissolves merges), so it is reported.
+  ['struct-escape-race',             ['structural-anomaly'], ['Inconsistent merge, use inclusive merge instead']],
+  // dual of the race: parallel fork -> parallel join where one branch can escape: the join
+  // may wait for a token that never arrives (deadlock / lost token).
+  ['struct-tokenloss',               ['structural-anomaly'], ["May lose token required by  'PJ'", "Required token may be lost at 'A'"]],
 ];
 
 for (const [f, rules, expected] of cases) {
@@ -42,11 +49,3 @@ for (const [f, rules, expected] of cases) {
   });
 }
 
-// Known gap: a race where one concurrent branch can escape (here via an error boundary) is
-// not yet detected — the reducer dissolves the exclusive merge before validating its parallel
-// block. Asserts the DESIRED behaviour; marked todo until the reducer is fixed, at which point
-// this should start passing and the todo flag can be removed.
-test('struct-escape-race should report a race (known gap)', { todo: true }, async () => {
-  const reports = await lint(fx('struct-escape-race'), ['structural-anomaly']);
-  assert.ok(reports.length > 0, 'expected a race/anomaly report for the escape variant');
-});
