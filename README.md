@@ -1,3 +1,8 @@
+> [!WARNING]
+> **This repository is deprecated and has been superseded by
+> [bpmn-workbench](https://github.com/bpmn-os/bpmn-workbench), [bpmnos-js](https://github.com/bpmn-os/bpmnos-js), and [bpmnos-workbench](https://github.com/bpmn-os/bpmnos-workbench).**
+> It is no longer maintained.
+
 # A BPMN 2.0 modeller for optimization and simulation
 
 Implementation of a BPMN 2.0 modeler allowing to provide data relevant for optimization and simulation. The modeller is based on [bpmn-js](https://github.com/bpmn-io/bpmn-js), [bpmn-js-properties-panel](https://github.com/bpmn-io/bpmn-js-properties-panel), and [bpmn-js-token-simulation](https://github.com/bpmn-io/bpmn-js-token-simulation). 
