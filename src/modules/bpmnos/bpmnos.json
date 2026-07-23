@@ -366,6 +366,11 @@
           "name": "name",
           "type": "String",
           "isAttr": true
+        },
+        {
+          "name": "header",
+          "type": "String",
+          "isAttr": true
         }
       ]
     }

@@ -37,6 +37,11 @@ export default function TableEntries(props) {
     component: TableName,
     idPrefix,
     table
+  },{
+    id: idPrefix + '-header',
+    component: TableHeader,
+    idPrefix,
+    table
   } ];
 
   return entries;
@@ -154,6 +159,55 @@ function TableName(props) {
     element: table,
     id: idPrefix + '-name',
     label: translate('Lookup function name'),
+    validate,
+    getValue,
+    setValue,
+    debounce
+  });
+}
+
+function TableHeader(props) {
+  const {
+    idPrefix,
+    element,
+    table
+  } = props;
+
+  const commandStack = useService('commandStack');
+  const translate = useService('translate');
+  const debounce = useService('debounceInput');
+
+  const setValue = (value) => {
+    commandStack.execute('element.updateModdleProperties', {
+      element,
+      moddleElement: table,
+      properties: {
+        header: value
+      }
+    });
+  };
+
+  const getValue = () => {
+    return table.header;
+  };
+
+  const validate = (value) => {
+    if ( !value || value.trim() == "" ) {
+      return 'Header must not be empty.';
+    }
+    const columns = value.split(";").map(name => name.trim());
+    if ( columns.length < 2 ) {
+      return 'Header must contain at least two column names separated by semicolon.';
+    }
+    if ( columns.some(name => name == "") ) {
+      return 'Column names must not be empty.';
+    }
+  }
+
+  return TextFieldEntry({
+    element: table,
+    id: idPrefix + '-header',
+    label: translate('Table header'),
     validate,
     getValue,
     setValue,
